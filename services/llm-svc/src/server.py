@@ -1,9 +1,9 @@
-"""gRPC Server fuer den LLM Analysis Service.
+"""gRPC Server für den LLM Analysis Service.
 
 Startet den async gRPC-Server mit:
 - LlmAnalysisServicer (textuelle KI-Analyse)
 - Health-Check-Service (gRPC Health Checking Protocol)
-- Reflection (fuer grpcurl / grpc-cli Debugging)
+- Reflection (für grpcurl / grpc-cli Debugging)
 - Graceful Shutdown bei SIGTERM/SIGINT
 
 Verwendung:
@@ -87,7 +87,7 @@ async def serve() -> None:
     start_http_server(metrics_port)
     logger.info("prometheus_metrics_gestartet", port=metrics_port)
 
-    # --- Pruefe ob gRPC verfuegbar ---
+    # --- Prüfe ob gRPC verfügbar ---
     if grpc_aio is None:
         logger.error("grpc_nicht_installiert", hinweis="pip install grpcio grpcio-tools")
         sys.exit(1)
@@ -110,7 +110,7 @@ async def serve() -> None:
         logger.info("servicer_registriert", service="LlmAnalysisService")
     else:
         logger.warning(
-            "stubs_nicht_verfuegbar",
+            "stubs_nicht_verfügbar",
             hinweis="gRPC-Stubs noch nicht generiert — Service startet ohne RPC-Registrierung",
         )
 
@@ -130,7 +130,7 @@ async def serve() -> None:
             )
         logger.info("health_check_registriert")
 
-    # --- Reflection (fuer grpcurl Debugging) ---
+    # --- Reflection (für grpcurl Debugging) ---
     if reflection is not None and llm_pb2 is not None:
         service_names = (
             llm_pb2.DESCRIPTOR.services_by_name["LlmAnalysisService"].full_name,

@@ -75,7 +75,7 @@ export default function EuroSciVocDetail({ data }: EuroSciVocDetailProps) {
         />
       </div>
 
-      {/* ── Index-Erklaerungen ── */}
+      {/* ── Index-Erklärungen ── */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-[10px] text-[var(--color-text-muted)] -mt-2">
         <p>Vielfalt der Disziplinen — höher = gleichmäßiger verteilt</p>
         <p>Konzentration — niedriger = diverser</p>
@@ -83,7 +83,7 @@ export default function EuroSciVocDetail({ data }: EuroSciVocDetailProps) {
         <p>Anteil der zuordenbaren Projekte</p>
       </div>
 
-      {/* ── Alle Wissenschaftsfelder (vergroessert) ── */}
+      {/* ── Alle Wissenschaftsfelder (vergrößert) ── */}
       {chartData.length > 0 && (
         <DetailChartSection
           ariaLabel="Alle Wissenschaftsfelder nach Anteil"
@@ -138,7 +138,7 @@ export default function EuroSciVocDetail({ data }: EuroSciVocDetailProps) {
         </DetailChartSection>
       )}
 
-      {/* ── Vollstaendige Felder-Tabelle ── */}
+      {/* ── Vollständige Felder-Tabelle ── */}
       <DetailDataSection title="Wissenschaftsfelder">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

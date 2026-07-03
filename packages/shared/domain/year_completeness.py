@@ -1,11 +1,11 @@
-"""Jahres-Vollstaendigkeit — Helfer fuer CAGR/S-Fit/Zeitreihen.
+"""Jahres-Vollständigkeit — Helfer für CAGR/S-Fit/Zeitreihen.
 
-Bug MAJ-7 und MAJ-8 entstanden, weil Services das laufende (unvollstaendige)
+Bug MAJ-7 und MAJ-8 entstanden, weil Services das laufende (unvollständige)
 Kalenderjahr in CAGR- und S-Kurven-Berechnungen einbezogen haben. Ein Jahr `Y`
-gilt genau dann als vollstaendig abgeschlossen, wenn `today >= date(Y + 1, 1, 1)`.
+gilt genau dann als vollständig abgeschlossen, wenn `today >= date(Y + 1, 1, 1)`.
 
 Diese Helfer liefern eine einheitliche Definition, auf die alle Panels (Landscape,
-Maturity, Publication, Research-Impact, Temporal) verweisen koennen.
+Maturity, Publication, Research-Impact, Temporal) verweisen können.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from datetime import date
 
 
 def last_complete_year(today: date | None = None) -> int:
-    """Letztes vollstaendig abgeschlossenes Kalenderjahr.
+    """Letztes vollständig abgeschlossenes Kalenderjahr.
 
     Args:
         today: Referenzdatum; wenn ``None``, wird ``date.today()`` genutzt.
@@ -33,13 +33,13 @@ def last_complete_year(today: date | None = None) -> int:
 
 
 def is_year_complete(year: int, today: date | None = None) -> bool:
-    """Prueft, ob ``year`` zum Stichtag ``today`` vollstaendig abgeschlossen ist.
+    """Prüft, ob ``year`` zum Stichtag ``today`` vollständig abgeschlossen ist.
 
     Ein Jahr ``Y`` ist genau dann abgeschlossen, wenn ``today >= date(Y + 1, 1, 1)``.
     Das laufende Jahr ist nie abgeschlossen (auch am 31.12. nicht).
 
     Args:
-        year: Zu pruefendes Kalenderjahr.
+        year: Zu prüfendes Kalenderjahr.
         today: Referenzdatum; wenn ``None``, wird ``date.today()`` genutzt.
 
     Returns:
@@ -53,7 +53,7 @@ def clip_to_complete_years(
     years: list[int],
     today: date | None = None,
 ) -> list[int]:
-    """Entfernt unvollstaendige Jahre aus der Liste, Reihenfolge bleibt erhalten.
+    """Entfernt unvollständige Jahre aus der Liste, Reihenfolge bleibt erhalten.
 
     Zukunftsjahre und das laufende Jahr werden verworfen. Duplikate werden
     nicht dedupliziert (falls bewusst in der Eingabe).
@@ -63,7 +63,7 @@ def clip_to_complete_years(
         today: Referenzdatum; wenn ``None``, wird ``date.today()`` genutzt.
 
     Returns:
-        Neue Liste mit nur vollstaendigen Jahren, Reihenfolge wie Eingabe.
+        Neue Liste mit nur vollständigen Jahren, Reihenfolge wie Eingabe.
     """
     ref = today if today is not None else date.today()
     return [y for y in years if is_year_complete(y, ref)]

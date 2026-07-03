@@ -1,6 +1,6 @@
-"""Unit-Tests fuer maturity-svc Service-Fallback-Logik (Bug MAJ-9).
+"""Unit-Tests für maturity-svc Service-Fallback-Logik (Bug MAJ-9).
 
-Stellt sicher, dass bei unzuverlaessigen Fits (kein Sigmoid-Fit moeglich
+Stellt sicher, dass bei unzuverlässigen Fits (kein Sigmoid-Fit möglich
 oder R² < 0.5) keine Scheinsicherheiten entstehen:
 
 - ``confidence_level`` muss exakt 0.0 sein.
@@ -8,7 +8,7 @@ oder R² < 0.5) keine Scheinsicherheiten entstehen:
 - ``fit_reliability_flag`` muss False sein.
 
 Strukturelle Kopplung: ``shared.domain.metrics.s_curve_confidence`` gibt
-bei R² < 0.5 garantiert 0.0 zurueck. Die Fallback-Logik im Service nutzt
+bei R² < 0.5 garantiert 0.0 zurück. Die Fallback-Logik im Service nutzt
 diese Funktion, statt rohe Heuristik-Konfidenzen direkt durchzureichen.
 """
 
@@ -105,11 +105,11 @@ def _run(coro: Any) -> Any:
 
 
 class TestFallbackInsufficientData:
-    """Wenn zu wenig Daten fuer Fit -> Fallback-Heuristik darf KEINE
+    """Wenn zu wenig Daten für Fit -> Fallback-Heuristik darf KEINE
     Scheinsicherheit liefern."""
 
     def test_three_datapoints_returns_zero_confidence(self):
-        """3 Datenpunkte (zu wenig fuer Fit) -> confidence == 0.0."""
+        """3 Datenpunkte (zu wenig für Fit) -> confidence == 0.0."""
         # Nur 3 Jahre mit Daten, gesamt unter min_patents_for_fit
         servicer = _make_servicer({2010: 1, 2011: 1, 2012: 1})
         request = _FakeRequest()
@@ -118,7 +118,7 @@ class TestFallbackInsufficientData:
         assert response["confidence"]["confidence_level"] == 0.0
 
     def test_three_datapoints_returns_unknown_phase(self):
-        """3 Datenpunkte (zu wenig fuer Fit) -> phase == 'Unknown'.
+        """3 Datenpunkte (zu wenig für Fit) -> phase == 'Unknown'.
 
         Kein 'Emerging'-Fake-Label.
         """
@@ -154,7 +154,7 @@ class TestFallbackInsufficientData:
 
 
 class TestFallbackNoData:
-    """Wenn ueberhaupt keine Patente -> alles auf 0/Unknown."""
+    """Wenn überhaupt keine Patente -> alles auf 0/Unknown."""
 
     def test_no_data_zero_confidence(self):
         servicer = _make_servicer({})
@@ -184,8 +184,8 @@ class TestFallbackNoData:
 
 
 class TestFitSuccess:
-    """Mit ausreichend sigmoid-foermigen Daten muss Fit gelingen
-    und zu hoher Konfidenz fuehren."""
+    """Mit ausreichend sigmoid-förmigen Daten muss Fit gelingen
+    und zu hoher Konfidenz führen."""
 
     def test_good_sigmoid_fit_has_positive_confidence(self):
         """Sauberer Logistic-Verlauf -> confidence > 0.5, fit_reliability_flag True."""
@@ -213,14 +213,14 @@ class TestFitSuccess:
 
 
 class TestLowRSquared:
-    """Wenn ein Fit erzeugt wird, aber R² < 0.5 -> Fit gilt als unzuverlaessig."""
+    """Wenn ein Fit erzeugt wird, aber R² < 0.5 -> Fit gilt als unzuverlässig."""
 
     def test_low_r_squared_zero_confidence(self):
         """Stark verrauschte Daten -> r² < 0.5 -> confidence == 0.0.
 
         Strukturelle Kopplung via s_curve_confidence().
         """
-        # Stark oszillierende Daten, die kein S-Curve-Modell erklaeren kann
+        # Stark oszillierende Daten, die kein S-Curve-Modell erklären kann
         year_counts = {
             2010: 50, 2011: 5, 2012: 80, 2013: 2, 2014: 100,
             2015: 1, 2016: 90, 2017: 3, 2018: 70, 2019: 4,
@@ -251,7 +251,7 @@ class TestDataCompleteYearMaj7Maj8:
 
     Vor AP8 war das Feld auf 2024 hardcoded. Heute (2026-04-14) muss es
     2025 ergeben — sonst zeigt das Frontend dauerhaft eine veraltete
-    Vollstaendigkeitsgrenze.
+    Vollständigkeitsgrenze.
     """
 
     def test_dict_response_uses_dynamic_year(self):
@@ -280,10 +280,10 @@ class TestDataCompleteYearMaj7Maj8:
 
 
 class TestOverfitWarningResponse:
-    """Response-Flag ``overfit_warning`` ergaenzt ``fit_reliability_flag``.
+    """Response-Flag ``overfit_warning`` ergänzt ``fit_reliability_flag``.
 
-    Unterschied: ``fit_reliability_flag`` prueft "Fit zu schlecht" (R² < 0.5);
-    ``overfit_warning`` prueft "Fit zu gut bei zu wenig Daten" — klassischer
+    Unterschied: ``fit_reliability_flag`` prüft "Fit zu schlecht" (R² < 0.5);
+    ``overfit_warning`` prüft "Fit zu gut bei zu wenig Daten" — klassischer
     Overfitting-Fall eines 3-Parameter Sigmoid-Fits (Semiconductor Laser
     v3.4.0 Live-Lauf: R² = 0.9983 bei n = 9).
     """
@@ -307,7 +307,7 @@ class TestOverfitWarningResponse:
         request = _FakeRequest(start_year=2016, end_year=2024)
         response = _run(servicer.AnalyzeMaturity(request, context=None))
 
-        # Vorbedingung: R² muss >= 0.98 liegen, sonst ist Test nicht aussagekraeftig.
+        # Vorbedingung: R² muss >= 0.98 liegen, sonst ist Test nicht aussagekräftig.
         assert response["r_squared"] > 0.98, (
             f"Fixture nicht geeignet: R²={response['r_squared']} muss > 0.98 sein"
         )
@@ -317,13 +317,13 @@ class TestOverfitWarningResponse:
         assert response["fit_reliability_flag"] is True
 
     def test_overfit_warning_false_for_many_datapoints(self):
-        """>= 30 vollstaendige Datenpunkte -> overfit_warning False."""
+        """>= 30 vollständige Datenpunkte -> overfit_warning False."""
         # 40 Jahre saubere Sigmoid-Kurve: Zeitraum 1985..2024.
         # Auch bei hohem R² darf kein Overfit-Flag gesetzt werden.
-        # Logistische jaehrliche Raten (Glocke um inflection ~ 2005).
+        # Logistische jährliche Raten (Glocke um inflection ~ 2005).
         year_counts = {}
         for offset, year in enumerate(range(1985, 2025)):
-            # Bell-shape: jaehrliche Raten um Inflection = 2005
+            # Bell-shape: jährliche Raten um Inflection = 2005
             distance = abs(year - 2005)
             count = max(1, int(100 * math.exp(-0.05 * distance * distance)))
             year_counts[year] = count

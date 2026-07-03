@@ -1,4 +1,4 @@
-"""Tests fuer lokalen Embedding-Provider."""
+"""Tests für lokalen Embedding-Provider."""
 import pytest
 from unittest.mock import patch, MagicMock
 import numpy as np

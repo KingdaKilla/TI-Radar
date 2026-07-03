@@ -1,4 +1,4 @@
-"""Reine Berechnungsfunktionen fuer Temporale Dynamik (UC8).
+"""Reine Berechnungsfunktionen für Temporale Dynamik (UC8).
 
 Alle Funktionen sind zustandslos und ohne I/O — testbar und auditierbar.
 """
@@ -48,9 +48,9 @@ def _compute_technology_breadth(
 ) -> list[dict[str, Any]]:
     """Technologie-Breite pro Jahr (Leydesdorff et al. 2015).
 
-    Zwei Granularitaeten:
+    Zwei Granularitäten:
     - unique_cpc_sections: CPC-Sektionen (A-H, grob, max 9)
-    - unique_cpc_subclasses: CPC-Subklassen (Level 4, z.B. H01L, feinkoernig)
+    - unique_cpc_subclasses: CPC-Subklassen (Level 4, z.B. H01L, feinkörnig)
     """
     result: list[dict[str, Any]] = []
 
@@ -103,7 +103,7 @@ def _compute_actor_timeline(
 def _compute_programme_evolution(
     instrument_data: list[dict[str, str | int | float]],
 ) -> list[dict[str, Any]]:
-    """Programm-Verteilung pro Jahr (fuer Stacked Area Chart)."""
+    """Programm-Verteilung pro Jahr (für Stacked Area Chart)."""
     by_year: dict[int, dict[str, int]] = {}
     for row in instrument_data:
         year = int(row.get("year", 0))

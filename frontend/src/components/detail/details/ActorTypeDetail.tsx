@@ -77,7 +77,7 @@ export default function ActorTypeDetail({ data }: ActorTypeDetailProps) {
         />
       </div>
 
-      {/* ── Donut-Chart (vergroessert) ── */}
+      {/* ── Donut-Chart (vergrößert) ── */}
       <DetailChartSection ariaLabel="Verteilung nach Organisationstyp">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -124,7 +124,7 @@ export default function ActorTypeDetail({ data }: ActorTypeDetailProps) {
         </ResponsiveContainer>
       </DetailChartSection>
 
-      {/* ── Typ-Erklaerungen ── */}
+      {/* ── Typ-Erklärungen ── */}
       <div className="grid grid-cols-2 gap-2 text-[10px] text-[var(--color-text-muted)] sm:grid-cols-3">
         <p><span className="font-semibold" style={{ color: CHART_COLORS.blue }}>HES</span> — Hochschulen und Universitäten</p>
         <p><span className="font-semibold" style={{ color: CHART_COLORS.orange }}>PRC</span> — Privatunternehmen (inkl. KMU)</p>
@@ -133,7 +133,7 @@ export default function ActorTypeDetail({ data }: ActorTypeDetailProps) {
         <p><span className="font-semibold" style={{ color: CHART_COLORS.purple }}>PUB</span> — Öffentliche Einrichtungen und Behörden</p>
       </div>
 
-      {/* ── Vollstaendige Typ-Tabelle ── */}
+      {/* ── Vollständige Typ-Tabelle ── */}
       <DetailDataSection title="Aufschlüsselung nach Organisationstyp">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

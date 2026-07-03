@@ -1,10 +1,10 @@
 # Datenmodell
 
-## Uebersicht
+## Übersicht
 
-TI-Radar nutzt eine einzelne PostgreSQL-17-Instanz mit 6 isolierten Schemas. Die Datenbank enthaelt ca. ~610M Zeilen bei einer Gesamtgroesse von ~363 GB. Fuer Vektoraehnlichkeitssuche ist pgvector installiert, fuer unscharfe Textsuche pg_trgm.
+TI-Radar nutzt eine einzelne PostgreSQL-17-Instanz mit 6 isolierten Schemas. Die Datenbank enthält ca. ~610M Zeilen bei einer Gesamtgröße von ~363 GB. Für Vektorähnlichkeitssuche ist pgvector installiert, für unscharfe Textsuche pg_trgm.
 
-**Groessenverteilung nach Schema (gemessen 2026-04-09, 156.4M Patents):**
+**Größenverteilung nach Schema (gemessen 2026-04-09, 156.4M Patents):**
 - `patent_schema`: ~217 GB
   - `patents` (partitioned): ~151 GB
   - `patent_applicants` (partitioned): ~30 GB / 246.9M Zeilen
@@ -15,7 +15,7 @@ TI-Radar nutzt eine einzelne PostgreSQL-17-Instanz mit 6 isolierten Schemas. Die
 - `entity_schema`: ~636 MB
 - `research_schema`, `export_schema`: < 10 MB
 
-**Speicherempfehlung:** >= 450 GB fuer das PostgreSQL-Datenverzeichnis (inkl. Headroom fuer Indexe, WAL und temporaere Dateien).
+**Speicherempfehlung:** >= 450 GB für das PostgreSQL-Datenverzeichnis (inkl. Headroom für Indexe, WAL und temporäre Dateien).
 
 ---
 
@@ -25,7 +25,7 @@ TI-Radar nutzt eine einzelne PostgreSQL-17-Instanz mit 6 isolierten Schemas. Die
 
 Das Datenmodell ist als **Hybrid-Data-Warehouse (OLTP + OLAP)** klassifiziert. Es kombiniert operative Datenhaltung mit analytischen Strukturen innerhalb einer einzigen PostgreSQL-Instanz.
 
-Die Architektur folgt dem **Faktenkonstellation-Muster (Galaxy Schema)**: Mehrere Fakten-Tabellen teilen sich gemeinsame Dimensions-Tabellen ueber Quellsystem-Grenzen hinweg. Im Gegensatz zu einem klassischen Star- oder Snowflake-Schema existieren hier mehrere unabhaengige Fakten-Sterne, die ueber die Entity-Resolution-Schicht (`entity_schema`) verbunden werden.
+Die Architektur folgt dem **Faktenkonstellation-Muster (Galaxy Schema)**: Mehrere Fakten-Tabellen teilen sich gemeinsame Dimensions-Tabellen über Quellsystem-Grenzen hinweg. Im Gegensatz zu einem klassischen Star- oder Snowflake-Schema existieren hier mehrere unabhängige Fakten-Sterne, die über die Entity-Resolution-Schicht (`entity_schema`) verbunden werden.
 
 ### Einordnung nach Inmon vs. Kimball
 
@@ -33,20 +33,20 @@ Die Architektur folgt dem **Faktenkonstellation-Muster (Galaxy Schema)**: Mehrer
 |---|---|---|---|
 | Normalisierung | 3NF | Denormalisiert | **Hybrid** -- normalisierte Basis + denormalisierte Arrays |
 | Aufbau | Top-down | Bottom-up (Data Marts) | **Bottom-up** -- Data Marts via Materialized Views |
-| Integration | Ueber einheitliches Modell | Conformed Dimensions | **Entity Resolution** (`unified_actors`) |
+| Integration | Über einheitliches Modell | Conformed Dimensions | **Entity Resolution** (`unified_actors`) |
 | Faktentabellen | Enterprise DWH | Dimensionale Modelle | **Faktenkonstellation** (mehrere Sterne) |
 
-Das Modell folgt primaer dem **Kimball-Ansatz** mit Bottom-up Data Marts (Materialized Views), ergaenzt durch eine **Inmon-typische Integrationsschicht** (Entity Resolution ueber `entity_schema`).
+Das Modell folgt primär dem **Kimball-Ansatz** mit Bottom-up Data Marts (Materialized Views), ergänzt durch eine **Inmon-typische Integrationsschicht** (Entity Resolution über `entity_schema`).
 
 ### Fakten- und Dimensionstabellen
 
 **Fakten-Tabellen (Transaktionsdaten):**
 
-| Tabelle | Zeilen | Granularitaet | Schema |
+| Tabelle | Zeilen | Granularität | Schema |
 |---|---|---|---|
 | `patent_cpc` | ~182M | Ein Eintrag pro Patent-CPC-Zuordnung (nur Patents mit >= 2 CPC-Codes, Jaccard-Requirement) | `patent_schema` |
 | `patent_applicants` | ~247M | Ein Eintrag pro Patent-Anmelder-Zuordnung | `patent_schema` |
-| `patent_citations` | 0 (nicht befuellt) | Ein Eintrag pro Zitationsbeziehung -- XML-Parser nicht implementiert (TODO 9.17) | `patent_schema` |
+| `patent_citations` | 0 (nicht befüllt) | Ein Eintrag pro Zitationsbeziehung -- XML-Parser nicht implementiert (TODO 9.17) | `patent_schema` |
 | `organizations` | 438K | Ein Eintrag pro Projektbeteiligung | `cordis_schema` |
 | `project_euroscivoc` | variabel | Ein Eintrag pro Projekt-Taxonomie-Zuordnung | `cordis_schema` |
 
@@ -58,7 +58,7 @@ Das Modell folgt primaer dem **Kimball-Ansatz** mit Bottom-up Data Marts (Materi
 | `cpc_descriptions` | ~670 | Technologiedimension (CPC-Klassifikation) | `patent_schema` |
 | `projects` | 80.5K | Projektdimension | `cordis_schema` |
 | `euroscivoc` | ~220K | Forschungstaxonomie (hierarchisch) | `cordis_schema` |
-| `unified_actors` | variabel | Cross-Source-Identitaetsdimension | `entity_schema` |
+| `unified_actors` | variabel | Cross-Source-Identitätsdimension | `entity_schema` |
 
 **Aggregate / Data Marts (Materialized Views):**
 
@@ -78,7 +78,7 @@ Schicht 2: Integration
 Schicht 3: Analytik (Data Marts)
 └── cross_schema    -- 9 Materialized Views (vorberechnete Aggregate)
 
-Schicht 4: Praesentation
+Schicht 4: Präsentation
 └── export_schema   -- API-Cache, Report-Templates, Export-Audit
 ```
 
@@ -86,21 +86,21 @@ Schicht 4: Praesentation
 
 ## Datenquellen und Beschaffungsmuster
 
-Das System integriert **5 externe Datenquellen** ueber **2 Beschaffungsmuster**:
+Das System integriert **5 externe Datenquellen** über **2 Beschaffungsmuster**:
 
-### Uebersicht
+### Übersicht
 
 | # | Quelle | Beschaffung | Schema | Volumen | TTL |
 |---|---|---|---|---|---|
 | 1 | **EPO DOCDB** | Bulk-Dateiimport (DOCDB-XML) | `patent_schema` | ~154.8M Patente | -- |
 | 2 | **CORDIS** | Bulk-Dateiimport (JSON/CSV) | `cordis_schema` | 80.5K Projekte, 438K Orgs, 529K Pubs | -- |
-| 3 | **OpenAIRE** | Live-API (on-demand) | `research_schema.openaire_cache` | Publikationszaehlungen | 7 Tage |
+| 3 | **OpenAIRE** | Live-API (on-demand) | `research_schema.openaire_cache` | Publikationszählungen | 7 Tage |
 | 4 | **Semantic Scholar** | Live-API (on-demand) | `research_schema.papers/authors` | Paper + Zitationsdaten | 30 Tage |
 | 5 | **GLEIF** | Live-API (on-demand) | `entity_schema.gleif_cache` | Legal Entity Identifier | 90 Tage |
 
 ### Beschaffungsmuster 1: Bulk-Dateiimport (EPO, CORDIS)
 
-EPO- und CORDIS-Daten werden als Bulk-Dateien importiert. Die Dateien muessen manuell im konfigurierten Verzeichnis (`bulk_data_dir`) bereitgestellt werden. Der wochentliche Scheduler verarbeitet dann alle neuen Dateien.
+EPO- und CORDIS-Daten werden als Bulk-Dateien importiert. Die Dateien müssen manuell im konfigurierten Verzeichnis (`bulk_data_dir`) bereitgestellt werden. Der wochentliche Scheduler verarbeitet dann alle neuen Dateien.
 
 ```
 Manueller Download         /data/bulk/EPO/        import-svc         patent_schema
@@ -110,18 +110,18 @@ Manueller Download         /data/bulk/EPO/        import-svc         patent_sche
 
 **EPO DOCDB:**
 - **Format:** Verschachtelte ZIP-Archive mit DOCDB-XML (Namespace `urn:EPO:...`)
-- **Dateigrösse:** ~1.4 GB pro Aussen-ZIP, ~195 GB Gesamt
-- **Parsing:** Memory-effizientes `iterparse` fuer verschachtelte ZIP-in-ZIP-Strukturen
+- **Dateigröße:** ~1.4 GB pro Außen-ZIP, ~195 GB Gesamt
+- **Parsing:** Memory-effizientes `iterparse` für verschachtelte ZIP-in-ZIP-Strukturen
 - **Extraktion:** publication_number, country, title, dates, CPC/IPC-Codes, Anmelder, Zitationen
-- **Normalisierung:** Firmen-Suffixe entfernt, Grossschreibung, CPC-Leerzeichen bereinigt
+- **Normalisierung:** Firmen-Suffixe entfernt, Großschreibung, CPC-Leerzeichen bereinigt
 
 **CORDIS:**
 - **Format:** JSON-ZIP-Archive oder CSV-Fallback (FP7, H2020, HORIZON)
 - **Datentypen:** Projekte, Organisationen, Publikationen, EuroSciVoc-Taxonomie
 - **Parsing:** Batch-Inserts (konfigurierbar, Default 200K Records)
-- **Normalisierung:** Europaeisches Dezimalformat (Komma), Boolean-Parsing (YES/true/1)
+- **Normalisierung:** Europäisches Dezimalformat (Komma), Boolean-Parsing (YES/true/1)
 
-**Einschraenkung:** Aktuell existiert keine automatisierte Datenbeschaffung ueber die EPO OPS API oder die CORDIS REST API. Fuer aktuelle Daten muessen die Bulk-Dateien manuell aktualisiert werden.
+**Einschränkung:** Aktuell existiert keine automatisierte Datenbeschaffung über die EPO OPS API oder die CORDIS REST API. Für aktuelle Daten müssen die Bulk-Dateien manuell aktualisiert werden.
 
 ### Beschaffungsmuster 2: Live-API mit DB-Cache (OpenAIRE, GLEIF, Semantic Scholar)
 
@@ -131,23 +131,23 @@ Die drei API-basierten Quellen werden on-demand bei Analyse-Abfragen aufgerufen 
 UC-Service Abfrage --> Adapter (HTTP-Client) --> Externe API
                            |                        |
                            v                        v
-                      DB-Cache pruefen         API-Response
+                      DB-Cache prüfen          API-Response
                       (TTL abgelaufen?)        verarbeiten
                            |                        |
-                           +--- Cache-Hit: sofort zurueck
+                           +--- Cache-Hit: sofort zurück
                            +--- Cache-Miss: API aufrufen, Ergebnis cachen
                            +--- API-Fehler: Stale Cache als Fallback
 ```
 
 **Gemeinsame Eigenschaften aller API-Adapter:**
 - Exponentielles Backoff bei HTTP 429 (Rate Limiting)
-- Graceful Degradation: API-Fehler fuehren nicht zum Abbruch der Analyse
-- Stale-Cache-Fallback: Abgelaufene Eintraege werden bei API-Ausfaellen zurueckgegeben
-- Negative Caching: Fehlende Ergebnisse werden ebenfalls gecacht (verhindert wiederholte Fehlschlaege)
+- Graceful Degradation: API-Fehler führen nicht zum Abbruch der Analyse
+- Stale-Cache-Fallback: Abgelaufene Einträge werden bei API-Ausfällen zurückgegeben
+- Negative Caching: Fehlende Ergebnisse werden ebenfalls gecacht (verhindert wiederholte Fehlschläge)
 
 **OpenAIRE** (`landscape-svc`, UC1):
 - API: `api.openaire.eu/search/publications`
-- Funktion: Zaehlt Publikationen pro Jahr und Technologie
+- Funktion: Zählt Publikationen pro Jahr und Technologie
 - Adapter: `openaire_adapter.py` mit JWT Token-Management
 - Cache: `research_schema.openaire_cache` (7-Tage-TTL)
 
@@ -158,7 +158,7 @@ UC-Service Abfrage --> Adapter (HTTP-Client) --> Externe API
 
 **GLEIF** (`actor-type-svc`, UC11):
 - API: `api.gleif.org/api/v1/fuzzy-completions` (kostenlos, kein API-Key)
-- Funktion: Organisationsnamen zu Legal Entity Identifiern aufloesen
+- Funktion: Organisationsnamen zu Legal Entity Identifiern auflösen
 - Adapter: `gleif_adapter.py` mit Fuzzy-Name-Matching und Rate-Limiting (55 RPM)
 - Cache: `entity_schema.gleif_cache` (90-Tage-TTL, auch Negativ-Ergebnisse)
 
@@ -166,7 +166,7 @@ UC-Service Abfrage --> Adapter (HTTP-Client) --> Externe API
 
 ## ETL/ELT-Pipeline
 
-Das System folgt einem **ELT-Muster** (Extract-Load-Transform): Rohdaten werden zuerst in die operativen Schemas geladen und dann ueber Materialized Views in analytische Aggregate transformiert.
+Das System folgt einem **ELT-Muster** (Extract-Load-Transform): Rohdaten werden zuerst in die operativen Schemas geladen und dann über Materialized Views in analytische Aggregate transformiert.
 
 ### Pipeline-Ablauf
 
@@ -182,7 +182,7 @@ Sem. Scholar --> research_schema                            --> UC7
 GLEIF API -----> entity_schema                              --> UC11
 ```
 
-### Import-Reihenfolge und Abhaengigkeiten
+### Import-Reihenfolge und Abhängigkeiten
 
 ```
 1. EuroSciVoc  (schnellstes, Taxonomie-Referenzdaten)
@@ -202,9 +202,9 @@ GLEIF API -----> entity_schema                              --> UC11
 ### Idempotenz und Deduplizierung
 
 - **Import-Log:** `cross_schema.import_log` mit UNIQUE auf `(source, filename)` verhindert Doppelimporte
-- **EPO:** Eindeutigkeit ueber `(publication_number, publication_year)` -- existierende Eintraege werden uebersprungen
+- **EPO:** Eindeutigkeit über `(publication_number, publication_year)` -- existierende Einträge werden übersprungen
 - **CORDIS:** Upsert-Logik -- existierende Projekte/Organisationen werden aktualisiert
-- **Inkrementeller Import:** Beim Neustart setzt der Import dort fort, wo er aufgehoert hat
+- **Inkrementeller Import:** Beim Neustart setzt der Import dort fort, wo er aufgehört hat
 
 ### Scheduler-Konfiguration
 
@@ -212,7 +212,7 @@ GLEIF API -----> entity_schema                              --> UC11
 |---|---|---|
 | `IMPORT_SCHEDULE` | `0 2 * * 0` | Cron-Ausdruck (Sonntag 02:00 UTC) |
 | `SCHEDULER_ENABLED` | `true` | Scheduler aktivieren/deaktivieren |
-| `SCHEDULER_TIMEZONE` | `UTC` | Zeitzone fuer den Cron-Trigger |
+| `SCHEDULER_TIMEZONE` | `UTC` | Zeitzone für den Cron-Trigger |
 
 ### ETL-Monitoring
 
@@ -220,8 +220,8 @@ GLEIF API -----> entity_schema                              --> UC11
 |---|---|---|
 | `import_log` | `cross_schema` | Import-Tracking: Quelle, Dateiname, Status, Record-Count, Dauer |
 | `etl_checkpoints` | `cross_schema` | Per-Source Sync-State: Cursor, last_sync_at, records_synced |
-| `etl_run_log` | `cross_schema` | ETL-Ausfuehrungshistorie: Start, Ende, Status, Records-Statistik |
-| `import_metadata` | `patent_schema` | EPO-ZIP-Datei-Tracking fuer Resume-Unterstuetzung |
+| `etl_run_log` | `cross_schema` | ETL-Ausführungshistorie: Start, Ende, Status, Records-Statistik |
+| `import_metadata` | `patent_schema` | EPO-ZIP-Datei-Tracking für Resume-Unterstützung |
 | `import_metadata` | `cordis_schema` | CORDIS-Quell-Tracking (FP7, H2020, HORIZON) |
 
 ---
@@ -238,7 +238,7 @@ EPO-Patentdaten und patentspezifische Analysen. Genutzt von: UC1 (Landscape), UC
 | `applicants` | ~27.5M | Normalisierte Patentanmelder (abgeleitet aus `patents.applicant_names`) |
 | `patent_applicants` | ~247M | N:M-Zuordnung Patent-Anmelder, co-partitioned nach `patent_year` |
 | `patent_cpc` | ~182M | N:M-Zuordnung Patent-CPC-Klasse, co-partitioned nach `pub_year` (nur Patents mit >= 2 CPC-Codes) |
-| `patent_citations` | 0 (leer) | Forward-/Backward-Zitationen zwischen Patenten -- nicht befuellt (TODO 9.17: XML-Parser in epo_importer.py fehlt) |
+| `patent_citations` | 0 (leer) | Forward-/Backward-Zitationen zwischen Patenten -- nicht befüllt (TODO 9.17: XML-Parser in epo_importer.py fehlt) |
 | `cpc_descriptions` | ~670 | CPC-Subclass-Beschreibungen (Referenzdaten) |
 | `import_metadata` | variabel | Tracking verarbeiteter EPO-DOCDB-ZIP-Dateien |
 | `enrichment_progress` | variabel | Patent-Embedding-Enrichment-Tracking |
@@ -246,15 +246,15 @@ EPO-Patentdaten und patentspezifische Analysen. Genutzt von: UC1 (Landscape), UC
 #### Junction-Ableitung aus denormalisierten Patent-Feldern
 
 Die Junction-Tabellen `applicants`, `patent_applicants` und `patent_cpc` werden
-**nicht direkt vom EPO-Importer** befuellt. Der Importer schreibt beim Bulk-
-Import ausschliesslich die denormalisierten Felder `patents.applicant_names`
+**nicht direkt vom EPO-Importer** befüllt. Der Importer schreibt beim Bulk-
+Import ausschließlich die denormalisierten Felder `patents.applicant_names`
 (Semikolon-separierter Text) und `patents.cpc_codes` (TEXT[]). Die Junctions
-werden anschliessend in einem separaten Derivation-Schritt abgeleitet:
+werden anschließend in einem separaten Derivation-Schritt abgeleitet:
 
 1. **DISTINCT-Extraktion** aus `patents.applicant_names` -> `applicants.raw_name`
    mit normalisiertem Firmensuffix-Stripping (GMBH, AG, LTD, LLC, INC, ...)
-2. **N:M-Join** ueber `applicants.raw_name` -> `patent_applicants`
-3. **LATERAL unnest(cpc_codes)** plus `substring(code, 1, 4)` fuer die 4-stellige
+2. **N:M-Join** über `applicants.raw_name` -> `patent_applicants`
+3. **LATERAL unnest(cpc_codes)** plus `substring(code, 1, 4)` für die 4-stellige
    CPC-Subklasse -> `patent_cpc` (nur Patents mit `array_length(cpc_codes) >= 2`,
    siehe Jaccard-Requirement unten)
 
@@ -264,15 +264,15 @@ und wird an drei Stellen getriggert:
   automatisch nach jedem EPO-Bulk-Import.
 - **Restore-Skript** (`database/restore_split_dump.sh` Phase `[7/9]`) --
   automatisch nach jedem Split-Dump-Restore, falls der Dump leere oder unvoll-
-  staendige Junctions enthaelt (idempotent via `ON CONFLICT DO NOTHING`).
+  ständige Junctions enthält (idempotent via `ON CONFLICT DO NOTHING`).
 - **Manuell** via `psql -f /opt/restore/seed_junctions_production.sql`
   (im DB-Image eingebacken) oder aus dem Repo-Checkout heraus.
 
 Das Skript ist **per Dekade partitioniert** (pre1980, 1980s, 1990s, 2000s,
-2010s, 2020s+), weil ein einziger Sort/Join ueber 156M Patents die Query
+2010s, 2020s+), weil ein einziger Sort/Join über 156M Patents die Query
 mehrere Stunden ohne Commit blockiert. Pro Dekade laufen die Stages in 3-45
 Minuten und committen zwischendurch. Stage 1 (applicants) hat eine Skip-Logik,
-die den teuren `DISTINCT`-Scan ueberspringt, wenn die Tabelle bereits
+die den teuren `DISTINCT`-Scan überspringt, wenn die Tabelle bereits
 > 5M Zeilen hat.
 
 **Typischer Full-Lauf gegen 156M Patents:**
@@ -286,17 +286,17 @@ die den teuren `DISTINCT`-Scan ueberspringt, wenn die Tabelle bereits
 | Spalte | Typ | Beschreibung |
 |---|---|---|
 | `id` | `BIGINT` | Identity Primary Key |
-| `publication_number` | `TEXT` | Natuerlicher Schluessel (z.B. EP1234567A1) |
+| `publication_number` | `TEXT` | Natürlicher Schlüssel (z.B. EP1234567A1) |
 | `country` | `CHAR(2)` | Ausstellungsland (CHECK: `^[A-Z]{2}$`) |
 | `doc_number` | `TEXT` | Dokumentennummer |
 | `kind` | `VARCHAR` | Dokumentart (A1, A2, B1, B2, U1 etc., CHECK: `^[A-Z][0-9]?$`) |
 | `title` | `TEXT` | Patenttitel |
-| `publication_date` | `DATE` | Veroeffentlichungsdatum |
+| `publication_date` | `DATE` | Veröffentlichungsdatum |
 | `publication_year` | `SMALLINT` | Extrahiert via Trigger, Partition-Key (CHECK: 1900-2100) |
-| `filing_date` | `DATE` | Anmeldedatum (fuer UC12 Time-to-Grant) |
+| `filing_date` | `DATE` | Anmeldedatum (für UC12 Time-to-Grant) |
 | `family_id` | `TEXT` | Patentfamilien-ID |
-| `applicant_names` | `TEXT` | Legacy denormalisiertes Feld, **Semikolon-separierter String** (`'Siemens AG; BASF SE'`). Queries muessen `string_to_table(applicant_names, '; ')` statt `unnest()` nutzen. |
-| `applicant_countries` | `TEXT[]` | Array von ISO-Laendercodes (GIN-indiziert) |
+| `applicant_names` | `TEXT` | Legacy denormalisiertes Feld, **Semikolon-separierter String** (`'Siemens AG; BASF SE'`). Queries müssen `string_to_table(applicant_names, '; ')` statt `unnest()` nutzen. |
+| `applicant_countries` | `TEXT[]` | Array von ISO-Ländercodes (GIN-indiziert) |
 | `cpc_codes` | `TEXT[]` | Array von CPC-Klassifikationscodes (GIN-indiziert) |
 | `ipc_codes` | `TEXT[]` | Array von IPC-Klassifikationscodes |
 | `search_vector` | `tsvector` | Volltextsuche (Trigger-gepflegt aus title + CPC) |
@@ -316,23 +316,23 @@ Die `patents`-Tabelle ist nach `publication_year` range-partitioniert:
 | `patents_2000` bis `patents_2030` | je 1 Jahr | Per-Year |
 | `patents_future` | 2031+ | Zukunft |
 
-**Vorteil:** Partition Pruning eliminiert ganze Dekaden bei zeitlich eingeschraenkten Abfragen. Eine Abfrage mit `WHERE publication_year BETWEEN 2020 AND 2025` scannt nur 6 von ~35 Partitionen.
+**Vorteil:** Partition Pruning eliminiert ganze Dekaden bei zeitlich eingeschränkten Abfragen. Eine Abfrage mit `WHERE publication_year BETWEEN 2020 AND 2025` scannt nur 6 von ~35 Partitionen.
 
 Die Junction-Tabellen `patent_applicants` und `patent_cpc` sind **co-partitioniert** nach demselben Schema, sodass Joins innerhalb einer Partition bleiben.
 
 **Design-Entscheidungen:**
 - BRIN-Indexe auf Datumsspalten (100-1000x kleiner als B-Tree bei chronologisch importierten Daten)
 - tsvector-Spalten mit GIN-Index ersetzen SQLite FTS5
-- TEXT[]-Arrays mit GIN-Index fuer Laender- und CPC-Abfragen (Containment-Operatoren `@>`, `&&`)
-- Covering-Indexe auf `patent_cpc` (cpc_code, pub_year, patent_id) fuer Index-Only-Scans bei CPC-Kookkurrenz
-- Integer-PKs in Junctions: 4-Byte-Integer sparen ~3 GB gegenueber 16-Byte-UUIDs bei 182M Zeilen
+- TEXT[]-Arrays mit GIN-Index für Länder- und CPC-Abfragen (Containment-Operatoren `@>`, `&&`)
+- Covering-Indexe auf `patent_cpc` (cpc_code, pub_year, patent_id) für Index-Only-Scans bei CPC-Kookkurrenz
+- Integer-PKs in Junctions: 4-Byte-Integer sparen ~3 GB gegenüber 16-Byte-UUIDs bei 182M Zeilen
 
-**Jaccard-Requirement fuer `patent_cpc`:** Nur Patents mit **>= 2 CPC-Codes**
-landen in der Junction (`array_length(p.cpc_codes, 1) >= 2`). Begruendung: UC5
+**Jaccard-Requirement für `patent_cpc`:** Nur Patents mit **>= 2 CPC-Codes**
+landen in der Junction (`array_length(p.cpc_codes, 1) >= 2`). Begründung: UC5
 (CPC-Flow) berechnet pairwise Co-Occurrence via Jaccard-Koeffizient; Patents mit
-nur einem CPC-Code koennen keine Paare bilden und wuerden die Tabelle nur
-aufblaehen, ohne den Use-Case zu unterstuetzen. Patents mit einem oder keinem
-CPC-Code werden in UC1/UC5/UC8 weiterhin ueber `patents.cpc_codes` (denormalisierte
+nur einem CPC-Code können keine Paare bilden und würden die Tabelle nur
+aufblähen, ohne den Use-Case zu unterstützen. Patents mit einem oder keinem
+CPC-Code werden in UC1/UC5/UC8 weiterhin über `patents.cpc_codes` (denormalisierte
 Array-Spalte) erreichbar, die Materialized Views lesen direkt daraus.
 
 #### Trigger
@@ -360,7 +360,7 @@ CORDIS-EU-Forschungsprojektdaten. Genutzt von: UC4 (Funding), UC6 (Geographic), 
 - `organizations.role` IN (`'coordinator'`, `'participant'`, `'partner'`, `'associatedpartner'`, `'thirdparty'`, `'internationalpartner'`)
 - `organizations.activity_type` IN (`'HES'`, `'PRC'`, `'REC'`, `'OTH'`, `'PUB'`)
 - `organizations.sme` -- nativer BOOLEAN (nicht TEXT)
-- `euroscivoc.parent_code` -- Self-Referencing FK fuer hierarchische Taxonomie (Level 0-10)
+- `euroscivoc.parent_code` -- Self-Referencing FK für hierarchische Taxonomie (Level 0-10)
 - `publications.doi` -- UNIQUE Constraint
 
 **Trigger:**
@@ -369,7 +369,7 @@ CORDIS-EU-Forschungsprojektdaten. Genutzt von: UC4 (Funding), UC6 (Geographic), 
 
 ### research_schema
 
-Semantic-Scholar- und OpenAIRE-Cache fuer Forschungswirkungsanalyse. Genutzt von: UC1 (Landscape, OpenAIRE), UC7 (Research-Impact, Semantic Scholar).
+Semantic-Scholar- und OpenAIRE-Cache für Forschungswirkungsanalyse. Genutzt von: UC1 (Landscape, OpenAIRE), UC7 (Research-Impact, Semantic Scholar).
 
 | Tabelle | Beschreibung | TTL |
 |---|---|---|
@@ -377,25 +377,25 @@ Semantic-Scholar- und OpenAIRE-Cache fuer Forschungswirkungsanalyse. Genutzt von
 | `authors` | Gecachte Autorendaten (h-Index, Affiliations) | 30 Tage |
 | `paper_authors` | N:M-Zuordnung Paper-Autoren (mit `author_position`) | 30 Tage |
 | `query_cache` | Tracking gecachter Semantic-Scholar-Abfragen | 30 Tage |
-| `openaire_cache` | Gecachte OpenAIRE-Publikationszaehler pro (Keyword, Jahr) | 7 Tage |
+| `openaire_cache` | Gecachte OpenAIRE-Publikationszähler pro (Keyword, Jahr) | 7 Tage |
 | `openaire_publications` | Persistierte OpenAIRE-Publikationsdaten | -- |
 
 **Cache-Strategie:**
 - Jeder Eintrag hat eine `stale_after`-Spalte (Timestamp)
-- Frische Eintraege (`stale_after > now()`) werden direkt zurueckgegeben
-- Abgelaufene Eintraege werden bei API-Ausfaellen als Fallback genutzt (Graceful Degradation)
-- Bereinigungsfunktion: `research_schema.purge_stale_papers()` entfernt Eintraege aelter als 30 Tage
+- Frische Einträge (`stale_after > now()`) werden direkt zurückgegeben
+- Abgelaufene Einträge werden bei API-Ausfällen als Fallback genutzt (Graceful Degradation)
+- Bereinigungsfunktion: `research_schema.purge_stale_papers()` entfernt Einträge älter als 30 Tage
 
 ### entity_schema
 
-Entity Resolution fuer quellenuebergreifendes Akteurs-Matching (EPO + CORDIS + GLEIF).
+Entity Resolution für quellenübergreifendes Akteurs-Matching (EPO + CORDIS + GLEIF).
 
 | Tabelle | Beschreibung |
 |---|---|
 | `unified_actors` | Vereinheitlichte Akteure mit UUID, kanonischem Namen, Typ, Land |
 | `actor_source_mappings` | Zuordnung zu Quellsystem-IDs mit Konfidenz und Match-Methode |
 | `gleif_cache` | GLEIF Legal Entity Identifier Cache (90-Tage-TTL) |
-| `resolution_runs` | Audit-Log der Entity-Resolution-Laeufe |
+| `resolution_runs` | Audit-Log der Entity-Resolution-Läufe |
 
 #### Entity-Resolution-Prozess
 
@@ -415,8 +415,8 @@ GLEIF gleif_cache.legal_name ────┘   Konfidenz    actor_source_mapping
 | Methode | Beschreibung | Konfidenz |
 |---|---|---|
 | `exact` | Exakter Namensabgleich (nach Normalisierung) | 1.0 |
-| `fuzzy_trgm` | pg_trgm Trigramm-Aehnlichkeit (`ti_fuzzy_score()`) | 0.7-0.99 |
-| `levenshtein` | Levenshtein-Distanz fuer kurze Namen | 0.6-0.9 |
+| `fuzzy_trgm` | pg_trgm Trigramm-Ähnlichkeit (`ti_fuzzy_score()`) | 0.7-0.99 |
+| `levenshtein` | Levenshtein-Distanz für kurze Namen | 0.6-0.9 |
 | `lei_match` | GLEIF LEI als eindeutiger Identifikator | 1.0 |
 | `manual` | Manuell zugeordnet | 1.0 |
 
@@ -431,16 +431,16 @@ GLEIF gleif_cache.legal_name ────┘   Konfidenz    actor_source_mapping
 | `raw_name` | `TEXT` (PK) | Originaler Abfragename |
 | `lei` | `CHAR(20)` | 20-stelliger LEI oder NULL (Negativ-Ergebnis) |
 | `legal_name` | `TEXT` | Offizieller Name laut GLEIF |
-| `country` | `CHAR(2)` | ISO 3166-1 Alpha-2 Laendercode |
+| `country` | `CHAR(2)` | ISO 3166-1 Alpha-2 Ländercode |
 | `registration_status` | `VARCHAR(20)` | GLEIF Registration Status (Spaltenname **nicht** `entity_status`) |
-| `resolved_at` | `TIMESTAMPTZ` | Zeitstempel der Cache-Aufloesung |
+| `resolved_at` | `TIMESTAMPTZ` | Zeitstempel der Cache-Auflösung |
 
 - **TTL:** 90 Tage. Negativ-Ergebnisse (kein LEI gefunden) werden mit `lei = NULL` gecacht.
-- **Bereinigung:** `entity_schema.purge_stale_gleif()` entfernt abgelaufene Eintraege.
+- **Bereinigung:** `entity_schema.purge_stale_gleif()` entfernt abgelaufene Einträge.
 
 ### cross_schema
 
-Quellenuebergreifende Materialized Views fuer OLAP-Analysen und Import-Tracking. Genutzt von: UC1 (Landscape), UC3 (Competitive), UC4 (Funding), UC5 (CPC-Flow), UC6 (Geographic), UC8 (Temporal).
+Quellenübergreifende Materialized Views für OLAP-Analysen und Import-Tracking. Genutzt von: UC1 (Landscape), UC3 (Competitive), UC4 (Funding), UC5 (CPC-Flow), UC6 (Geographic), UC8 (Temporal).
 
 #### Tabellen
 
@@ -448,33 +448,33 @@ Quellenuebergreifende Materialized Views fuer OLAP-Analysen und Import-Tracking.
 |---|---|
 | `import_log` | Inkrementelles Import-Tracking (Quelle, Dateiname, Status, Dauer) |
 | `etl_checkpoints` | Per-Source Sync-State (Cursor, last_sync_at, records_synced) |
-| `etl_run_log` | ETL-Ausfuehrungshistorie (started_at, finished_at, Status, Records) |
+| `etl_run_log` | ETL-Ausführungshistorie (started_at, finished_at, Status, Records) |
 | `document_chunks` | RAG-Dokumenten-Chunks mit Embeddings (Schema: vector(384), Dump: vector(1024) -- wird beim Restore via `restore_dump.sql` angepasst) |
 
 #### Materialized Views (Analytische Schicht)
 
-Die 9 Materialized Views bilden die **analytische Schicht (Data Marts)** des Data Warehouse. Sie loesen teure Joins und Aggregationen ueber hunderte Millionen Zeilen durch Vorberechnung auf.
+Die 9 Materialized Views bilden die **analytische Schicht (Data Marts)** des Data Warehouse. Sie lösen teure Joins und Aggregationen über hunderte Millionen Zeilen durch Vorberechnung auf.
 
 | Materialized View | Basistabellen | Genutzt von | Zweck |
 |---|---|---|---|
-| `mv_patent_counts_by_cpc_year` | `patent_cpc` | UC1, UC5, UC8 | Patentanzahl pro CPC-Klasse und Jahr -- ersetzt COUNT-Aggregation ueber 237M Zeilen |
+| `mv_patent_counts_by_cpc_year` | `patent_cpc` | UC1, UC5, UC8 | Patentanzahl pro CPC-Klasse und Jahr -- ersetzt COUNT-Aggregation über 237M Zeilen |
 | `mv_cpc_cooccurrence` | `patent_cpc` (Self-Join) | UC5 | CPC-Paar-Kookkurrenz mit Jaccard-Koeffizient -- ersetzt 237M-Zeilen-Self-Join |
-| `mv_yearly_tech_counts` | `patent_cpc` | UC1 | Jaehrliche Technologie-Zaehler fuer Zeitreihenanalyse |
+| `mv_yearly_tech_counts` | `patent_cpc` | UC1 | Jährliche Technologie-Zähler für Zeitreihenanalyse |
 | `mv_top_applicants` | `applicants`, `patent_applicants`, `patents` | UC3, UC8 | Top-Anmelder mit >= 10 Patenten und Jahresverteilung |
-| `mv_patent_country_distribution` | `patents` (unnest) | UC6 | Patente nach Anmelder-Land pro Jahr -- ersetzt UNNEST ueber 154.8M Zeilen |
-| `mv_project_counts_by_year` | `projects` | UC1, UC4 | CORDIS-Projekte + Foerdervolumen pro Jahr und Framework |
-| `mv_cordis_country_pairs` | `projects`, `organizations` | UC6 | Laender-Kooperationspaare in CORDIS-Projekten |
+| `mv_patent_country_distribution` | `patents` (unnest) | UC6 | Patente nach Anmelder-Land pro Jahr -- ersetzt UNNEST über 154.8M Zeilen |
+| `mv_project_counts_by_year` | `projects` | UC1, UC4 | CORDIS-Projekte + Fördervolumen pro Jahr und Framework |
+| `mv_cordis_country_pairs` | `projects`, `organizations` | UC6 | Länder-Kooperationspaare in CORDIS-Projekten |
 | `mv_top_cordis_orgs` | `organizations`, `projects` | UC3, UC4, UC8 | Top-Organisationen mit >= 3 Projekten (SME/Coordinator-Flags) |
-| `mv_funding_by_instrument` | `projects` | UC4 | Foerdervolumen pro Instrument (RIA, IA, CSA, ERC) und Jahr |
+| `mv_funding_by_instrument` | `projects` | UC4 | Fördervolumen pro Instrument (RIA, IA, CSA, ERC) und Jahr |
 
 **Refresh-Strategie:**
 
 - Alle MVs verwenden `REFRESH MATERIALIZED VIEW CONCURRENTLY` (erfordert UNIQUE INDEX auf jeder MV)
-- Concurrent Refresh setzt **keine Lese-Sperren** -- Analyse-Abfragen laufen waehrend des Refreshs weiter
-- Refresh wird automatisch nach jedem erfolgreichen Import ausgeloest:
+- Concurrent Refresh setzt **keine Lese-Sperren** -- Analyse-Abfragen laufen während des Refreshs weiter
+- Refresh wird automatisch nach jedem erfolgreichen Import ausgelöst:
   - EPO-Import: 5 Patent-Views (`refresh_patent_views()`)
   - CORDIS-Import: 4 CORDIS-Views (`refresh_cordis_views()`)
-  - Manuell: `refresh_all_views()` fuer alle 9 MVs
+  - Manuell: `refresh_all_views()` für alle 9 MVs
 - Endpoint: `POST /api/v1/import/refresh-views`
 
 ### export_schema
@@ -484,13 +484,13 @@ Export-Service-Cache und Report-Templates. Genutzt von: Export-Service.
 | Tabelle | Beschreibung |
 |---|---|
 | `analysis_cache` | Gecachte Analyseergebnisse (JSONB, 24h TTL, SHA-256-Deduplizierung) |
-| `report_templates` | Vorlagen fuer CSV/PDF/XLSX/JSON-Reports |
-| `export_log` | Audit-Log der Exporte (Technologie, Format, Zeilenanzahl, Dateigroesse, Dauer) |
+| `report_templates` | Vorlagen für CSV/PDF/XLSX/JSON-Reports |
+| `export_log` | Audit-Log der Exporte (Technologie, Format, Zeilenanzahl, Dateigröße, Dauer) |
 
 **Cache-Strategie:**
-- Cache-Key: SHA-256 ueber `(technology, start_year, end_year, use_cases, european_only)`
+- Cache-Key: SHA-256 über `(technology, start_year, end_year, use_cases, european_only)`
 - TTL: 24 Stunden (konfigurierbar)
-- Bereinigung: `export_schema.purge_expired_cache()` entfernt abgelaufene Eintraege
+- Bereinigung: `export_schema.purge_expired_cache()` entfernt abgelaufene Einträge
 
 ---
 
@@ -529,7 +529,7 @@ erDiagram
         text_arr applicant_countries "GIN-indexed"
         text_arr cpc_codes "GIN-indexed"
         text_arr ipc_codes
-        date filing_date "fuer UC12 Time-to-Grant"
+        date filing_date "für UC12 Time-to-Grant"
         tsvector search_vector
         vector title_embedding "384-dim multilingual-e5-small"
     }
@@ -591,20 +591,20 @@ erDiagram
 
 | Index-Typ | Einsatz | Vorteil |
 |---|---|---|
-| **BRIN** | Datumsspalten (`publication_date`, `start_date`) | 100-1000x kleiner als B-Tree bei chronologisch importierten Daten (~200 KB fuer 154M Zeilen) |
-| **GIN (tsvector)** | Volltextsuche auf Titeln und Beschreibungen | Ersetzt SQLite FTS5, unterstuetzt gewichtete Suche |
+| **BRIN** | Datumsspalten (`publication_date`, `start_date`) | 100-1000x kleiner als B-Tree bei chronologisch importierten Daten (~200 KB für 154M Zeilen) |
+| **GIN (tsvector)** | Volltextsuche auf Titeln und Beschreibungen | Ersetzt SQLite FTS5, unterstützt gewichtete Suche |
 | **GIN (pg_trgm)** | Fuzzy-Suche und Autocomplete auf Namen | Trigramm-basiert, toleriert Tippfehler |
 | **GIN (Array)** | TEXT[]-Spalten (`applicant_countries`, `cpc_codes`) | Containment-Operatoren (`@>`, `&&`) statt O(n) LIKE-Scans |
-| **B-Tree** | Fremdschluessel, `family_id`, `country`, `filing_date` | Standard-Lookups und Bereichsabfragen |
-| **Covering** | `patent_cpc` (cpc_code, pub_year, patent_id) | Index-Only-Scans fuer CPC-Kookkurrenz-Queries (kein Heap-Zugriff) |
+| **B-Tree** | Fremdschlüssel, `family_id`, `country`, `filing_date` | Standard-Lookups und Bereichsabfragen |
+| **Covering** | `patent_cpc` (cpc_code, pub_year, patent_id) | Index-Only-Scans für CPC-Kookkurrenz-Queries (kein Heap-Zugriff) |
 
 ### Volltextsuche-Funktionen
 
 | Funktion | Beschreibung |
 |---|---|
 | `ti_plainto_tsquery(TEXT)` | Normalisierte englische Stemming-Suche (mit `unaccent`) |
-| `ti_websearch_tsquery(TEXT)` | Websearch-Syntax mit "Phrasen" und OR-Verknuepfungen |
-| `ti_fuzzy_score(TEXT, TEXT)` | pg_trgm Trigramm-Aehnlichkeit (0.0-1.0) |
+| `ti_websearch_tsquery(TEXT)` | Websearch-Syntax mit "Phrasen" und OR-Verknüpfungen |
+| `ti_fuzzy_score(TEXT, TEXT)` | pg_trgm Trigramm-Ähnlichkeit (0.0-1.0) |
 
 ---
 
@@ -618,11 +618,11 @@ erDiagram
 | `projects.content_embedding` | `cordis_schema` | Semantische Projektbeschreibungssuche |
 | `papers.abstract_embedding` | `research_schema` | Semantische Abstrakt-Suche |
 | `unified_actors.name_embedding` | `entity_schema` | Semantischer Akteursvergleich |
-| `document_chunks.embedding` | `cross_schema` | RAG-Chunks fuer semantische Suche |
+| `document_chunks.embedding` | `cross_schema` | RAG-Chunks für semantische Suche |
 
-**Status:** Spalten provisioniert (Typ `vector(384)`), aber noch nicht befuellt. Vorgesehen fuer kuenftige LLM-Enrichment-Pipeline.
+**Status:** Spalten provisioniert (Typ `vector(384)`), aber noch nicht befüllt. Vorgesehen für künftige LLM-Enrichment-Pipeline.
 
-**Hinweis Dump-Kompatibilitaet:** Der Produktions-Dump verwendet fuer `document_chunks.embedding` eine andere Dimensionalitaet (`vector(1024)`). Beim Restore wird die Spalte via `restore_dump.sql` automatisch von `vector(384)` auf `vector(1024)` geaendert. Alle anderen Embedding-Spalten bleiben bei `vector(384)` und stimmen mit dem Dump ueberein.
+**Hinweis Dump-Kompatibilität:** Der Produktions-Dump verwendet für `document_chunks.embedding` eine andere Dimensionalität (`vector(1024)`). Beim Restore wird die Spalte via `restore_dump.sql` automatisch von `vector(384)` auf `vector(1024)` geändert. Alle anderen Embedding-Spalten bleiben bei `vector(384)` und stimmen mit dem Dump überein.
 
 ---
 
@@ -632,7 +632,7 @@ Das System implementiert ein **RBAC-Modell (Role-Based Access Control)** mit Sch
 
 ### Service-Rollen (Read-Only)
 
-Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf seine benoetigen Schemas:
+Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf seine benötigen Schemas:
 
 | Rolle | Service | Liest aus |
 |---|---|---|
@@ -642,7 +642,7 @@ Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf sei
 | `svc_funding` | UC4 | `cordis_schema`, `cross_schema` |
 | `svc_cpc_flow` | UC5 | `patent_schema`, `cross_schema` |
 | `svc_geographic` | UC6 | `patent_schema`, `cordis_schema`, `cross_schema` |
-| `svc_research_impact` | UC7 | `research_schema`, `cordis_schema` (R/W auf research_schema fuer Cache) |
+| `svc_research_impact` | UC7 | `research_schema`, `cordis_schema` (R/W auf research_schema für Cache) |
 | `svc_temporal` | UC8 | `patent_schema`, `cordis_schema`, `cross_schema` |
 | `svc_tech_cluster` | UC9 | `patent_schema`, `cordis_schema`, `cross_schema` |
 | `svc_euroscivoc` | UC10 | `cordis_schema`, `cross_schema` |
@@ -650,8 +650,8 @@ Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf sei
 | `svc_patent_grant` | UC12 | `patent_schema`, `cross_schema` |
 | `svc_publication` | UC-C | `cordis_schema` |
 
-> **Hinweis (v3.3.3):** Nach Split-Dump-Restore fehlen haeufig die GRANT-
-> Statements fuer UC7/UC9/UC10/UC12 und `svc_export`. Das Hotfix-Skript
+> **Hinweis (v3.3.3):** Nach Split-Dump-Restore fehlen häufig die GRANT-
+> Statements für UC7/UC9/UC10/UC12 und `svc_export`. Das Hotfix-Skript
 > `database/sql/fix_grants.sql` stellt alle Privilegien idempotent wieder
 > her — siehe `docs/DEPLOYMENT.md` > Troubleshooting.
 
@@ -659,8 +659,8 @@ Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf sei
 
 | Rolle | Berechtigungen |
 |---|---|
-| `tip_admin` | Vollzugriff auf alle Schemas (Superuser fuer TI-Radar) |
-| `tip_readonly` | SELECT auf alle Schemas (fuer pgAdmin, Monitoring) |
+| `tip_admin` | Vollzugriff auf alle Schemas (Superuser für TI-Radar) |
+| `tip_readonly` | SELECT auf alle Schemas (für pgAdmin, Monitoring) |
 | `importer_epo` | INSERT/UPDATE auf `patent_schema` |
 | `importer_cordis` | INSERT/UPDATE auf `cordis_schema` |
 
@@ -690,7 +690,7 @@ Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf sei
 
 ---
 
-## Datenqualitaet und Validierung
+## Datenqualität und Validierung
 
 ### CHECK-Constraints
 
@@ -711,9 +711,9 @@ Jeder UC-Service hat eine eigene Datenbank-Rolle mit SELECT-Berechtigung auf sei
 | Quelle | Transformation | Beschreibung |
 |---|---|---|
 | EPO | Datumsformate | ISO, YYYYMMDD, DD/MM/YYYY -> DATE |
-| EPO | Anmelder-Normalisierung | Firmen-Suffixe entfernt, Grossschreibung |
+| EPO | Anmelder-Normalisierung | Firmen-Suffixe entfernt, Großschreibung |
 | EPO | CPC-Normalisierung | Leerzeichen entfernt (z.B. "H04N   7/152" -> "H04N7/152") |
 | EPO | Array-Konvertierung | CSV-Text -> PostgreSQL TEXT[] |
 | CORDIS | Boolean-Parsing | YES/true/1 -> BOOLEAN |
-| CORDIS | Dezimalformat | Europaeisches Komma -> Punkt |
+| CORDIS | Dezimalformat | Europäisches Komma -> Punkt |
 | CORDIS | Framework-Erkennung | Automatisch aus Dateiname (FP7, H2020, HORIZON) |

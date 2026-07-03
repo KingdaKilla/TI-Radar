@@ -1,12 +1,12 @@
-"""Health- und Metrics-Endpoints fuer den Orchestrator.
+"""Health- und Metrics-Endpoints für den Orchestrator.
 
-GET /health — Aggregierter Health-Check ueber alle UC-Services.
+GET /health — Aggregierter Health-Check über alle UC-Services.
 GET /metrics — Prometheus-Metriken im OpenMetrics-Format.
 
-Der Health-Endpoint unterstuetzt zwei Modi:
-- Shallow (Standard): Nur der Orchestrator selbst wird geprueft.
+Der Health-Endpoint unterstützt zwei Modi:
+- Shallow (Standard): Nur der Orchestrator selbst wird geprüft.
 - Deep (?deep=true): Alle 13 UC-Service-Channels werden auf
-  Konnektivitaet geprueft (dauert bis zu 3s).
+  Konnektivität geprüft (dauert bis zu 3s).
 """
 
 from __future__ import annotations
@@ -49,20 +49,20 @@ async def health_check(
     request: Request,
     deep: bool = Query(
         default=False,
-        description="Deep Health Check: Konnektivitaet zu allen UC-Services pruefen",
+        description="Deep Health Check: Konnektivität zu allen UC-Services prüfen",
     ),
 ) -> HealthResponse:
     """Service Health Check mit optionalem Deep-Check der UC-Services.
 
-    Shallow (Standard): Prueft nur, ob der Orchestrator selbst laeuft.
-    Deep (?deep=true): Prueft zusaetzlich die gRPC-Konnektivitaet zu
-    allen 12 UC-Services und gibt pro Service Latenz + Status zurueck.
+    Shallow (Standard): Prüft nur, ob der Orchestrator selbst läuft.
+    Deep (?deep=true): Prüft zusätzlich die gRPC-Konnektivität zu
+    allen 12 UC-Services und gibt pro Service Latenz + Status zurück.
     """
     channel_manager: GrpcChannelManager = request.app.state.grpc_channels
     services: list[ServiceHealthStatus] = []
     overall_healthy = True
 
-    # Datenbank-Konnektivitaet pruefen
+    # Datenbank-Konnektivität prüfen
     db_healthy = False
     db_pool = getattr(request.app.state, "db_pool", None)
     if db_pool is not None:
@@ -74,7 +74,7 @@ async def health_check(
             logger.warning("health_db_fehler", error=str(exc))
 
     if deep:
-        # Alle UC-Service-Channels parallel pruefen
+        # Alle UC-Service-Channels parallel prüfen
         health_results = await channel_manager.check_all_health()
 
         for uc_name, (healthy, latency_ms, error) in health_results.items():
@@ -96,7 +96,7 @@ async def health_check(
             db_healthy=db_healthy,
         )
     else:
-        # Shallow: Orchestrator laeuft -> healthy
+        # Shallow: Orchestrator läuft -> healthy
         logger.debug("health_shallow_check", healthy=True, db_healthy=db_healthy)
 
     return HealthResponse(

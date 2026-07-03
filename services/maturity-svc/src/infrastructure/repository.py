@@ -1,11 +1,11 @@
-"""MaturityRepository — PostgreSQL-Datenbankzugriff fuer UC2.
+"""MaturityRepository — PostgreSQL-Datenbankzugriff für UC2.
 
-Liefert Patent-Familien-Zeitreihen fuer S-Curve-Analyse.
+Liefert Patent-Familien-Zeitreihen für S-Curve-Analyse.
 Migriert von SQLite (aiosqlite + FTS5) zu PostgreSQL (asyncpg + tsvector).
 
 Zentrale Abfragen:
 - Patent-Familien pro Jahr (DISTINCT family_id, OECD 2009)
-- Fallback: Patent-Zaehlungen pro Jahr (ohne Deduplizierung)
+- Fallback: Patent-Zählungen pro Jahr (ohne Deduplizierung)
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from shared.domain.result_types import YearCount
 
 logger = structlog.get_logger(__name__)
 
-# EU/EEA-Laendercodes fuer european_only-Filter
+# EU/EEA-Ländercodes für european_only-Filter
 EU_EEA_COUNTRIES: frozenset[str] = frozenset({
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
     "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
@@ -30,9 +30,9 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 class MaturityRepository:
-    """Async PostgreSQL-Zugriff fuer UC2 Maturity-Analysen.
+    """Async PostgreSQL-Zugriff für UC2 Maturity-Analysen.
 
-    Alle Methoden verwenden den uebergebenen asyncpg Connection Pool.
+    Alle Methoden verwenden den übergebenen asyncpg Connection Pool.
     """
 
     def __init__(self, pool: asyncpg.Pool) -> None:
@@ -46,10 +46,10 @@ class MaturityRepository:
         end_year: int | None = None,
         european_only: bool = True,
     ) -> list[YearCount]:
-        """Patent-Familien pro Jahr zaehlen (DISTINCT family_id).
+        """Patent-Familien pro Jahr zählen (DISTINCT family_id).
 
         OECD (2009): Patent-Familien-Deduplizierung vermeidet
-        Mehrfachzaehlung von Patentanmeldungen derselben Erfindung.
+        Mehrfachzählung von Patentanmeldungen derselben Erfindung.
         """
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
@@ -97,7 +97,7 @@ class MaturityRepository:
     ) -> list[YearCount]:
         """Patentanzahl pro Jahr (ohne Deduplizierung).
 
-        Fallback wenn family_id nicht verfuegbar.
+        Fallback wenn family_id nicht verfügbar.
         """
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]

@@ -1,6 +1,6 @@
-"""Unit-Test fuer AP3 — UC8 Response enthaelt kanonisches Scope-Label.
+"""Unit-Test für AP3 — UC8 Response enthält kanonisches Scope-Label.
 
-Bug CRIT-3: UC8 zaehlt *Patent-Anmelder im Zeitfenster*. Das Label muss
+Bug CRIT-3: UC8 zählt *Patent-Anmelder im Zeitfenster*. Das Label muss
 ``aktive Akteure im Zeitfenster`` (``ActorScope.ACTIVE_IN_WINDOW``) sein.
 """
 
@@ -14,10 +14,10 @@ from src.service import TemporalServicer
 
 
 class TestUc8ActorScopeLabel:
-    """Prueft, dass der UC8-dict-Response das Scope-Label enthaelt.
+    """Prüft, dass der UC8-dict-Response das Scope-Label enthält.
 
     Das dict-Response wird in der REST/JSON-Auslieferung genutzt und ist
-    die fuer das Frontend sichtbare Repraesentation. Wir testen hier den
+    die für das Frontend sichtbare Repräsentation. Wir testen hier den
     ``_build_dict_response``-Pfad direkt.
     """
 
@@ -63,7 +63,7 @@ class TestUc8DataCompleteYearMaj7Maj8:
     """UC8-Response MUSS ``data_complete_year`` enthalten.
 
     Bug MAJ-7/MAJ-8: UC8 zeigt eine Akteurs-Timeline bis 2026 — das
-    Frontend kann nur den ReferenceArea-Hinweis „Daten ggf. unvollstaendig"
+    Frontend kann nur den ReferenceArea-Hinweis „Daten ggf. unvollständig"
     rendern, wenn das Backend einen Cutoff liefert. Quelle: shared-Helper
     ``last_complete_year()``.
     """

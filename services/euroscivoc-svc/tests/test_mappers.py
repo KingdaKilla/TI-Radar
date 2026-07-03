@@ -1,7 +1,7 @@
-"""Unit-Tests fuer euroscivoc-svc dict_response Mapper.
+"""Unit-Tests für euroscivoc-svc dict_response Mapper.
 
 Testet die Konvertierung von EuroSciVocResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 
 Besonderer Fokus: Feld-Renaming und interdisciplinarity-Objekt.
 """
@@ -93,7 +93,7 @@ class TestDictResponseMapper:
 # ---------------------------------------------------------------------------
 
 class TestFieldRenaming:
-    """Testet korrekte Umbenennung der Felder fuer die API-Response.
+    """Testet korrekte Umbenennung der Felder für die API-Response.
 
     - fields -> fields_of_science
     - links -> disciplinary_links
@@ -245,7 +245,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Default-Result."""
+    """Testet Randfälle: leere Listen, Default-Result."""
 
     def test_empty_lists(self):
         result = _make_result(

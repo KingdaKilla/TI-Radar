@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.sampling — Stratifizierte Stichprobenziehung."""
+"""Tests für shared.domain.sampling — Stratifizierte Stichprobenziehung."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from shared.domain.sampling import (
 
 class TestStratifiedSample:
     def test_trivial_case_no_sampling(self):
-        """Population < target_size: keine Stichprobe noetig."""
+        """Population < target_size: keine Stichprobe nötig."""
         data = [
             ({"A01", "B02"}, 2020),
             ({"C03", "D04"}, 2021),
@@ -39,7 +39,7 @@ class TestStratifiedSample:
 
     def test_actual_sampling(self):
         """Population > target_size: Stichprobe wird gezogen."""
-        # 100 Patente ueber 5 Jahre (20 pro Jahr)
+        # 100 Patente über 5 Jahre (20 pro Jahr)
         data = []
         for year in range(2020, 2025):
             for _ in range(20):
@@ -70,7 +70,7 @@ class TestStratifiedSample:
         assert info_2020.sample_count > info_2021.sample_count
 
     def test_census_threshold(self):
-        """Kleine Schichten werden vollstaendig uebernommen."""
+        """Kleine Schichten werden vollständig übernommen."""
         data = []
         for _ in range(100):
             data.append(({"A", "B"}, 2020))
@@ -143,7 +143,7 @@ class TestEstimateJaccardConfidence:
         assert result.ci_upper <= 1.0
 
     def test_confidence_interval_width(self):
-        """Groessere Stichprobe -> kleineres KI."""
+        """Größere Stichprobe -> kleineres KI."""
         small = estimate_jaccard_confidence(50, 100, 100, 10000)
         large = estimate_jaccard_confidence(500, 1000, 1000, 10000)
         assert small.margin_of_error_95 > large.margin_of_error_95

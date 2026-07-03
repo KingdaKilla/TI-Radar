@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.cpc_descriptions — CPC-Code-Beschreibungen."""
+"""Tests für shared.domain.cpc_descriptions — CPC-Code-Beschreibungen."""
 
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ class TestCpcDescriptions:
     def test_class_descriptions_non_empty(self):
         assert len(CPC_CLASS_DESCRIPTIONS) > 50
         for key, value in CPC_CLASS_DESCRIPTIONS.items():
-            assert len(key) == 3, f"Klasse {key} hat falsche Laenge"
+            assert len(key) == 3, f"Klasse {key} hat falsche Länge"
             assert value, f"Klasse {key} hat leere Beschreibung"
 
     def test_subclass_descriptions_non_empty(self):
         assert len(CPC_SUBCLASS_DESCRIPTIONS) > 100
         for key, value in CPC_SUBCLASS_DESCRIPTIONS.items():
-            assert len(key) == 4, f"Subklasse {key} hat falsche Laenge"
+            assert len(key) == 4, f"Subklasse {key} hat falsche Länge"
             assert value, f"Subklasse {key} hat leere Beschreibung"
 
 

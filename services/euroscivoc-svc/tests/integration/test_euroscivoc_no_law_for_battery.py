@@ -1,11 +1,11 @@
-"""Integrationstest fuer AP4 · CRIT-2: Query-Relevanz-Filter.
+"""Integrationstest für AP4 · CRIT-2: Query-Relevanz-Filter.
 
 Stellt sicher, dass die SQL-Query der discipline_distribution einen
-ts_rank_cd-Threshold enthaelt. Das soll ausschliessen, dass bei einer
-Mehrwort-Query wie "solid state battery" Projekte als relevant zaehlen,
+ts_rank_cd-Threshold enthält. Das soll ausschließen, dass bei einer
+Mehrwort-Query wie "solid state battery" Projekte als relevant zählen,
 die nur einzelne Tokens matchen (z. B. "battery law").
 
-Der Test ueberprueft die SQL-String-Struktur, da ohne Postgres keine
+Der Test überprüft die SQL-String-Struktur, da ohne Postgres keine
 echte Query gegen die Produktion laufen kann.
 """
 
@@ -20,7 +20,7 @@ from src.infrastructure.repository import EuroSciVocRepository
 
 class _FakePool:
     """Poolsimulator, der die SQL-String aufzeichnet, die an conn.fetch
-    uebergeben wird, ohne sie tatsaechlich auszufuehren."""
+    übergeben wird, ohne sie tatsächlich auszuführen."""
 
     def __init__(self, captured_rows: list[dict[str, Any]] | None = None) -> None:
         self.captured_sql: str | None = None
@@ -53,7 +53,7 @@ class _FakeConn:
 
 
 def test_discipline_distribution_uses_ts_rank_threshold() -> None:
-    """Die Query muss ts_rank_cd fuer Score-Filtering enthalten."""
+    """Die Query muss ts_rank_cd für Score-Filtering enthalten."""
     pool = _FakePool()
     repo = EuroSciVocRepository(pool)  # type: ignore[arg-type]
 
@@ -65,11 +65,11 @@ def test_discipline_distribution_uses_ts_rank_threshold() -> None:
     # Muss ts_rank_cd mit Threshold enthalten, um Token-Split-Matches zu
     # eliminieren (z. B. "battery law" bei Suche nach "solid state battery").
     assert "ts_rank_cd" in sql, (
-        "SQL muss ts_rank_cd fuer Relevanz-Filter verwenden, um fachliche "
+        "SQL muss ts_rank_cd für Relevanz-Filter verwenden, um fachliche "
         "Fehlzuordnungen wie 'law' -> 'solid state battery' zu vermeiden."
     )
 
-    # Prueft, dass ein numerischer Schwellenwert verwendet wird (>= 0.x).
+    # Prüft, dass ein numerischer Schwellenwert verwendet wird (>= 0.x).
     # Die innere Parameter-Liste von ts_rank_cd darf selbst Klammern
     # (z. B. plainto_tsquery(...)) enthalten, daher nicht greedy und keine
     # Zeichen-Klassen-basierte Nicht-Klammer-Match-Heuristik.
@@ -81,11 +81,11 @@ def test_discipline_distribution_uses_ts_rank_threshold() -> None:
         f"haben. SQL war:\n{sql}"
     )
     threshold = float(threshold_match.group(1))
-    assert threshold > 0.0, "Threshold muss groesser als 0 sein."
+    assert threshold > 0.0, "Threshold muss größer als 0 sein."
 
 
 def test_total_mapped_projects_also_uses_rank_threshold() -> None:
-    """Auch die Hilfsquery fuer Gesamtzahlen muss konsistent rank-gefiltert sein,
+    """Auch die Hilfsquery für Gesamtzahlen muss konsistent rank-gefiltert sein,
     sonst divergieren total_mapped und discipline_distribution.
 
     Das verhindert, dass 'Coverage' als Quotient zweier unterschiedlich

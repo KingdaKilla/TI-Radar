@@ -1,6 +1,6 @@
-"""Wissenschaftliche Validierungstests fuer deterministische Metriken.
+"""Wissenschaftliche Validierungstests für deterministische Metriken.
 
-Referenz-Testfaelle aus akademischen Quellen und anerkannten Richtlinien:
+Referenz-Testfälle aus akademischen Quellen und anerkannten Richtlinien:
 - CAGR: Glaenge & Jones (2004) — Investment Mathematics, Kapitel 4
 - HHI: U.S. Department of Justice — Horizontal Merger Guidelines (2010)
 - S-Kurve / Reifephasen: Gao et al. (2013) — "Technology life cycle analysis
@@ -9,7 +9,7 @@ Referenz-Testfaelle aus akademischen Quellen und anerkannten Richtlinien:
   zone", New Phytologist
 
 Zweck: Q.6 Wissenschaftliche Validierung — sicherstellt, dass die
-Implementierung mit publizierten Referenzwerten uebereinstimmt.
+Implementierung mit publizierten Referenzwerten übereinstimmt.
 Alle erwarteten Werte wurden manuell aus Primärquellen abgeleitet.
 """
 
@@ -29,7 +29,7 @@ from shared.domain.metrics import (
 
 
 # ============================================================================
-# CAGR — Referenzwerte aus Finanzlehrbuecher
+# CAGR — Referenzwerte aus Finanzlehrbücher
 # ============================================================================
 
 
@@ -67,7 +67,7 @@ class TestCagrScientificReference:
                    = 9.6478...%
         Erwarteter Wert: 9.60% (gerundet auf 2 Dezimalstellen).
 
-        Anwendungskontext: Patentwachstum als Technologieindikatoren — gaengige
+        Anwendungskontext: Patentwachstum als Technologieindikatoren — gängige
         Methodik in Technology Intelligence (Ashton & Klavans 1997).
         """
         ergebnis = cagr(100.0, 250.0, 10)
@@ -88,13 +88,13 @@ class TestCagrScientificReference:
     def test_cagr_stagnation_null_prozent(self):
         """Kein Wachstum: identische Start- und Endwerte ergeben 0%.
 
-        Berechnung: ((1000 / 1000) ^ (1/n) - 1) * 100 = 0.0% fuer beliebiges n.
+        Berechnung: ((1000 / 1000) ^ (1/n) - 1) * 100 = 0.0% für beliebiges n.
         """
         ergebnis = cagr(1_000.0, 1_000.0, 7)
         assert ergebnis == pytest.approx(0.0, abs=1e-10)
 
     def test_cagr_schrumpfung_negatives_wachstum(self):
-        """Rueckgang: 200 auf 100 in 4 Jahren entspricht negativem CAGR.
+        """Rückgang: 200 auf 100 in 4 Jahren entspricht negativem CAGR.
 
         Berechnung: ((100 / 200) ^ (1/4) - 1) * 100
                    = (0.5 ^ 0.25 - 1) * 100
@@ -107,16 +107,16 @@ class TestCagrScientificReference:
         assert ergebnis == pytest.approx(-15.91, abs=0.01)
 
     def test_cagr_formel_konsistenz_mit_manueller_berechnung(self):
-        """Algebraische Konsistenz: CAGR-Formel stimmt mit manueller Berechnung ueberein.
+        """Algebraische Konsistenz: CAGR-Formel stimmt mit manueller Berechnung überein.
 
-        Fuer V_final = V_initial * (1 + CAGR/100)^n muss gelten:
-        CAGR-Berechnung und Rueckrechnung ergeben denselben Endwert.
+        Für V_final = V_initial * (1 + CAGR/100)^n muss gelten:
+        CAGR-Berechnung und Rückrechnung ergeben denselben Endwert.
         """
         v_initial = 500.0
         v_final = 1200.0
         n = 8
         rate = cagr(v_initial, v_final, n)
-        # Rueckrechnung: v_initial * (1 + rate/100)^n soll v_final ergeben
+        # Rückrechnung: v_initial * (1 + rate/100)^n soll v_final ergeben
         v_rueck = v_initial * math.pow(1.0 + rate / 100.0, n)
         assert v_rueck == pytest.approx(v_final, rel=1e-6)
 
@@ -133,12 +133,12 @@ class TestHhiScientificReference:
     Horizontal Merger Guidelines, Section 5.3.
     URL: https://www.justice.gov/atr/horizontal-merger-guidelines-08192010
 
-    Skalierung: shares als Dezimalbrueche [0.0, 1.0], HHI = sum(s^2) * 10000
+    Skalierung: shares als Dezimalbrüche [0.0, 1.0], HHI = sum(s^2) * 10000
     entspricht der im Code verwendeten Implementierung.
     """
 
     def test_gleichverteilter_4_firmen_markt_hhi_2500(self):
-        """DOJ-Referenzfall: 4 gleichgrosse Akteure je 25% Marktanteil.
+        """DOJ-Referenzfall: 4 gleichgroße Akteure je 25% Marktanteil.
 
         Berechnung: (0.25^2 + 0.25^2 + 0.25^2 + 0.25^2) * 10000
                    = 4 * 0.0625 * 10000
@@ -153,19 +153,19 @@ class TestHhiScientificReference:
         """DOJ-Referenzfall: Ein Akteur mit 100% Marktanteil = maximaler HHI.
 
         Berechnung: (1.0^2) * 10000 = 10000
-        Bedeutung: Vollstaendiges Monopol, maximal konzentrierter Markt.
+        Bedeutung: Vollständiges Monopol, maximal konzentrierter Markt.
         """
         anteile = [1.0]
         ergebnis = hhi_index(anteile)
         assert ergebnis == pytest.approx(10_000.0)
 
     def test_stark_fragmentierter_markt_100_firmen_hhi_100(self):
-        """DOJ-Referenzfall: 100 gleichgrosse Anbieter je 1% Marktanteil.
+        """DOJ-Referenzfall: 100 gleichgroße Anbieter je 1% Marktanteil.
 
         Berechnung: 100 * (0.01^2) * 10000
                    = 100 * 0.0001 * 10000
                    = 100
-        Bedeutung: Minimale Konzentration — vollstaendig atomistischer Markt.
+        Bedeutung: Minimale Konzentration — vollständig atomistischer Markt.
         """
         anteile = [0.01] * 100
         ergebnis = hhi_index(anteile)
@@ -217,7 +217,7 @@ class TestHhiScientificReference:
         stufe_en, _ = hhi_concentration_level(2000)
         assert stufe_en == "Moderate"
 
-        # Exakter Grenzwert bei 1500 gehoert zu Moderat (>= 1500)
+        # Exakter Grenzwert bei 1500 gehört zu Moderat (>= 1500)
         stufe_en_grenz, _ = hhi_concentration_level(1500)
         assert stufe_en_grenz == "Moderate"
 
@@ -231,12 +231,12 @@ class TestHhiScientificReference:
         assert stufe_en == "High"
         assert stufe_de == "Hoch"
 
-        # Exakter Grenzwert bei 2500 gehoert zu Hoch (>= 2500)
+        # Exakter Grenzwert bei 2500 gehört zu Hoch (>= 2500)
         stufe_en_grenz, _ = hhi_concentration_level(2500)
         assert stufe_en_grenz == "High"
 
     def test_hhi_duopol_gleich_5000(self):
-        """Grundfall Duopol: Zwei gleichgrosse Akteure = HHI 5000.
+        """Grundfall Duopol: Zwei gleichgroße Akteure = HHI 5000.
 
         Berechnung: (0.5^2 + 0.5^2) * 10000 = (0.25 + 0.25) * 10000 = 5000
         """
@@ -246,7 +246,7 @@ class TestHhiScientificReference:
     def test_hhi_additiv_unabhaengig_von_reihenfolge(self):
         """Algebraische Eigenschaft: HHI ist kommutativ (Reihenfolge irrelevant).
 
-        Die Summe der Quadrate ist unabhaengig von der Reihenfolge der Eintraege.
+        Die Summe der Quadrate ist unabhängig von der Reihenfolge der Einträge.
         """
         anteile_a = [0.4, 0.35, 0.15, 0.1]
         anteile_b = [0.1, 0.4, 0.15, 0.35]  # umgekehrt sortiert
@@ -266,7 +266,7 @@ class TestReifephasenScientificReference:
     on patent documents." Technological Forecasting and Social Change, 80(3),
     pp. 398-407. DOI: 10.1016/j.techfore.2012.10.003
 
-    Schwellwerte fuer logistische S-Kurve (maturity_percent = aktuell / Saettigung):
+    Schwellwerte für logistische S-Kurve (maturity_percent = aktuell / Sättigung):
     - Emerging:    maturity_percent < 10%
     - Growing:     10% <= maturity_percent < 50%
     - Mature:      50% <= maturity_percent < 90%
@@ -305,7 +305,7 @@ class TestReifephasenScientificReference:
     ) -> None:
         """Schwellwert-Validierung nach Gao et al. (2013), Tabelle 1.
 
-        Verifiziert alle Phasenuebergaenge inklusive exakter Grenzwerte.
+        Verifiziert alle Phasenübergänge inklusive exakter Grenzwerte.
         r_squared=0.9 entspricht einem guten S-Kurven-Fit.
         """
         phase_en, phase_de, konfidenz = classify_maturity_phase(
@@ -314,7 +314,7 @@ class TestReifephasenScientificReference:
             r_squared=0.9,
         )
         assert phase_en == erwartete_phase_en, (
-            f"Fuer maturity_percent={maturity_percent}% erwartet '{erwartete_phase_en}', "
+            f"Für maturity_percent={maturity_percent}% erwartet '{erwartete_phase_en}', "
             f"erhalten '{phase_en}'"
         )
         assert phase_de == erwartete_phase_de
@@ -322,8 +322,8 @@ class TestReifephasenScientificReference:
     def test_konfidenz_aus_r_squared_abgeleitet(self):
         """Konfidenz spiegelt R² des S-Kurven-Fits wider.
 
-        Bei guten Fitqualitaeten (hoeheres R²) muss die Konfidenz hoeher sein
-        als bei schlechten Fitqualitaeten, da R² direkt als Konfidenzmass dient.
+        Bei guten Fitqualitäten (höheres R²) muss die Konfidenz höher sein
+        als bei schlechten Fitqualitäten, da R² direkt als Konfidenzmaß dient.
         """
         _, _, konfidenz_hoch = classify_maturity_phase(
             [], maturity_percent=50.0, r_squared=0.95
@@ -336,7 +336,7 @@ class TestReifephasenScientificReference:
     def test_konfidenz_maximal_0_95(self):
         """Konfidenz ist auf 0.95 begrenzt — kein Algorithmus ist perfekt sicher.
 
-        Implementierungsgrenze: max(confidence) = 0.95 verhindert Ueberheblichkeit
+        Implementierungsgrenze: max(confidence) = 0.95 verhindert Überheblichkeit
         bei der Phasenzuweisung trotz perfektem R² = 1.0.
         """
         _, _, konfidenz = classify_maturity_phase(
@@ -347,7 +347,7 @@ class TestReifephasenScientificReference:
     def test_emerging_phase_grenzfall_knapp_unter_10_prozent(self):
         """Grenzfall: maturity_percent = 9.999 liegt knapp in Emerging-Phase.
 
-        Prueft, dass die Schwellwert-Grenze bei < 10.0 (nicht <= 10.0) liegt.
+        Prüft, dass die Schwellwert-Grenze bei < 10.0 (nicht <= 10.0) liegt.
         """
         phase_en, _, _ = classify_maturity_phase(
             [], maturity_percent=9.999, r_squared=0.85
@@ -357,7 +357,7 @@ class TestReifephasenScientificReference:
     def test_growing_phase_grenzfall_exakt_50_prozent(self):
         """Grenzfall: maturity_percent = 50.0 liegt genau an Schwelle Growing/Mature.
 
-        Prueft, dass 50.0% der Mature-Phase zugeordnet wird (nicht Growing).
+        Prüft, dass 50.0% der Mature-Phase zugeordnet wird (nicht Growing).
         Gao et al. (2013): Mature beginnt bei >= 50%.
         """
         phase_en, _, _ = classify_maturity_phase(
@@ -368,7 +368,7 @@ class TestReifephasenScientificReference:
     def test_saturation_grenzfall_exakt_90_prozent(self):
         """Grenzfall: maturity_percent = 90.0 liegt genau an Schwelle Mature/Saturation.
 
-        Prueft, dass 90.0% der Saturation-Phase zugeordnet wird (nicht Mature).
+        Prüft, dass 90.0% der Saturation-Phase zugeordnet wird (nicht Mature).
         """
         phase_en, _, _ = classify_maturity_phase(
             [], maturity_percent=90.0, r_squared=0.92
@@ -389,7 +389,7 @@ class TestJaccardIndexScientificReference:
 
     Formel: J(A, B) = |A ∩ B| / |A ∪ B|
 
-    Anwendung in TI-Radar (UC5 CPC-Flow): Jaccard-Index misst die Aehnlichkeit
+    Anwendung in TI-Radar (UC5 CPC-Flow): Jaccard-Index misst die Ähnlichkeit
     zwischen CPC-Technologieklassen anhand ihrer Co-Klassifikation in Patenten.
     """
 
@@ -397,23 +397,23 @@ class TestJaccardIndexScientificReference:
         """Kanonisches Beispiel: {A,B,C} und {B,C,D} — Jaccard = 2/4 = 0.5.
 
         Mengen: A = {A, B, C}, B = {B, C, D}
-        Schnittmenge: {B, C} — Maechtigkeit 2
-        Vereinigung: {A, B, C, D} — Maechtigkeit 4
+        Schnittmenge: {B, C} — Mächtigkeit 2
+        Vereinigung: {A, B, C, D} — Mächtigkeit 4
         J(A, B) = 2 / 4 = 0.5
 
         Quelle: Jaccard (1912); Tan, Steinbach & Kumar (2005) — Introduction
         to Data Mining, Anhang B.
         """
-        # Simulation: Patent 1 traegt {A,B,C}, Patent 2 traegt {B,C,D}
+        # Simulation: Patent 1 trägt {A,B,C}, Patent 2 trägt {B,C,D}
         patent_sets = [
             {"A", "B", "C"},
             {"B", "C", "D"},
         ]
         labels, matrix, _ = build_cooccurrence(patent_sets, top_n=4)
 
-        # Jaccard fuer B-C: beide in Patent 1 UND Patent 2 -> count=2, union=2 -> J=1.0
-        # Jaccard fuer A-B: beide in Patent 1 -> count=1, union=2 -> J=0.5
-        # Finde Indizes fuer A und B
+        # Jaccard für B-C: beide in Patent 1 UND Patent 2 -> count=2, union=2 -> J=1.0
+        # Jaccard für A-B: beide in Patent 1 -> count=1, union=2 -> J=0.5
+        # Finde Indizes für A und B
         assert "A" in labels
         assert "B" in labels
         idx_a = labels.index("A")
@@ -424,7 +424,7 @@ class TestJaccardIndexScientificReference:
         assert jaccard_ab == pytest.approx(0.5)
 
     def test_jaccard_perfekte_ueberlappung_gleiche_mengen(self):
-        """J(A, A) = 1.0 fuer identische Mengen (maximale Aehnlichkeit).
+        """J(A, A) = 1.0 für identische Mengen (maximale Ähnlichkeit).
 
         Wenn A = B, dann: |A ∩ B| = |A|, |A ∪ B| = |A| -> J = 1.0
         Simuliert durch Patente die nur {X, Y} enthalten (beide immer gemeinsam).
@@ -438,7 +438,7 @@ class TestJaccardIndexScientificReference:
         assert matrix[idx_x][idx_y] == pytest.approx(1.0)
 
     def test_jaccard_keine_ueberlappung_null(self):
-        """J(A, B) = 0.0 fuer disjunkte Mengen (keine Aehnlichkeit).
+        """J(A, B) = 0.0 für disjunkte Mengen (keine Ähnlichkeit).
 
         Wenn A ∩ B = {}, dann: J = 0/|A ∪ B| = 0.0
         CPC-Codes die niemals gemeinsam auftreten haben Jaccard = 0.
@@ -454,7 +454,7 @@ class TestJaccardIndexScientificReference:
         """Mathematische Eigenschaft: Jaccard-Matrix ist symmetrisch (J(A,B) = J(B,A)).
 
         Da die Schnittmenge und Vereinigung kommutativ sind, muss gelten:
-        matrix[i][j] == matrix[j][i] fuer alle i, j.
+        matrix[i][j] == matrix[j][i] für alle i, j.
         """
         patent_sets = [
             {"H01L", "G06N", "B60L"},
@@ -472,7 +472,7 @@ class TestJaccardIndexScientificReference:
                 )
 
     def test_jaccard_aus_sql_aggregaten_explizite_formel(self):
-        """SQL-basierter Jaccard stimmt mit analytischer Formel ueberein.
+        """SQL-basierter Jaccard stimmt mit analytischer Formel überein.
 
         Formel via build_jaccard_from_sql:
             J = co_count / (count_a + count_b - co_count)
@@ -481,8 +481,8 @@ class TestJaccardIndexScientificReference:
                   gemeinsam in 40 Patenten.
             J = 40 / (100 + 80 - 40) = 40 / 140 = 0.2857...
 
-        Dies entspricht dem Einschlussprinzip der Mengenlehre fuer
-        approximative Jaccard-Berechnung aus Einzelhaeufigkeiten.
+        Dies entspricht dem Einschlussprinzip der Mengenlehre für
+        approximative Jaccard-Berechnung aus Einzelhäufigkeiten.
         """
         top_codes = ["A", "B"]
         code_counts = {"A": 100, "B": 80}
@@ -497,7 +497,7 @@ class TestJaccardIndexScientificReference:
         assert total == 1
 
     def test_jaccard_wertebereich_immer_zwischen_0_und_1(self):
-        """Beweis des beschraenkten Wertebereichs: J ∈ [0.0, 1.0].
+        """Beweis des beschränkten Wertebereichs: J ∈ [0.0, 1.0].
 
         Da |A ∩ B| <= |A ∪ B| immer gilt (Teilmengen-Eigenschaft),
         ist Jaccard immer im Intervall [0, 1].
@@ -512,5 +512,5 @@ class TestJaccardIndexScientificReference:
         for i, reihe in enumerate(matrix):
             for j, wert in enumerate(reihe):
                 assert 0.0 <= wert <= 1.0, (
-                    f"Jaccard ausserhalb [0,1] bei ({labels[i]}, {labels[j]}): {wert}"
+                    f"Jaccard außerhalb [0,1] bei ({labels[i]}, {labels[j]}): {wert}"
                 )

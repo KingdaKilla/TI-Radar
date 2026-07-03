@@ -1,18 +1,18 @@
-"""Cross-Service-Konsistenztests fuer Patent-Zaehlungen (Bug CRIT-4).
+"""Cross-Service-Konsistenztests für Patent-Zählungen (Bug CRIT-4).
 
 Hintergrund: Im Live-System zeigte der Header z.B. "Perovskite 101 Patente",
-waehrend UC12 fuer dieselbe Tech "5.462 Anmeldungen" lieferte (Faktor 54).
+während UC12 für dieselbe Tech "5.462 Anmeldungen" lieferte (Faktor 54).
 Ursache war fehlende Trennung zwischen ``ALL_PATENTS`` (Header),
 ``APPLICATIONS_ONLY`` und ``GRANTS_ONLY`` (UC12).
 
-Diese Tests sichern die Plausibilitaetsregel:
+Diese Tests sichern die Plausibilitätsregel:
     ``header.total_patents >= uc12.total_applications + uc12.total_grants``
 
-Ausserdem wird geprueft, dass die Kind-Code-Filter aus
+Außerdem wird geprüft, dass die Kind-Code-Filter aus
 ``shared.domain.patent_definitions`` (nicht aus lokalen Duplikaten) stammen.
 
 Die Tests laufen *ohne* echte Datenbank: ein DummyPool simuliert die
-SQL-Ausfuehrung auf einem deterministischen In-Memory-Datensatz. So bleibt
+SQL-Ausführung auf einem deterministischen In-Memory-Datensatz. So bleibt
 der Test schnell und reproduzierbar.
 """
 
@@ -33,7 +33,7 @@ import pytest
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
-# packages/ enthaelt das ``shared``-Package (package_dir=packages/shared).
+# packages/ enthält das ``shared``-Package (package_dir=packages/shared).
 _PACKAGES_ROOT = _REPO_ROOT / "packages"
 for p in (_PACKAGES_ROOT, _REPO_ROOT):
     sp = str(p)
@@ -86,14 +86,14 @@ class _Patent:
     cpc_codes: tuple[str, ...]
 
 
-# Deterministisches Mini-Universum fuer "quantum computing".
-# Wichtig fuer CRIT-4:
+# Deterministisches Mini-Universum für "quantum computing".
+# Wichtig für CRIT-4:
 # - 10 Patente insgesamt (ALL_PATENTS).
 # - 6 Patente haben A*-Kind-Codes (APPLICATIONS_ONLY).
 # - 2 Patente haben B*-Kind-Codes (GRANTS_ONLY).
 # - 2 Patente haben Kind=NULL bzw. unbekannten Code (UNKNOWN) — tauchen
 #   nur in ALL_PATENTS auf.
-# Plausibilitaet: 10 >= 6 + 2 = 8. Stimmt.
+# Plausibilität: 10 >= 6 + 2 = 8. Stimmt.
 _TEST_PATENTS: list[_Patent] = [
     _Patent(2020, "A1", ("DE",), ("G06F",)),
     _Patent(2020, "A1", ("DE", "FR"), ("G06F", "H04W")),
@@ -122,18 +122,18 @@ def _filter_patents(
 
 
 class _DummyConn:
-    """Minimal-Nachbildung einer asyncpg.Connection fuer das, was die
-    Repository-Methoden tatsaechlich aufrufen.
+    """Minimal-Nachbildung einer asyncpg.Connection für das, was die
+    Repository-Methoden tatsächlich aufrufen.
 
     Die Klasse parst die SQL-Strings NICHT. Stattdessen entscheidet sie
     anhand charakteristischer Schlagworte, welche Aggregation
-    zurueckgegeben wird. Parameter ``$1`` (technology) wird ignoriert;
+    zurückgegeben wird. Parameter ``$1`` (technology) wird ignoriert;
     die Testdaten sind alle "quantum computing".
     """
 
     async def fetch(self, sql: str, *params: Any) -> list[dict[str, Any]]:
         # Extrahiere start_year / end_year aus den Parametern in der Reihenfolge
-        # in der die Repositorys sie anhaengen ($2=start, $3=end).
+        # in der die Repositorys sie anhängen ($2=start, $3=end).
         start_year: int | None = None
         end_year: int | None = None
         # Nach technology ($1) folgt in beiden Queries optional start_year+end_year
@@ -181,7 +181,7 @@ class _DummyConn:
                 for k, c in sorted(counts_by_kind.items(), key=lambda kv: -kv[1])
             ]
 
-        # Sonst: leer zurueckgeben
+        # Sonst: leer zurückgeben
         return []
 
     async def fetchval(self, sql: str, *params: Any) -> Any:
@@ -227,14 +227,14 @@ def patent_grant_repo(dummy_pool: _DummyPool) -> Any:
 
 
 # ---------------------------------------------------------------------------
-# Tests: Plausibilitaetsregel header >= applications + grants
+# Tests: Plausibilitätsregel header >= applications + grants
 # ---------------------------------------------------------------------------
 
 
 class TestPatentPopulationConsistency:
-    """Plausibilitaetsregel ``ALL_PATENTS >= APPLICATIONS + GRANTS``.
+    """Plausibilitätsregel ``ALL_PATENTS >= APPLICATIONS + GRANTS``.
 
-    Header-`total_patents` (aus UC1) muss groesser-gleich der Summe aus
+    Header-`total_patents` (aus UC1) muss größer-gleich der Summe aus
     UC12-`total_applications` + UC12-`total_grants` sein, weil es in der
     DB auch Kind-Codes gibt, die weder A* noch B* sind (U, D0, leer).
     """
@@ -250,7 +250,7 @@ class TestPatentPopulationConsistency:
 
     @pytest.mark.asyncio
     async def test_uc12_applications_is_subset(self, patent_grant_repo: Any) -> None:
-        """UC12 total_applications zaehlt nur A*-Kind-Codes (6 Patente)."""
+        """UC12 total_applications zählt nur A*-Kind-Codes (6 Patente)."""
         rows = await patent_grant_repo.grant_rate_by_year(
             "quantum computing", start_year=2020, end_year=2024,
         )
@@ -260,7 +260,7 @@ class TestPatentPopulationConsistency:
 
     @pytest.mark.asyncio
     async def test_uc12_grants_is_subset(self, patent_grant_repo: Any) -> None:
-        """UC12 total_grants zaehlt nur B*-Kind-Codes (2 Patente)."""
+        """UC12 total_grants zählt nur B*-Kind-Codes (2 Patente)."""
         rows = await patent_grant_repo.grant_rate_by_year(
             "quantum computing", start_year=2020, end_year=2024,
         )
@@ -273,7 +273,7 @@ class TestPatentPopulationConsistency:
     ) -> None:
         """Kern-Assertion: header >= applications + grants.
 
-        Bei den Testdaten: 10 >= 6 + 2 = 8. Der Ueberhang von 2 entspricht
+        Bei den Testdaten: 10 >= 6 + 2 = 8. Der Überhang von 2 entspricht
         dem U-Kind-Code (Utility Model) + leerem Kind-Code — Patente, die
         im ALL_PATENTS-Header erscheinen, aber nicht als Applications
         oder Grants gelten.
@@ -290,7 +290,7 @@ class TestPatentPopulationConsistency:
         uc12_grants = sum(r["grant_count"] for r in rows)
 
         assert header_total >= uc12_apps + uc12_grants, (
-            f"Plausibilitaet verletzt: header={header_total} < apps={uc12_apps} "
+            f"Plausibilität verletzt: header={header_total} < apps={uc12_apps} "
             f"+ grants={uc12_grants}. ALL_PATENTS muss Obergrenze sein."
         )
 
@@ -302,18 +302,18 @@ class TestPatentPopulationConsistency:
 
 class TestSharedKindCodeUsage:
     """Verhindert erneute Divergenzen: die Kind-Code-Sets, die UC12 in
-    seiner Query verwendet, muessen Obermenge der Shared-Definitionen sein.
+    seiner Query verwendet, müssen Obermenge der Shared-Definitionen sein.
 
     Anders formuliert: Alle in ``shared.domain.patent_definitions`` als
-    Application-Codes gelisteten Werte muessen auch in der SQL-Query der
+    Application-Codes gelisteten Werte müssen auch in der SQL-Query der
     grant_rate_by_year-Methode erscheinen (Textsuche im Query-String).
-    Gleiches gilt fuer Grant-Codes.
+    Gleiches gilt für Grant-Codes.
     """
 
     def _query_has_all_codes(
         self, patent_grant_repo: Any, codes: set[str] | frozenset[str],
     ) -> tuple[bool, list[str]]:
-        """Prueft, ob alle Codes im Methoden- oder Modul-Source erscheinen.
+        """Prüft, ob alle Codes im Methoden- oder Modul-Source erscheinen.
 
         Akzeptiert zwei Varianten:
         1. Methode referenziert eine Modul-Konstante (z.B.
@@ -321,8 +321,8 @@ class TestSharedKindCodeUsage:
            ``shared.domain.patent_definitions`` gespeist wird.
         2. Codes stehen direkt als String-Literale in der SQL.
         """
-        # Modul-Quelle ueber die Datei des Repositorys einlesen, weil die
-        # Test-Fixture das Modul per importlib laedt; in diesem Fall liefert
+        # Modul-Quelle über die Datei des Repositorys einlesen, weil die
+        # Test-Fixture das Modul per importlib lädt; in diesem Fall liefert
         # ``inspect.getmodule(method)`` ``None``.
         module_src = _PATENT_GRANT_REPO_FILE.read_text(encoding="utf-8")
         uses_shared = (
@@ -338,11 +338,11 @@ class TestSharedKindCodeUsage:
     def test_application_codes_present_in_query(
         self, patent_grant_repo: Any,
     ) -> None:
-        """SQL-Text von grant_rate_by_year enthaelt alle A*-Kind-Codes.
+        """SQL-Text von grant_rate_by_year enthält alle A*-Kind-Codes.
 
         Akzeptiert entweder:
         - Import-Referenz auf shared.domain.patent_definitions im Modul,
-        - oder vollstaendige String-Literal-Liste in der Query.
+        - oder vollständige String-Literal-Liste in der Query.
         """
         ok, missing = self._query_has_all_codes(
             patent_grant_repo, APPLICATION_KIND_CODES,
@@ -350,7 +350,7 @@ class TestSharedKindCodeUsage:
         assert ok, f"Application-Kind-Codes fehlen in der Query: {missing}"
 
     def test_grant_codes_present_in_query(self, patent_grant_repo: Any) -> None:
-        """SQL-Text von grant_rate_by_year enthaelt alle B*-Kind-Codes."""
+        """SQL-Text von grant_rate_by_year enthält alle B*-Kind-Codes."""
         ok, missing = self._query_has_all_codes(
             patent_grant_repo, GRANT_KIND_CODES,
         )
@@ -364,7 +364,7 @@ class TestSharedKindCodeUsage:
 
 class TestPatentScopeEnum:
     """Stellt sicher, dass die kanonischen Scopes existieren und dokumentieren,
-    was der jeweilige Zaehl-Scope bedeutet.
+    was der jeweilige Zähl-Scope bedeutet.
     """
 
     def test_enum_has_all_three_scopes(self) -> None:

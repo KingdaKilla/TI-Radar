@@ -1,6 +1,6 @@
 """UC5 CpcFlowServicer — gRPC-Implementierung der CPC-Co-Klassifikations-Analyse.
 
-Empfaengt AnalysisRequest, berechnet Jaccard-Similarity-Matrix auf
+Empfängt AnalysisRequest, berechnet Jaccard-Similarity-Matrix auf
 CPC-Code-Co-Klassifikationen und identifiziert Technologie-Konvergenz.
 
 Zwei Pfade:
@@ -76,14 +76,14 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc5_cpc_flow_pb2_grpc is not None:
         return uc5_cpc_flow_pb2_grpc.CpcFlowServiceServicer  # type: ignore[return-value]
     return object
 
 
 class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC5 CPC Technology Flow.
+    """gRPC-Servicer für UC5 CPC Technology Flow.
 
     Berechnet Jaccard-Co-Klassifikations-Matrix:
     1. SQL-nativer Pfad: Direkte Aggregation in patent_cpc (bevorzugt)
@@ -143,12 +143,12 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
                 )
             return self._build_empty_response(request_id, t0)
 
-        # --- Analyse ausfuehren ---
+        # --- Analyse ausführen ---
         warnings: list[dict[str, str]] = []
         data_sources: list[dict[str, Any]] = []
 
         try:
-            # Pruefen ob patent_cpc Tabelle existiert
+            # Prüfen ob patent_cpc Tabelle existiert
             has_cpc_table = await self._repo.has_cpc_table()
 
             if has_cpc_table:
@@ -237,7 +237,7 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
         labels = result["labels"]
         if not labels or len(labels) < 2:
             warnings.append({
-                "message": "Zu wenige CPC-Codes fuer Fluss-Analyse",
+                "message": "Zu wenige CPC-Codes für Fluss-Analyse",
                 "severity": "MEDIUM",
                 "code": "INSUFFICIENT_CPC_CODES",
             })
@@ -333,7 +333,7 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
 
         if not patent_rows:
             warnings.append({
-                "message": "Keine CPC-Codes fuer diese Technologie gefunden",
+                "message": "Keine CPC-Codes für diese Technologie gefunden",
                 "severity": "MEDIUM",
                 "code": "NO_CPC_DATA",
             })
@@ -384,14 +384,14 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
             })
             return None
 
-        # CPC-Counts aus patent_data rekonstruieren (fuer union_count)
+        # CPC-Counts aus patent_data rekonstruieren (für union_count)
         local_code_counts: dict[str, int] = {}
         for codes, _year in patent_data:
             for code in codes:
                 if code in labels:
                     local_code_counts[code] = local_code_counts.get(code, 0) + 1
 
-        # Exakte Co-Occurrence fuer Top-Pairs
+        # Exakte Co-Occurrence für Top-Pairs
         local_pair_counts: dict[tuple[str, str], int] = {}
         for codes, _year in patent_data:
             relevant = sorted(c for c in codes if c in labels)
@@ -506,7 +506,7 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
                     key = (code_a, code_b) if code_a < code_b else (code_b, code_a)
                     co = pair_co_counts.get(key, 0)
                     if co == 0 and sim > 0:
-                        # aus Jaccard zurueckrechnen als Fallback
+                        # aus Jaccard zurückrechnen als Fallback
                         ca = code_counts.get(code_a, 0)
                         cb = code_counts.get(code_b, 0)
                         if ca + cb > 0:
@@ -651,7 +651,7 @@ class CpcFlowServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             labels=[], matrix=[], total_connections=0, total_patents=0,
@@ -679,10 +679,10 @@ def _extract_top_pairs(
     Args:
         labels: CPC-Code-Labels.
         matrix: Jaccard-Similarity-Matrix.
-        top_n: Anzahl zurueckgegebener Paare.
+        top_n: Anzahl zurückgegebener Paare.
         pair_co_counts: Optional Lookup {(code_a, code_b): co_count}
-            fuer exakte Intersection-Groessen (Bug 2 Fix).
-        code_counts: Optional Lookup {code: patent_count} fuer union_count.
+            für exakte Intersection-Größen (Bug 2 Fix).
+        code_counts: Optional Lookup {code: patent_count} für union_count.
     """
     pair_co_counts = pair_co_counts or {}
     code_counts = code_counts or {}
@@ -698,7 +698,7 @@ def _extract_top_pairs(
                 key = (code_a, code_b) if code_a < code_b else (code_b, code_a)
                 co_count = pair_co_counts.get(key, 0)
 
-                # Wenn co_count nicht bekannt, aus Jaccard zurueckrechnen:
+                # Wenn co_count nicht bekannt, aus Jaccard zurückrechnen:
                 # jaccard = co / (a + b - co)  -->  co = jaccard*(a+b) / (1+jaccard)
                 if co_count == 0 and code_counts:
                     count_a = code_counts.get(code_a, 0)
@@ -732,7 +732,7 @@ def _build_year_data_entries(
     Aggregiert pro Jahr:
     - active_codes: Anzahl distinkter CPC-Codes
     - patent_count: Summe Patent-Counts
-    - avg_similarity / max_similarity: Jaccard ueber Paare des Jahres.
+    - avg_similarity / max_similarity: Jaccard über Paare des Jahres.
     """
     codes_by_year: dict[int, dict[str, int]] = {}
     for row in cpc_year_counts:
@@ -786,7 +786,7 @@ def _build_chord_data(
         for j in range(i + 1, n):
             sim = matrix[i][j] if i < len(matrix) and j < len(matrix[i]) else 0.0
             if sim > 0:
-                # Wert als Integer-Gewicht (Skalierung fuer Visualisierung)
+                # Wert als Integer-Gewicht (Skalierung für Visualisierung)
                 value = max(1, int(sim * 1000))
                 chord.append({
                     "source": labels[i],

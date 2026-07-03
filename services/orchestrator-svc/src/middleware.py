@@ -1,11 +1,11 @@
-"""Middleware fuer Request-ID-Propagation, Rate Limiting, Logging und Metriken.
+"""Middleware für Request-ID-Propagation, Rate Limiting, Logging und Metriken.
 
-Jeder eingehende HTTP-Request erhaelt eine eindeutige Request-ID,
+Jeder eingehende HTTP-Request erhält eine eindeutige Request-ID,
 die in den strukturierten Logs und in der gRPC-Metadata an die
 UC-Services weitergegeben wird (Distributed Tracing).
 
 Rate Limiting: Einfacher In-Memory-Limiter (Sliding Window pro IP).
-Fuer MVP ausreichend — bei Skalierung auf Redis/Valkey umsteigen.
+Für MVP ausreichend — bei Skalierung auf Redis/Valkey umsteigen.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ logger = structlog.get_logger(__name__)
 # ---------------------------------------------------------------------------
 REQUEST_ID_HEADER = "X-Request-ID"
 
-# Erlaubtes Format fuer X-Request-ID: alphanumerisch + Bindestrich, 1-64 Zeichen
+# Erlaubtes Format für X-Request-ID: alphanumerisch + Bindestrich, 1-64 Zeichen
 _REQUEST_ID_PATTERN = re.compile(r"^[a-zA-Z0-9\-]{1,64}$")
 
 # ---------------------------------------------------------------------------
@@ -80,12 +80,12 @@ UC_DEGRADATION_TOTAL = Counter(
 # ---------------------------------------------------------------------------
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
-    """Fuegt jedem Request eine eindeutige Request-ID hinzu.
+    """Fügt jedem Request eine eindeutige Request-ID hinzu.
 
     - Liest vorhandene X-Request-ID aus dem Header (z.B. von API-Gateway)
     - Generiert eine neue UUID v4 falls kein Header vorhanden
     - Setzt die Request-ID in den Response-Header
-    - Bindet die Request-ID an den structlog-Context fuer alle Logeintraege
+    - Bindet die Request-ID an den structlog-Context für alle Logeinträge
     """
 
     async def dispatch(
@@ -98,7 +98,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         if not request_id or not _REQUEST_ID_PATTERN.match(request_id):
             request_id = str(uuid.uuid4())
 
-        # In Request-State speichern (fuer Router-Zugriff)
+        # In Request-State speichern (für Router-Zugriff)
         request.state.request_id = request_id
 
         # Strukturiertes Logging: Request-ID an Context binden
@@ -153,7 +153,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
 
 
 # ---------------------------------------------------------------------------
-# Hilfsfunktionen fuer gRPC-Metriken (von Routern aufgerufen)
+# Hilfsfunktionen für gRPC-Metriken (von Routern aufgerufen)
 # ---------------------------------------------------------------------------
 
 
@@ -162,7 +162,7 @@ def record_grpc_call(
     status: str,
     duration_seconds: float,
 ) -> None:
-    """Zeichnet Metriken fuer einen gRPC-Aufruf auf.
+    """Zeichnet Metriken für einen gRPC-Aufruf auf.
 
     Args:
         uc_service: Name des UC-Service (z.B. "landscape").
@@ -188,10 +188,10 @@ def record_radar_request(status: str) -> None:
 # Rate-Limit-Middleware (Sliding Window, In-Memory)
 # ---------------------------------------------------------------------------
 
-# Prometheus-Metrik fuer Rate-Limit-Verletzungen
+# Prometheus-Metrik für Rate-Limit-Verletzungen
 RATE_LIMIT_EXCEEDED_TOTAL = Counter(
     "rate_limit_exceeded_total",
-    "Anzahl der abgelehnten Requests wegen Rate-Limit-Ueberschreitung",
+    "Anzahl der abgelehnten Requests wegen Rate-Limit-Überschreitung",
     ["client_ip"],
 )
 
@@ -200,7 +200,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """Einfacher In-Memory Rate-Limiter (Sliding Window pro Client-IP).
 
     Standard: 100 Requests pro Minute. Konfigurierbar via Konstruktor.
-    Fuer MVP ausreichend — bei horizontaler Skalierung (mehrere Replicas)
+    Für MVP ausreichend — bei horizontaler Skalierung (mehrere Replicas)
     auf Redis/Valkey-basierten Limiter umsteigen.
 
     Health-Check-Endpunkte (/healthz, /readyz, /metrics) sind vom
@@ -251,7 +251,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 )
                 del self._requests[oldest_ip]
 
-            # Alte Requests ausserhalb des Zeitfensters aufräumen
+            # Alte Requests außerhalb des Zeitfensters aufräumen
             window_start = now - self.window_seconds
             self._requests[client_ip] = [
                 t for t in self._requests[client_ip]
@@ -261,7 +261,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if len(self._requests[client_ip]) >= self.max_requests:
                 RATE_LIMIT_EXCEEDED_TOTAL.labels(client_ip=client_ip).inc()
                 logger.warning(
-                    "rate_limit_ueberschritten",
+                    "rate_limit_überschritten",
                     client_ip=client_ip,
                     max_requests=self.max_requests,
                     window_seconds=self.window_seconds,

@@ -1,6 +1,6 @@
-"""Unit-Tests fuer AnalyzeLandscape Use Case.
+"""Unit-Tests für AnalyzeLandscape Use Case.
 
-Alle externen Abhaengigkeiten (Repository, OpenAIRE) werden durch
+Alle externen Abhängigkeiten (Repository, OpenAIRE) werden durch
 AsyncMock-Objekte ersetzt. Kein IO, kein gRPC, kein Protobuf.
 """
 
@@ -73,7 +73,7 @@ def _make_openaire(**overrides: object) -> AsyncMock:
 # ---------------------------------------------------------------------------
 
 class TestAnalyzeLandscapeNormal:
-    """Testet den normalen Ausfuehrungspfad mit gueltigem Input."""
+    """Testet den normalen Ausführungspfad mit gültigem Input."""
 
     async def test_returns_landscape_result(self):
         repo = _make_repo()
@@ -146,7 +146,7 @@ class TestAnalyzeLandscapeNormal:
 
         result = await uc.execute("5g", start_year=2020, end_year=2024)
 
-        # Patent CAGR: 100 -> 200 ueber 4 Jahre (2020-2024)
+        # Patent CAGR: 100 -> 200 über 4 Jahre (2020-2024)
         assert result.cagr_patents > 0.0
         assert result.cagr_projects > 0.0
         assert result.cagr_funding > 0.0
@@ -195,7 +195,7 @@ class TestAnalyzeLandscapeEmpty:
     """Testet Verhalten bei leeren oder fehlenden Daten."""
 
     async def test_empty_results_from_repo(self):
-        """Leere Ergebnisse fuehren zu Null-Totals (kein Fehler)."""
+        """Leere Ergebnisse führen zu Null-Totals (kein Fehler)."""
         repo = _make_repo(
             patent_years=[],
             patent_countries=[],
@@ -229,7 +229,7 @@ class TestAnalyzeLandscapeErrors:
     async def test_failed_query_adds_warning(self):
         """Fehlgeschlagene Query wird als Warning dokumentiert, nicht als Exception."""
         repo = _make_repo()
-        # patent_years Query schlaegt fehl
+        # patent_years Query schlägt fehl
         repo.count_patents_by_year.side_effect = RuntimeError("DB connection lost")
         uc = AnalyzeLandscape(repo=repo, openaire=None)
 
@@ -241,7 +241,7 @@ class TestAnalyzeLandscapeErrors:
         assert any("MEDIUM" == w["severity"] for w in result.warnings)
 
     async def test_failed_query_does_not_crash(self):
-        """Einzelne fehlgeschlagene Query laesst andere Queries durchlaufen."""
+        """Einzelne fehlgeschlagene Query lässt andere Queries durchlaufen."""
         repo = _make_repo()
         repo.count_patents_by_year.side_effect = RuntimeError("timeout")
         uc = AnalyzeLandscape(repo=repo, openaire=None)
@@ -256,7 +256,7 @@ class TestAnalyzeLandscapeErrors:
         """Fehlgeschlagene OpenAIRE-Query erzeugt Warning — Header bleibt aus CORDIS.
 
         CRIT-1: OpenAIRE liefert nur die Zeitreihen-Trendkurve.  Wenn sie
-        ausfaellt, bleibt ``total_publications`` dennoch aus dem Repo gefuellt.
+        ausfällt, bleibt ``total_publications`` dennoch aus dem Repo gefüllt.
         """
         repo = _make_repo(cordis_publications_total=789)
         openaire = _make_openaire()
@@ -265,7 +265,7 @@ class TestAnalyzeLandscapeErrors:
 
         result = await uc.execute("ai", start_year=2020, end_year=2024)
 
-        assert result.total_publications == 789  # Header unveraendert aus CORDIS
+        assert result.total_publications == 789  # Header unverändert aus CORDIS
         warning_codes = [w["code"] for w in result.warnings]
         assert any("PUBLICATION_YEARS" in code for code in warning_codes)
 
@@ -352,7 +352,7 @@ class TestLandscapeResult:
         assert result.total_patents == 500
 
     def test_slots(self):
-        """LandscapeResult nutzt __slots__ fuer Speichereffizienz."""
+        """LandscapeResult nutzt __slots__ für Speichereffizienz."""
         result = LandscapeResult()
         assert not hasattr(result, "__dict__")
 
@@ -405,7 +405,7 @@ class TestAnalyzeLandscapePublicationScopeCrit1:
         assert result.total_publications == 789
 
     async def test_publication_scope_label_cordis_linked(self):
-        """Die Data-Source-Liste enthaelt das kanonische Label aus shared.domain."""
+        """Die Data-Source-Liste enthält das kanonische Label aus shared.domain."""
         from shared.domain.publication_definitions import (
             PublicationScope,
             canonical_publication_label,
@@ -431,8 +431,8 @@ class TestAnalyzeLandscapePublicationScopeCrit1:
 class TestAnalyzeLandscapeDataCompleteYearMaj7Maj8:
     """LandscapeResult MUSS ``data_complete_year`` ausweisen.
 
-    Bug MAJ-7/MAJ-8: Header zeigte CAGR auf Basis unvollstaendiger Jahre,
-    Frontend hatte keinen Hinweis, ob das Endjahr vollstaendig ist. Nach
+    Bug MAJ-7/MAJ-8: Header zeigte CAGR auf Basis unvollständiger Jahre,
+    Frontend hatte keinen Hinweis, ob das Endjahr vollständig ist. Nach
     AP8 wird ``data_complete_year`` aus
     :func:`shared.domain.year_completeness.last_complete_year` abgeleitet
     und im Result mitgegeben.
@@ -460,11 +460,11 @@ class TestAnalyzeLandscapeDataCompleteYearMaj7Maj8:
     async def test_cagr_clipped_to_complete_years(self):
         """CAGR ignoriert Daten nach ``data_complete_year``.
 
-        Selbst wenn das Repo Jahre bis 2026 liefert, darf CAGR nur ueber
+        Selbst wenn das Repo Jahre bis 2026 liefert, darf CAGR nur über
         Jahre bis ``last_complete_year()`` berechnet werden. ``cagr()``
-        gibt Prozentwerte zurueck.
+        gibt Prozentwerte zurück.
         """
-        # Repo liefert 2020 -> 100, 2026 -> 1_000_000 (kuenstlich hoher Spike
+        # Repo liefert 2020 -> 100, 2026 -> 1_000_000 (künstlich hoher Spike
         # im laufenden Jahr).  CAGR muss diesen Spike ignorieren.
         repo = _make_repo(
             patent_years=[
@@ -477,7 +477,7 @@ class TestAnalyzeLandscapeDataCompleteYearMaj7Maj8:
 
         result = await uc.execute("ai", start_year=2020, end_year=2026)
 
-        # Mit dem Spike (1_000_000): CAGR wuerde > 300% sein.
+        # Mit dem Spike (1_000_000): CAGR würde > 300% sein.
         # Geclippt (100 → 200, 5 Jahre): ca. 14.87%.
         assert 0.0 < result.cagr_patents < 50.0, (
             f"CAGR {result.cagr_patents:.2f}% deutet auf nicht-geclipptes "
@@ -498,9 +498,9 @@ class TestAnalyzeLandscapeDataCompleteYearMaj7Maj8:
 
 
 class TestSafeCagrUsesYearHelper:
-    """``_safe_cagr`` MUSS standardmaessig ``last_complete_year()`` nutzen.
+    """``_safe_cagr`` MUSS standardmäßig ``last_complete_year()`` nutzen.
 
-    Vorher hardcoded 2024 — das laeuft ab 2026 in eine zu kurze Reihe.
+    Vorher hardcoded 2024 — das läuft ab 2026 in eine zu kurze Reihe.
     Nach AP8 ist der Default dynamisch.
     """
 
@@ -513,6 +513,6 @@ class TestSafeCagrUsesYearHelper:
         ]
         result = _safe_cagr(data, periods=6)
         # Heute = 2026: last_complete_year() = 2025 ⇒ Spike (2026) ist raus.
-        # Erwartet: moderate CAGR von 100 → 200 ueber 5 Jahre ≈ 14.87 (Prozent).
-        # ``cagr()`` gibt Prozentwerte zurueck; ohne Clip waere CAGR > 300%.
+        # Erwartet: moderate CAGR von 100 → 200 über 5 Jahre ≈ 14.87 (Prozent).
+        # ``cagr()`` gibt Prozentwerte zurück; ohne Clip wäre CAGR > 300%.
         assert 0.0 < result < 50.0

@@ -1,4 +1,4 @@
-"""Unit-Tests fuer Multi-Label-aware Share-Normalisierung (Bundle E).
+"""Unit-Tests für Multi-Label-aware Share-Normalisierung (Bundle E).
 
 Hintergrund:
     Zuvor wurde `share` als `COUNT(DISTINCT project_id) / total_projects`
@@ -8,11 +8,11 @@ Hintergrund:
     derselben Hierarchie-Ebene)`, d. h. pro Level (FIELD/SUBFIELD/TOPIC)
     Σ=1.0.
 
-Da das Repository `asyncpg` benoetigt, werden die Queries hier nicht
+Da das Repository `asyncpg` benötigt, werden die Queries hier nicht
 "echt" gegen eine DB gefahren. Stattdessen wird ein Fake-Pool die
 Python-Semantik der SQL-Normalisierung reproduzieren; der Test
 verifiziert, dass die Service-Schicht / das Repository-Mapping diese
-Shares durchreicht und die Summen-Invariante haelt.
+Shares durchreicht und die Summen-Invariante hält.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ from src.service import EuroSciVocServicer
 def _normalize_share_per_level(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Pythonisches Pendant zu `counts + level_totals + LEFT JOIN` in SQL.
 
-    Fuer jede Hierarchie-Ebene: share_i = count_i / Σ(counts in Level).
+    Für jede Hierarchie-Ebene: share_i = count_i / Σ(counts in Level).
     """
     level_totals: dict[str, float] = {}
     for row in rows:
@@ -111,7 +111,7 @@ class TestNormalizeSharePerLevel:
         assert sum(shares) == pytest.approx(1.0)
 
     def test_multi_level_independently_sum_to_one(self) -> None:
-        """FIELD- und SUBFIELD-Shares werden unabhaengig normiert (je Σ=1.0)."""
+        """FIELD- und SUBFIELD-Shares werden unabhängig normiert (je Σ=1.0)."""
         rows = [
             {"id": "f1", "label": "F1", "level": "FIELD",    "parent_code": "",   "project_count": 3},
             {"id": "f2", "label": "F2", "level": "FIELD",    "parent_code": "",   "project_count": 7},
@@ -139,7 +139,7 @@ class TestNormalizeSharePerLevel:
 
 
 class TestServicePassThroughSumToOne:
-    """Stellt sicher, dass der Service normalisierte Shares unveraendert
+    """Stellt sicher, dass der Service normalisierte Shares unverändert
     durchreicht — d. h. `fields_of_science[].share` summiert auf 1.0.
     """
 
@@ -165,11 +165,11 @@ class TestServicePassThroughSumToOne:
 
     @pytest.mark.asyncio
     async def test_fields_of_science_share_sum_to_one(self) -> None:
-        """Fields (level=FIELD) muessen isoliert auf Σ=1.0 normalisiert sein."""
+        """Fields (level=FIELD) müssen isoliert auf Σ=1.0 normalisiert sein."""
         raw = [
             {"id": "f1", "label": "natural sciences", "level": "FIELD",    "parent_code": "",   "project_count": 40},
             {"id": "f2", "label": "engineering",      "level": "FIELD",    "parent_code": "",   "project_count": 60},
-            # Subfields duerfen FIELD-Summen nicht beeinflussen.
+            # Subfields dürfen FIELD-Summen nicht beeinflussen.
             {"id": "s1", "label": "chemistry",        "level": "SUBFIELD", "parent_code": "f1", "project_count": 15},
             {"id": "s2", "label": "physics",          "level": "SUBFIELD", "parent_code": "f1", "project_count": 85},
         ]
@@ -191,7 +191,7 @@ class TestServicePassThroughSumToOne:
 
     @pytest.mark.asyncio
     async def test_multi_label_does_not_break_invariant(self) -> None:
-        """Regression fuer den urspruenglichen Bug: AI/Blockchain Σshare > 1.
+        """Regression für den ursprünglichen Bug: AI/Blockchain Σshare > 1.
 
         Simulation: 100 Projekte, aber jedes Projekt ist in 3 FIELDs getagged.
         Counts sind daher kumuliert 300 — aber share muss trotzdem Σ=1.0 ergeben,

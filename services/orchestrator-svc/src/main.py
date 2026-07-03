@@ -1,4 +1,4 @@
-"""FastAPI Application Factory fuer den Orchestrator Service.
+"""FastAPI Application Factory für den Orchestrator Service.
 
 Erstellt und konfiguriert die FastAPI-Anwendung mit:
 - CORS-Middleware (konfigurierbar via CORS_ORIGINS)
@@ -38,10 +38,10 @@ logger = structlog.get_logger(__name__)
 
 
 def _configure_structlog() -> None:
-    """Konfiguriert structlog fuer strukturiertes JSON-Logging.
+    """Konfiguriert structlog für strukturiertes JSON-Logging.
 
     Entwicklungsmodus: farbige Console-Ausgabe (human-readable).
-    Produktion: JSON-Lines fuer Log-Aggregatoren (ELK, Loki).
+    Produktion: JSON-Lines für Log-Aggregatoren (ELK, Loki).
     """
     settings = Settings()
     is_dev = settings.debug
@@ -59,7 +59,7 @@ def _configure_structlog() -> None:
         # Farbige Console-Ausgabe im Entwicklungsmodus
         processors.append(structlog.dev.ConsoleRenderer())
     else:
-        # JSON-Lines fuer Produktion
+        # JSON-Lines für Produktion
         processors.append(structlog.processors.JSONRenderer())
 
     structlog.configure(
@@ -86,8 +86,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
       3. Konfiguration loggen
 
     Shutdown:
-      1. Alle gRPC-Channels graceful schliessen
-      2. DB-Pool schliessen
+      1. Alle gRPC-Channels graceful schließen
+      2. DB-Pool schließen
     """
     settings = Settings()
 
@@ -136,7 +136,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.warning(
             "db_pool_fehler",
             error=str(exc),
-            hint="Suggestions-Endpoint nicht verfuegbar",
+            hint="Suggestions-Endpoint nicht verfügbar",
         )
 
     logger.info("orchestrator_bereit", version="3.0.0")
@@ -146,10 +146,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # --- Shutdown ---
     logger.info("orchestrator_shutdown_gestartet")
 
-    # gRPC-Channels schliessen
+    # gRPC-Channels schließen
     await channel_manager.close()
 
-    # DB-Pool schliessen
+    # DB-Pool schließen
     if app.state.db_pool is not None:
         await app.state.db_pool.close()
         logger.info("db_pool_geschlossen")
@@ -163,7 +163,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def _mask_dsn(dsn: str) -> str:
-    """Maskiert das Passwort in einem DSN-String fuer sichere Ausgabe."""
+    """Maskiert das Passwort in einem DSN-String für sichere Ausgabe."""
     # postgresql://user:PASSWORD@host:port/db -> postgresql://user:***@host:port/db
     import re
 
@@ -200,7 +200,7 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json" if _debug else None,
     )
 
-    # --- Middleware (Reihenfolge: aussen -> innen) ---
+    # --- Middleware (Reihenfolge: außen -> innen) ---
 
     # 1. CORS (muss vor Request-ID sein, damit Preflight-Requests durchkommen)
     app.add_middleware(

@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.entity_resolution — Normalisierung, Blocking, Fuzzy Matching."""
+"""Tests für shared.domain.entity_resolution — Normalisierung, Blocking, Fuzzy Matching."""
 
 from __future__ import annotations
 
@@ -103,7 +103,7 @@ class TestNormalizeActorName:
         assert "AG" not in result.split()
         assert "KG" not in result.split()
 
-    # --- Schritt 3: Abkuerzungen expandieren ---
+    # --- Schritt 3: Abkürzungen expandieren ---
 
     def test_expand_univ(self):
         result = normalize_actor_name("Techn. Univ. Berlin")
@@ -340,13 +340,13 @@ class TestTfidfCosineSimilarity:
     def test_similar_names(self):
         names = ["FRAUNHOFER GESELLSCHAFT", "FRAUNHOFER INSTITUTE"]
         matrix = tfidf_cosine_similarity(names)
-        # Aehnlich, aber nicht identisch
+        # Ähnlich, aber nicht identisch
         assert 0.3 < matrix[0, 1] < 1.0
 
     def test_different_names(self):
         names = ["FRAUNHOFER GESELLSCHAFT", "TOYOTA MOTOR"]
         matrix = tfidf_cosine_similarity(names)
-        # Kaum Aehnlichkeit
+        # Kaum Ähnlichkeit
         assert matrix[0, 1] < 0.5
 
     def test_single_name(self):
@@ -377,7 +377,7 @@ class TestTfidfCosineSimilarity:
             "TOYOTA MOTOR CORPORATION",
         ]
         matrix = tfidf_cosine_similarity(names)
-        # Die ersten beiden sollten aehnlicher sein als zum dritten
+        # Die ersten beiden sollten ähnlicher sein als zum dritten
         assert matrix[0, 1] > matrix[0, 2]
 
 
@@ -405,12 +405,12 @@ class TestFindMatches:
             {"name": "SIEMENS", "country": "DE", "source": "cordis"},
         ]
         result = find_matches(actors)
-        # Identische normalisierte Namen muessen zusammengefuehrt werden
+        # Identische normalisierte Namen müssen zusammengeführt werden
         assert len(result) == 1
         assert len(result[0]["members"]) == 2
 
     def test_siemens_ag_vs_siemens(self):
-        """Siemens AG vs SIEMENS — Rechtsform-Entfernung fuehrt zu exaktem Match."""
+        """Siemens AG vs SIEMENS — Rechtsform-Entfernung führt zu exaktem Match."""
         actors = [
             {"name": "Siemens AG", "country": "DE", "source": "epo"},
             {"name": "SIEMENS", "country": "DE", "source": "cordis"},
@@ -420,7 +420,7 @@ class TestFindMatches:
         assert len(result[0]["members"]) == 2
 
     def test_fraunhofer_variants(self):
-        """Fraunhofer mit aehnlich langen Namensformen."""
+        """Fraunhofer mit ähnlich langen Namensformen."""
         actors = [
             {
                 "name": "FRAUNHOFER GESELLSCHAFT E.V.",
@@ -442,7 +442,7 @@ class TestFindMatches:
         """Sehr unterschiedlich lange Namen sollen konservativ behandelt werden."""
         actors = [
             {
-                "name": "Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V.",
+                "name": "Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.",
                 "country": "DE",
                 "source": "cordis",
             },
@@ -452,13 +452,13 @@ class TestFindMatches:
                 "source": "epo",
             },
         ]
-        # Bei starkem Laengenunterschied: konservatives Matching verhindert FP
+        # Bei starkem Längenunterschied: konservatives Matching verhindert FP
         result = find_matches(actors, threshold=0.8)
         # Kein erzwungener Match bei hohem Threshold erwartet
         assert len(result) >= 1  # Mindestens eine Gruppe existiert
 
     def test_completely_different_not_matched(self):
-        """Voellig verschiedene Namen duerfen nicht gematcht werden."""
+        """Völlig verschiedene Namen dürfen nicht gematcht werden."""
         actors = [
             {"name": "Siemens AG", "country": "DE", "source": "epo"},
             {"name": "Toyota Motor Corp.", "country": "JP", "source": "epo"},
@@ -468,7 +468,7 @@ class TestFindMatches:
         assert len(result) == 2
 
     def test_blocking_prevents_cross_country_match(self):
-        """Blocking separiert gleiche Anfangsbuchstaben in verschiedenen Laendern."""
+        """Blocking separiert gleiche Anfangsbuchstaben in verschiedenen Ländern."""
         actors = [
             {"name": "Samsung Electronics", "country": "KR", "source": "epo"},
             {"name": "Sony Corporation", "country": "JP", "source": "epo"},
@@ -478,14 +478,14 @@ class TestFindMatches:
         assert len(result) == 2
 
     def test_canonical_name_is_longest(self):
-        """Kanonischer Name = laengster Originalname (meiste Information)."""
+        """Kanonischer Name = längster Originalname (meiste Information)."""
         actors = [
             {"name": "SIEMENS", "country": "DE", "source": "epo"},
             {"name": "Siemens AG", "country": "DE", "source": "cordis"},
         ]
         result = find_matches(actors)
         assert len(result) == 1
-        # "Siemens AG" ist laenger als "SIEMENS"
+        # "Siemens AG" ist länger als "SIEMENS"
         assert result[0]["canonical_name"] == "Siemens AG"
 
     def test_confidence_in_valid_range(self):
@@ -529,7 +529,7 @@ class TestFindMatches:
         assert result[0]["country"] == "DE"
 
     def test_high_threshold_fewer_matches(self):
-        """Hoeherer Schwellwert fuehrt zu weniger Matches."""
+        """Höherer Schwellwert führt zu weniger Matches."""
         actors = [
             {"name": "Fraunhofer Institute", "country": "DE", "source": "cordis"},
             {"name": "FRAUNHOFER INSTITUT", "country": "DE", "source": "epo"},
@@ -552,7 +552,7 @@ class TestFindMatches:
         result = find_matches(actors, threshold=0.7)
         # Siemens-Gruppe und Bosch-Gruppe
         assert len(result) <= 4  # Maximal 4 Gruppen
-        # Pruefen, dass nicht alles in einer Gruppe landet
+        # Prüfen, dass nicht alles in einer Gruppe landet
         names_in_groups = {g["canonical_name"] for g in result}
         assert len(names_in_groups) >= 1
 
@@ -571,7 +571,7 @@ class TestFindMatches:
 
 
 # ============================================================================
-# Realistische Testfaelle (aus der Thesis)
+# Realistische Testfälle (aus der Thesis)
 # ============================================================================
 
 
@@ -597,7 +597,7 @@ class TestRealWorldExamples:
         assert len(result) == 1
 
     def test_cnrs_full_and_abbreviation(self):
-        """CNRS: Abkuerzung vs. voller Name."""
+        """CNRS: Abkürzung vs. voller Name."""
         actors = [
             {
                 "name": "CENTRE NATIONAL DE LA RECHERCHE SCIENTIFIQUE (CNRS)",
@@ -612,13 +612,13 @@ class TestRealWorldExamples:
         ]
         # Verschiedene Blocking-Keys (C vs C) — gleicher Block
         result = find_matches(actors, threshold=0.3)
-        # CNRS vs. langer Name: sehr verschiedene Laengen
-        # Bei Standard-Threshold (0.8) wuerden sie nicht matchen
-        # Bei niedrigem Threshold koennen sie matchen
+        # CNRS vs. langer Name: sehr verschiedene Längen
+        # Bei Standard-Threshold (0.8) würden sie nicht matchen
+        # Bei niedrigem Threshold können sie matchen
         assert len(result) >= 1
 
     def test_max_planck_variants(self):
-        """Max-Planck-Gesellschaft — aehnliche Laengen matchen bei niedrigem Threshold."""
+        """Max-Planck-Gesellschaft — ähnliche Längen matchen bei niedrigem Threshold."""
         actors = [
             {
                 "name": "MAX PLANCK GESELLSCHAFT E.V.",
@@ -645,7 +645,7 @@ class TestRealWorldExamples:
         assert len(result) == 1
 
     def test_different_entities_not_merged(self):
-        """Verschiedene Organisationen duerfen nicht zusammengefuehrt werden."""
+        """Verschiedene Organisationen dürfen nicht zusammengeführt werden."""
         actors = [
             {"name": "Siemens AG", "country": "DE", "source": "epo"},
             {"name": "Samsung Electronics", "country": "DE", "source": "epo"},
@@ -654,7 +654,7 @@ class TestRealWorldExamples:
         assert len(result) == 2
 
     def test_large_batch_performance(self):
-        """Performance-Test mit 100 Akteuren (darf nicht haengen)."""
+        """Performance-Test mit 100 Akteuren (darf nicht hängen)."""
         actors = [
             {
                 "name": f"Organization {i}",

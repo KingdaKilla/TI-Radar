@@ -1,12 +1,12 @@
 /* ──────────────────────────────────────────────
- * TI-Radar v3 -- Tests fuer Publication Calc (MIN-11)
+ * TI-Radar v3 -- Tests für Publication Calc (MIN-11)
  *
  * Konsistenz-Audit MIN-11:
  *  - UC13 zeigte "8.0 Pub/Projekt" und "2.456 Publikationen" ohne
  *    explizite Multiplikation. Nutzer mussten den Bezugswert (Projekte)
  *    selbst berechnen.
  *  - Fix: Explizite Rechen-Zeile "8.0 Pub/Projekt × 307 Projekte ≈
- *    2.456 Publikationen". Die Bezugsgroesse soll dem Header (UC1) folgen,
+ *    2.456 Publikationen". Die Bezugsgröße soll dem Header (UC1) folgen,
  *    wenn dieser durchgereicht wird.
  * ────────────────────────────────────────────── */
 
@@ -17,12 +17,12 @@ import {
   resolveProjectsCount,
 } from "../publication-calc";
 
-describe("resolveProjectsCount – Bezugsgroesse fuer Pub-Rechnung (MIN-11)", () => {
-  it("bevorzugt den externen (Header-)Projektzaehler, wenn vorhanden", () => {
+describe("resolveProjectsCount – Bezugsgröße für Pub-Rechnung (MIN-11)", () => {
+  it("bevorzugt den externen (Header-)Projektzähler, wenn vorhanden", () => {
     expect(resolveProjectsCount(307, 280)).toBe(307);
   });
 
-  it("faellt auf den panel-eigenen Wert zurueck, wenn extern nicht gesetzt", () => {
+  it("fällt auf den panel-eigenen Wert zurück, wenn extern nicht gesetzt", () => {
     expect(resolveProjectsCount(undefined, 280)).toBe(280);
   });
 
@@ -43,7 +43,7 @@ describe("buildPublicationCalcRow – sichtbare Multiplikation (MIN-11)", () => 
     expect(row).toBe("8.0 Pub/Projekt \u00D7 307 Projekte \u2248 2.456 Publikationen");
   });
 
-  it("nutzt 1 Nachkommastelle fuer Pub/Projekt", () => {
+  it("nutzt 1 Nachkommastelle für Pub/Projekt", () => {
     const row = buildPublicationCalcRow(7.95, 307, 2440);
     expect(row).toContain("8.0 Pub/Projekt");
   });
@@ -54,7 +54,7 @@ describe("buildPublicationCalcRow – sichtbare Multiplikation (MIN-11)", () => 
     expect(row).toContain("12.456 Publikationen");
   });
 
-  it("liefert null, wenn keine Bezugsgroesse vorhanden ist", () => {
+  it("liefert null, wenn keine Bezugsgröße vorhanden ist", () => {
     expect(buildPublicationCalcRow(8.0, null, 2456)).toBeNull();
   });
 });

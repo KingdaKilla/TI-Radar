@@ -1,9 +1,9 @@
 // =============================================================================
-// retrieval.proto — Retrieval Service fuer die Technology Intelligence Platform
+// retrieval.proto — Retrieval Service für die Technology Intelligence Platform
 // =============================================================================
-// Semantische Suche ueber eingebettete Dokumente via pgvector.
-// Der LLM-Service oder Orchestrator sendet eine Query und erhaelt die
-// relevantesten Dokumente als Kontext fuer RAG-Analysen zurueck.
+// Semantische Suche über eingebettete Dokumente via pgvector.
+// Der LLM-Service oder Orchestrator sendet eine Query und erhält die
+// relevantesten Dokumente als Kontext für RAG-Analysen zurück.
 // =============================================================================
 
 syntax = "proto3";
@@ -18,8 +18,8 @@ option go_package = "tip/proto/retrieval";
 // Retrieval Service — Semantische Dokumentensuche via pgvector.
 // ---------------------------------------------------------------------------
 service RetrievalService {
-  // Fuehrt eine semantische Suche ueber eingebettete Dokumente durch
-  // und liefert die Top-K aehnlichsten Dokumente zurueck.
+  // Führt eine semantische Suche über eingebettete Dokumente durch
+  // und liefert die Top-K ähnlichsten Dokumente zurück.
   rpc Retrieve(RetrievalRequest) returns (RetrievalResponse);
 }
 
@@ -27,34 +27,34 @@ service RetrievalService {
 // Request: Semantische Suche nach relevanten Dokumenten.
 // ---------------------------------------------------------------------------
 message RetrievalRequest {
-  // Technologie-Suchbegriff fuer den Kontext, z.B. "solid-state batteries".
+  // Technologie-Suchbegriff für den Kontext, z.B. "solid-state batteries".
   string technology = 1;
 
   // Freie Suchanfrage, z.B. "Welche Forschungsgruppen arbeiten an ...?"
   string query = 2;
 
-  // Maximale Anzahl zurueckgegebener Dokumente (Standard: 10).
+  // Maximale Anzahl zurückgegebener Dokumente (Standard: 10).
   int32 top_k = 3;
 
   // Zu durchsuchende Quellen: ["patents", "projects", "papers"].
   // Leeres Array = alle Quellen.
   repeated string sources = 4;
 
-  // Opaque Request-ID fuer verteiltes Tracing / Korrelation.
+  // Opaque Request-ID für verteiltes Tracing / Korrelation.
   string request_id = 5;
 }
 
 // ---------------------------------------------------------------------------
-// Response: Gefundene Dokumente mit Aehnlichkeitsscores.
+// Response: Gefundene Dokumente mit Ähnlichkeitsscores.
 // ---------------------------------------------------------------------------
 message RetrievalResponse {
-  // Liste der gefundenen Dokumente, absteigend nach Aehnlichkeit sortiert.
+  // Liste der gefundenen Dokumente, absteigend nach Ähnlichkeit sortiert.
   repeated RetrievedDocument documents = 1;
 
-  // Zeit in Millisekunden fuer das Embedding der Query.
+  // Zeit in Millisekunden für das Embedding der Query.
   float query_embedding_ms = 2;
 
-  // Zeit in Millisekunden fuer die pgvector-Suche.
+  // Zeit in Millisekunden für die pgvector-Suche.
   float search_ms = 3;
 }
 
@@ -71,13 +71,13 @@ message RetrievedDocument {
   // Titel des Dokuments.
   string title = 3;
 
-  // Textausschnitt (Abstract, Objective, Titel) fuer die Anzeige.
+  // Textausschnitt (Abstract, Objective, Titel) für die Anzeige.
   string text_snippet = 4;
 
-  // Kosinus-Aehnlichkeit zur Query im Bereich [0, 1].
+  // Kosinus-Ähnlichkeit zur Query im Bereich [0, 1].
   float similarity_score = 5;
 
-  // Zusaetzliche Metadaten als Key-Value-Paare
+  // Zusätzliche Metadaten als Key-Value-Paare
   // (z.B. "year", "country", "cpc_codes", "programme").
   map<string, string> metadata = 6;
 }

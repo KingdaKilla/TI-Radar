@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Competitive-Service.
+"""Konfiguration für den Competitive-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 Alle Konfigurationsparameter sind zentral hier definiert.
 """
 
@@ -38,8 +38,8 @@ class Settings(BaseSettings):
     network_max_edges: int = 100
 
     # --- Entity Resolution (optional, TODO 6.4) ---
-    # Wenn True, werden Akteure ueber entity.unified_actors dedupliziert.
-    # Faellt automatisch auf Raw-Namen zurueck wenn entity-Tabellen leer.
+    # Wenn True, werden Akteure über entity.unified_actors dedupliziert.
+    # Fällt automatisch auf Raw-Namen zurück wenn entity-Tabellen leer.
     use_entity_resolution: bool = True
 
     model_config = {

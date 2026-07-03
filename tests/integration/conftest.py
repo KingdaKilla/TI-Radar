@@ -1,19 +1,19 @@
-"""Pytest-Fixtures fuer Integrations-Tests mit PostgreSQL Testcontainer.
+"""Pytest-Fixtures für Integrations-Tests mit PostgreSQL Testcontainer.
 
 Stellt folgende Session-scoped Fixtures bereit:
 - ``postgres_container``: laufender PostgreSQL 17-Testcontainer
 - ``db_pool``: asyncpg Connection-Pool gegen den Container
-- ``populated_db``: Pool mit vorab eingefuegten Testdaten
+- ``populated_db``: Pool mit vorab eingefügten Testdaten
 
 Ablauf:
 1. PostgreSQL 17-Container starten (testcontainers-python)
 2. Extensions anlegen (001_extensions.sql)
 3. Schema anlegen (002_schema.sql)
-4. Optimierungen *nicht* ausfuehren (003 enthaelt ALTER SYSTEM — nur in Produktion)
-5. Testdaten einfuegen (populated_db)
+4. Optimierungen *nicht* ausführen (003 enthält ALTER SYSTEM — nur in Produktion)
+5. Testdaten einfügen (populated_db)
 
 Hinweis: Die materialized Views aus 002_schema.sql setzen Daten in den
-Basis-Tabellen voraus. Daher werden sie *nach* dem Einfuegen der
+Basis-Tabellen voraus. Daher werden sie *nach* dem Einfügen der
 Testdaten per REFRESH aktualisiert (nur dann nicht-leer).
 """
 
@@ -41,8 +41,8 @@ _SQL_DIR = _REPO_ROOT / "database" / "sql"
 
 _SQL_001_EXTENSIONS = _SQL_DIR / "001_extensions.sql"
 _SQL_002_SCHEMA = _SQL_DIR / "002_schema.sql"
-# 003 enthaelt nur ALTER SYSTEM — wird beim Test uebersprungen
-# 004 enthaelt nur Query-Beispiele — wird beim Test uebersprungen
+# 003 enthält nur ALTER SYSTEM — wird beim Test übersprungen
+# 004 enthält nur Query-Beispiele — wird beim Test übersprungen
 
 
 # ---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ def _strip_alter_system(sql: str) -> str:
     """Entfernt ALTER SYSTEM-Anweisungen aus dem SQL.
 
     ALTER SYSTEM erfordert Superuser und persistiert in postgresql.auto.conf.
-    In Testcontainern nicht noetig; runtime-Parameter werden ohnehin ignoriert.
+    In Testcontainern nicht nötig; runtime-Parameter werden ohnehin ignoriert.
     """
     return re.sub(r"ALTER SYSTEM SET[^;]+;", "", sql, flags=re.IGNORECASE | re.DOTALL)
 
@@ -64,8 +64,8 @@ def _strip_mv_with_data(sql: str) -> str:
 
     Die MVs greifen auf Basis-Tabellen zu, die beim Schema-Aufbau noch leer
     sind. 'WITH NO DATA' verhindert einen Fehler beim initialen CREATE.
-    Die MVs werden in 'populated_db' nach dem Einfuegen der Testdaten
-    explizit per REFRESH befuellt.
+    Die MVs werden in 'populated_db' nach dem Einfügen der Testdaten
+    explizit per REFRESH befüllt.
     """
     return re.sub(
         r"\bWITH DATA\b",
@@ -76,11 +76,11 @@ def _strip_mv_with_data(sql: str) -> str:
 
 
 async def _execute_sql_file(conn: asyncpg.Connection, path: pathlib.Path) -> None:
-    """Fuehrt eine SQL-Datei als einzelnen Block aus.
+    """Führt eine SQL-Datei als einzelnen Block aus.
 
-    Semikolon-getrenntes Ausfuehren wuerde bei DO $$...$$-Bloecken versagen,
+    Semikolon-getrenntes Ausführen würde bei DO $$...$$-Blöcken versagen,
     da Semikolons im PL/pgSQL-Body vorkommen. asyncpg akzeptiert den gesamten
-    Block wenn er keinen Rueckgabewert hat.
+    Block wenn er keinen Rückgabewert hat.
     """
     raw_sql = path.read_text(encoding="utf-8")
     cleaned = _strip_alter_system(raw_sql)
@@ -95,10 +95,10 @@ async def _execute_sql_file(conn: asyncpg.Connection, path: pathlib.Path) -> Non
 
 @pytest.fixture(scope="session")
 def postgres_container():
-    """Startet einen PostgreSQL 17-Testcontainer fuer die gesamte Test-Session.
+    """Startet einen PostgreSQL 17-Testcontainer für die gesamte Test-Session.
 
     Verwendet testcontainers-python. Der Container wird nach der Session
-    automatisch gestoppt und geloescht.
+    automatisch gestoppt und gelöscht.
 
     Yields:
         testcontainers.postgres.PostgresContainer-Instanz mit laufendem PG17.
@@ -114,7 +114,7 @@ def postgres_container():
         port=5432,
     )
 
-    # Zusaetzliche PostgreSQL-Konfiguration fuer Tests
+    # Zusätzliche PostgreSQL-Konfiguration für Tests
     container.with_env("POSTGRES_INITDB_ARGS", "--encoding=UTF8 --locale=C")
 
     with container as pg:
@@ -136,19 +136,19 @@ def event_loop():
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def db_pool(postgres_container):
-    """Erstellt einen asyncpg Connection-Pool und baut das vollstaendige Schema auf.
+    """Erstellt einen asyncpg Connection-Pool und baut das vollständige Schema auf.
 
-    Fuehrt in Reihenfolge aus:
+    Führt in Reihenfolge aus:
     1. 001_extensions.sql — pg_trgm, vector, uuid-ossp, unaccent
     2. 002_schema.sql    — alle Tabellen, Indexes, Trigger, Materialized Views
 
-    Der Pool wird fuer alle Integrations-Tests der Session wiederverwendet.
+    Der Pool wird für alle Integrations-Tests der Session wiederverwendet.
 
     Yields:
         asyncpg.Pool mit aufgebautem Schema, aber ohne Testdaten.
     """
     dsn = postgres_container.get_connection_url()
-    # testcontainers liefert SQLAlchemy-DSN; asyncpg benoetigt postgres:// Schema
+    # testcontainers liefert SQLAlchemy-DSN; asyncpg benötigt postgres:// Schema
     dsn = dsn.replace("postgresql+psycopg2://", "postgresql://")
     dsn = dsn.replace("postgresql+asyncpg://", "postgresql://")
 
@@ -169,25 +169,25 @@ async def db_pool(postgres_container):
 
 
 # ---------------------------------------------------------------------------
-# Session-scoped: Testdaten einfuegen und MVs refreshen
+# Session-scoped: Testdaten einfügen und MVs refreshen
 # ---------------------------------------------------------------------------
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def populated_db(db_pool):
-    """Befuellt den Pool mit repraesentativen Testdaten.
+    """Befüllt den Pool mit repräsentativen Testdaten.
 
-    Fuegt in alle relevanten Schemas Beispieldatensaetze ein:
-    - patent_schema.patents (inkl. Trigger fuer search_vector)
+    Fügt in alle relevanten Schemas Beispieldatensätze ein:
+    - patent_schema.patents (inkl. Trigger für search_vector)
     - patent_schema.patent_cpc
     - cordis_schema.projects
     - cordis_schema.organizations
 
-    Anschliessend werden alle Materialized Views per REFRESH befuellt,
+    Anschließend werden alle Materialized Views per REFRESH befüllt,
     sodass MV-basierte Queries in Tests funktionieren.
 
     Yields:
-        asyncpg.Pool mit Schema + Testdaten + befuellten MVs.
+        asyncpg.Pool mit Schema + Testdaten + befüllten MVs.
     """
 
     async def _insert() -> None:
@@ -197,7 +197,7 @@ async def populated_db(db_pool):
                 await _insert_test_patents(conn)
                 await _insert_test_cordis_data(conn)
 
-        # Materialized Views refreshen (benoetigt eigene Transaktion)
+        # Materialized Views refreshen (benötigt eigene Transaktion)
         async with db_pool.acquire() as conn:
             await _refresh_materialized_views(conn)
 
@@ -206,7 +206,7 @@ async def populated_db(db_pool):
 
 
 async def _insert_cpc_descriptions(conn: asyncpg.Connection) -> None:
-    """Fuegt statische CPC-Code-Beschreibungen ein (Referenzdaten)."""
+    """Fügt statische CPC-Code-Beschreibungen ein (Referenzdaten)."""
     await conn.executemany(
         """
         INSERT INTO patent_schema.cpc_descriptions
@@ -220,15 +220,15 @@ async def _insert_cpc_descriptions(conn: asyncpg.Connection) -> None:
             ("C12N", "C", "C12", "Microorganisms or enzymes", "Mikroorganismen oder Enzyme"),
             ("G06F", "G", "G06", "Electric digital data processing", "Elektrische digitale Datenverarbeitung"),
             ("B60L", "B", "B60", "Vehicles in general", "Fahrzeuge allgemein"),
-            ("H02J", "H", "H02", "Circuit arrangements for electric power supply", "Schaltungen fuer Stromversorgung"),
+            ("H02J", "H", "H02", "Circuit arrangements for electric power supply", "Schaltungen für Stromversorgung"),
         ],
     )
 
 
 async def _insert_test_patents(conn: asyncpg.Connection) -> None:
-    """Fuegt Testpatente mit CPC-Codes und Anmelderlaendern ein.
+    """Fügt Testpatente mit CPC-Codes und Anmelderländern ein.
 
-    Die Trigger auf patent_schema.patents befuellen automatisch:
+    Die Trigger auf patent_schema.patents befüllen automatisch:
     - search_vector (aus title + cpc_codes)
     - publication_year (aus publication_date)
     """
@@ -349,7 +349,7 @@ async def _insert_test_patents(conn: asyncpg.Connection) -> None:
 
 
 async def _insert_test_cordis_data(conn: asyncpg.Connection) -> None:
-    """Fuegt CORDIS-Testprojekte und -Organisationen ein."""
+    """Fügt CORDIS-Testprojekte und -Organisationen ein."""
     # CORDIS-Projekte
     await conn.executemany(
         """
@@ -458,11 +458,11 @@ async def _insert_test_cordis_data(conn: asyncpg.Connection) -> None:
 
 
 async def _refresh_materialized_views(conn: asyncpg.Connection) -> None:
-    """Refresht alle Materialized Views nach dem Einfuegen der Testdaten.
+    """Refresht alle Materialized Views nach dem Einfügen der Testdaten.
 
     REFRESH MATERIALIZED VIEW (ohne CONCURRENTLY) blockiert Reads kurz,
-    ist aber in Tests kein Problem. CONCURRENTLY wuerde eine UNIQUE-Index
-    voraussetzen, der bei 'WITH NO DATA' noch nicht befuellt ist.
+    ist aber in Tests kein Problem. CONCURRENTLY würde eine UNIQUE-Index
+    voraussetzen, der bei 'WITH NO DATA' noch nicht befüllt ist.
     """
     views = [
         "cross_schema.mv_patent_counts_by_cpc_year",
@@ -473,7 +473,7 @@ async def _refresh_materialized_views(conn: asyncpg.Connection) -> None:
         "cross_schema.mv_cordis_country_pairs",
         "cross_schema.mv_top_cordis_orgs",
         "cross_schema.mv_funding_by_instrument",
-        # mv_cpc_cooccurrence erfordert ausreichend Daten fuer Top-200-Berechnung
+        # mv_cpc_cooccurrence erfordert ausreichend Daten für Top-200-Berechnung
         "cross_schema.mv_cpc_cooccurrence",
     ]
     for view in views:

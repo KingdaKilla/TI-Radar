@@ -2,7 +2,7 @@
 
 ## Ausgangslage der Rohdaten
 
-**Kritische Eingangs-Beobachtung:** In `raw_ice.json` ist für **alle 13 Tabs** `activeTab = "Neue Analyse"` und der `mainText` ist in allen 13 Panels **byte-identisch**. Der aufgezeichnete `mainText` enthält ausschliesslich die Executive-Summary-Kopfzeile sowie die vier Cluster-Info-Beschreibungen ("Dieser Analysebereich umfasst: UC6 … UC12 … UC1 … UC5 … UC3 … UC8 … UC11 … UC4 …"). Es wurden **keine echten Panel-Nutzdaten** (keine HHI-Werte, keine CAGR-Zahlen, keine Top-Länder, keine h-Index-Werte, keine Grant-Rate, keine Jahresreihen, keine CPC-Klassen) aufgezeichnet.
+**Kritische Eingangs-Beobachtung:** In `raw_ice.json` ist für **alle 13 Tabs** `activeTab = "Neue Analyse"` und der `mainText` ist in allen 13 Panels **byte-identisch**. Der aufgezeichnete `mainText` enthält ausschließlich die Executive-Summary-Kopfzeile sowie die vier Cluster-Info-Beschreibungen ("Dieser Analysebereich umfasst: UC6 … UC12 … UC1 … UC5 … UC3 … UC8 … UC11 … UC4 …"). Es wurden **keine echten Panel-Nutzdaten** (keine HHI-Werte, keine CAGR-Zahlen, keine Top-Länder, keine h-Index-Werte, keine Grant-Rate, keine Jahresreihen, keine CPC-Klassen) aufgezeichnet.
 
 Damit ist ein **Kopf-vs-Detail-Vergleich auf Zahlen-Ebene nicht möglich** — die unten aufgeführten Befunde konzentrieren sich auf (a) Inkonsistenzen im Header selbst und (b) strukturelle Widersprüche zwischen Header-Aussage und fehlender Detail-Evidenz.
 
@@ -28,12 +28,12 @@ Damit ist ein **Kopf-vs-Detail-Vergleich auf Zahlen-Ebene nicht möglich** — d
 #### C1 · Publikationen-Header vs. Impact-Label (Widerspruch innerhalb der Kopfzeile)
 - **Quelle:** `summary` / Header aller Panels.
 - **Snippet:** `"… 0 Publikationen … Moderater Forschungsimpact …"`
-- **Widerspruch:** Der Header meldet **0 Publikationen**, labelt gleichzeitig aber den Forschungsimpact als **"Moderater Forschungsimpact"**. Ohne jede Publikation kann es definitionsgemäss weder Zitationen, h-Index noch einen messbaren Impact geben — das Label ist entweder aus anderer Quelle (Patent-Zitationen?) gespeist und unsauber kommuniziert, oder schlicht falsch. Für UC7 (Forschungsimpact) und UC13 (Publikations-Impact) ist das ein Blocker.
+- **Widerspruch:** Der Header meldet **0 Publikationen**, labelt gleichzeitig aber den Forschungsimpact als **"Moderater Forschungsimpact"**. Ohne jede Publikation kann es definitionsgemäß weder Zitationen, h-Index noch einen messbaren Impact geben — das Label ist entweder aus anderer Quelle (Patent-Zitationen?) gespeist und unsauber kommuniziert, oder schlicht falsch. Für UC7 (Forschungsimpact) und UC13 (Publikations-Impact) ist das ein Blocker.
 
 #### C2 · Publikationen-Header vs. UC13-Versprechen nicht prüfbar (aber strukturell auffällig)
 - **Quelle:** `Publikationen`-Panel.
 - **Snippet:** *(kein UC13-Detail im Dump; activeTab = "Neue Analyse")*
-- **Widerspruch:** Header sagt `0 Publikationen`. UC13 verspricht "CORDIS-Publikationen × Projekte, Publikationseffizienz (Pub/Project)". Bei 48 Projekten und 0 Publikationen wäre die Effizienz 0/48 = 0 — eine Panel-Darstellung eines 0-Werts wäre definitionsgemäss inhaltsleer. Header ist damit konsistent zur **Abwesenheit** von UC13-Daten, aber UC13 müsste das explizit als "Keine Daten" ausweisen.
+- **Widerspruch:** Header sagt `0 Publikationen`. UC13 verspricht "CORDIS-Publikationen × Projekte, Publikationseffizienz (Pub/Project)". Bei 48 Projekten und 0 Publikationen wäre die Effizienz 0/48 = 0 — eine Panel-Darstellung eines 0-Werts wäre definitionsgemäß inhaltsleer. Header ist damit konsistent zur **Abwesenheit** von UC13-Daten, aber UC13 müsste das explizit als "Keine Daten" ausweisen.
 
 #### C3 · Header-Phase "Reife" ohne Fit-Evidenz
 - **Quelle:** `S-Kurve & Reife`-Panel.
@@ -62,7 +62,7 @@ Damit ist ein **Kopf-vs-Detail-Vergleich auf Zahlen-Ebene nicht möglich** — d
 #### m1 · Patentzahl-Rundung "10.2K"
 - **Quelle:** Header.
 - **Snippet:** `"10.2K Patente"`.
-- **Widerspruch:** Der Header zeigt eine gerundete Grösse "10.2K", während die Panel-Detailansichten (UC3 HHI, UC6 Länder, UC12 Erteilungsquoten) üblicherweise auf exakte Patent-Counts aufsetzen. Sobald UC3/UC6/UC12 sichtbar sind, ist zu prüfen, ob Summen der Länder-/Akteurs-Shares ≈ 10.200 ergeben (±200 ok, sonst Basis-Mismatch).
+- **Widerspruch:** Der Header zeigt eine gerundete Größe "10.2K", während die Panel-Detailansichten (UC3 HHI, UC6 Länder, UC12 Erteilungsquoten) üblicherweise auf exakte Patent-Counts aufsetzen. Sobald UC3/UC6/UC12 sichtbar sind, ist zu prüfen, ob Summen der Länder-/Akteurs-Shares ≈ 10.200 ergeben (±200 ok, sonst Basis-Mismatch).
 
 #### m2 · Alle 13 Tabs zeigen identischen "Neue Analyse"-Überblicksinhalt
 - **Quelle:** alle Panels.

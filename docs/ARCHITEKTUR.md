@@ -165,10 +165,10 @@ Services dürfen eigene SQL-Queries schreiben, müssen aber die Enum-Werte + Kin
 
 ### API-Design-Patterns (TMF630-inspiriert)
 
-- **Typisierte Panels:** Die `RadarResponse` enthaelt ein `panels`-Array mit `use_case`-Discriminator-Feld (analog zu TMF630 `@type`) fuer typisierte Panel-Identifikation
+- **Typisierte Panels:** Die `RadarResponse` enthält ein `panels`-Array mit `use_case`-Discriminator-Feld (analog zu TMF630 `@type`) für typisierte Panel-Identifikation
 - **HATEOAS:** `_links`-Objekt in der RadarResponse mit navigierbaren Links zu Export-Endpoints und Suggestions
-- **Paging:** `GET /api/v1/export/history` unterstuetzt `offset`/`limit` mit `X-Total-Count`-Header
-- **Event-Hub (Pub/Sub):** `POST /api/v1/export/webhooks` registriert Callback-URLs fuer Event-Benachrichtigungen (`export.completed`, `export.failed`, `cache.purged`)
+- **Paging:** `GET /api/v1/export/history` unterstützt `offset`/`limit` mit `X-Total-Count`-Header
+- **Event-Hub (Pub/Sub):** `POST /api/v1/export/webhooks` registriert Callback-URLs für Event-Benachrichtigungen (`export.completed`, `export.failed`, `cache.purged`)
 
 ### Fan-Out-Muster
 
@@ -218,45 +218,45 @@ Der Orchestrator nutzt `asyncio.gather` mit `return_exceptions=True` für parall
 | UC12 | patent-grant-svc | Erteilungsanalyse: Time-to-Grant, Erteilungsquoten |
 | UC-C | publication-svc | Publikationskette: CORDIS-Publikationen, Open Access |
 
-## Woechentlicher Import-Scheduler
+## Wöchentlicher Import-Scheduler
 
-Der `import-svc` enthaelt einen integrierten Scheduler (APScheduler), der woechentlich einen vollstaendigen Datenimport ausfuehrt:
+Der `import-svc` enthält einen integrierten Scheduler (APScheduler), der wöchentlich einen vollständigen Datenimport ausführt:
 
 - **Reihenfolge:** EuroSciVoc -> CORDIS -> EPO -> Materialized Views Refresh
 - **Zeitplan:** Jeden Sonntag um 02:00 UTC (konfigurierbar via `IMPORT_SCHEDULE`, Cron-Syntax)
 - **Steuerung:** `SCHEDULER_ENABLED=true|false`, `SCHEDULER_TIMEZONE=UTC`
-- **Status-Endpunkt:** `GET /api/v1/import/schedule` liefert naechsten Lauf, letzten Lauf und Ergebnisse
+- **Status-Endpunkt:** `GET /api/v1/import/schedule` liefert nächsten Lauf, letzten Lauf und Ergebnisse
 
 ## GLEIF LEI Integration (UC11)
 
-Der `actor-type-svc` (UC11) nutzt die kostenlose GLEIF API (`api.gleif.org`) fuer Legal Entity Identifier (LEI) Lookups. Damit koennen Organisationen anhand ihres LEI eindeutig identifiziert und mit offiziellen Registerdaten angereichert werden.
+Der `actor-type-svc` (UC11) nutzt die kostenlose GLEIF API (`api.gleif.org`) für Legal Entity Identifier (LEI) Lookups. Damit können Organisationen anhand ihres LEI eindeutig identifiziert und mit offiziellen Registerdaten angereichert werden.
 
 - **Aktivierung:** `GLEIF_ENABLED=true` (Default)
 - **Cache:** `entity_schema.gleif_cache` mit 90-Tage-TTL (auch Negativ-Ergebnisse werden gecacht)
-- **Bereinigung:** `entity_schema.purge_stale_gleif()` entfernt abgelaufene Eintraege
+- **Bereinigung:** `entity_schema.purge_stale_gleif()` entfernt abgelaufene Einträge
 
 ## Datenakquise-Architektur
 
-Das System nutzt 5 externe Datenquellen ueber 2 Beschaffungsmuster:
+Das System nutzt 5 externe Datenquellen über 2 Beschaffungsmuster:
 
 ### Hybrides Beschaffungsmodell (Bulk + API)
 
 Das System nutzt ein zweistufiges Beschaffungsmodell:
 
-1. **Bulk-Dateiimport (initiales Setup):** EPO DOCDB-XML und CORDIS JSON-ZIP werden woechentlich importiert (Sonntag 02:00 UTC). Die Dateien muessen manuell in `/data/bulk/` bereitgestellt werden. Bulk-Daten bilden die historische Datenbasis.
+1. **Bulk-Dateiimport (initiales Setup):** EPO DOCDB-XML und CORDIS JSON-ZIP werden wöchentlich importiert (Sonntag 02:00 UTC). Die Dateien müssen manuell in `/data/bulk/` bereitgestellt werden. Bulk-Daten bilden die historische Datenbasis.
 
-2. **Live-API-Adapter (laufende Aktualisierung):** EPO OPS REST API und CORDIS REST API werden taeglich abgefragt (03:00 UTC). API-Daten sind die primaere laufende Datenquelle und **ueberschreiben Bulk-Daten** (`ON CONFLICT DO UPDATE`).
+2. **Live-API-Adapter (laufende Aktualisierung):** EPO OPS REST API und CORDIS REST API werden täglich abgefragt (03:00 UTC). API-Daten sind die primäre laufende Datenquelle und **überschreiben Bulk-Daten** (`ON CONFLICT DO UPDATE`).
 
-| Quelle | Methode | Schedule | Prioritaet |
+| Quelle | Methode | Schedule | Priorität |
 |---|---|---|---|
-| EPO DOCDB | Bulk-Dateiimport | Woechentlich (So 02:00) | Initiales Setup |
-| EPO OPS API | Live-REST-API (OAuth2) | Taeglich (03:00) | Aktuell, ueberschreibt Bulk |
-| CORDIS Bulk | JSON-ZIP-Import | Woechentlich (So 02:00) | Initiales Setup |
-| CORDIS API | Live-REST-API (public) | Taeglich (03:00) | Aktuell, ueberschreibt Bulk |
+| EPO DOCDB | Bulk-Dateiimport | Wöchentlich (So 02:00) | Initiales Setup |
+| EPO OPS API | Live-REST-API (OAuth2) | Täglich (03:00) | Aktuell, überschreibt Bulk |
+| CORDIS Bulk | JSON-ZIP-Import | Wöchentlich (So 02:00) | Initiales Setup |
+| CORDIS API | Live-REST-API (public) | Täglich (03:00) | Aktuell, überschreibt Bulk |
 
 ### Live-API mit DB-Cache (OpenAIRE, Semantic Scholar, GLEIF)
 
-Drei Quellen werden on-demand bei Analyse-Abfragen ueber HTTP-Adapter aufgerufen:
+Drei Quellen werden on-demand bei Analyse-Abfragen über HTTP-Adapter aufgerufen:
 
 | Quelle | Adapter | Genutzt von | Cache-TTL | Rate-Limit |
 |---|---|---|---|---|
@@ -264,11 +264,11 @@ Drei Quellen werden on-demand bei Analyse-Abfragen ueber HTTP-Adapter aufgerufen
 | Semantic Scholar | Research-Adapter | UC7 Research-Impact | 30 Tage | API-Key |
 | GLEIF | `gleif_adapter.py` | UC11 Actor-Type | 90 Tage | 55 RPM, kein Key |
 
-Alle Adapter implementieren: exponentielles Backoff, Graceful Degradation (leere Ergebnisse statt Abbruch), Stale-Cache-Fallback bei API-Ausfaellen.
+Alle Adapter implementieren: exponentielles Backoff, Graceful Degradation (leere Ergebnisse statt Abbruch), Stale-Cache-Fallback bei API-Ausfällen.
 
 ## Per-UC-Timeout-Konfiguration
 
-| UC-Service | Timeout | Begruendung |
+| UC-Service | Timeout | Begründung |
 |---|---|---|
 | UC2 Maturity | 60s | `family_id COUNT DISTINCT` ist CPU-intensiv |
 | UC3 Competitive | 60s | Entity Resolution + Netzwerk-Berechnungen |

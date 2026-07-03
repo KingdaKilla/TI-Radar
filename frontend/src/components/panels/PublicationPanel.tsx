@@ -29,14 +29,14 @@ interface PublicationPanelProps {
   error: string | null;
   onDetailClick?: () => void;
   queryTimeSeconds?: number;
-  /** MIN-11: Externer (Header-)Projektzaehler. Wenn gesetzt, wird er
-   *  fuer die explizite "Pub/Projekt × Projekte ≈ Publikationen"-Rechnung
-   *  bevorzugt, damit die UI dieselbe Bezugsgroesse wie der Header (UC1)
-   *  zeigt. Faellt sonst auf `data.total_projects_with_pubs` zurueck. */
+  /** MIN-11: Externer (Header-)Projektzähler. Wenn gesetzt, wird er
+   *  für die explizite "Pub/Projekt × Projekte ≈ Publikationen"-Rechnung
+   *  bevorzugt, damit die UI dieselbe Bezugsgröße wie der Header (UC1)
+   *  zeigt. Fällt sonst auf `data.total_projects_with_pubs` zurück. */
   projectsCount?: number;
-  /** MAJ-7/MAJ-8: Letztes vollstaendig abgeschlossenes Kalenderjahr.
-   *  Wenn die Pub-Trend-Daten ueber dieses Jahr hinausgehen, zeigt der
-   *  Chart eine ReferenceArea „Daten ggf. unvollstaendig" — exakt wie
+  /** MAJ-7/MAJ-8: Letztes vollständig abgeschlossenes Kalenderjahr.
+   *  Wenn die Pub-Trend-Daten über dieses Jahr hinausgehen, zeigt der
+   *  Chart eine ReferenceArea „Daten ggf. unvollständig" — exakt wie
    *  LandscapePanel/MaturityPanel.  Bisher fehlte der Hinweis trotz
    *  Bedarf laut KONSOLIDIERUNG.md MAJ-8. */
   dataCompleteYear?: number;
@@ -79,8 +79,8 @@ export default function PublicationPanel({
 
           {/* CRIT-1 / MIN-11: Explizite Rechnung sichtbar machen, damit Nutzer
               nachvollziehen, wie sich total_publications zusammensetzt.
-              MIN-11: Wenn ein externer Projektzaehler (z. B. Header/UC1)
-              uebergeben wird, hat dieser Vorrang -- so passt die Rechnung
+              MIN-11: Wenn ein externer Projektzähler (z. B. Header/UC1)
+              übergeben wird, hat dieser Vorrang -- so passt die Rechnung
               numerisch zum Header-Wert. */}
           {(() => {
             const projects = resolveProjectsCount(

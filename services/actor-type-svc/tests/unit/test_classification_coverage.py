@@ -1,11 +1,11 @@
-"""Unit-Tests fuer compute_classification_coverage + Service-Integration.
+"""Unit-Tests für compute_classification_coverage + Service-Integration.
 
 Bug-Fix (Bundle B):
     Die UC11 ActorType-Response hat ``classification_coverage`` als Feld
     im Proto (uc11_actor_type.proto:193), aber der Service hat es nie
     gesetzt. Dadurch war ``classification_coverage == 0`` bei
     ``unclassified_actors == 0`` und ``total_classified_actors > 0`` --
-    ein logisch unmoeglicher Zustand.
+    ein logisch unmöglicher Zustand.
 
     Hier werden die neue Berechnungslogik (``compute_classification_coverage``)
     und die Durchreichung durch den Servicer (``_build_response``,
@@ -22,7 +22,7 @@ from src.domain.metrics import compute_classification_coverage
 
 
 class TestComputeClassificationCoverage:
-    """Tests fuer die reine Domain-Funktion."""
+    """Tests für die reine Domain-Funktion."""
 
     def test_leere_daten_geben_1_0(self):
         # 0/0 -> 1.0 ("alle bekannten Akteure klassifiziert", leere Basis)

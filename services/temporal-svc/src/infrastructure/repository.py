@@ -1,6 +1,6 @@
-"""TemporalRepository — PostgreSQL-Datenbankzugriff fuer UC8.
+"""TemporalRepository — PostgreSQL-Datenbankzugriff für UC8.
 
-Abfragen fuer Akteur-Dynamik, CPC-Breite und Programmevolution.
+Abfragen für Akteur-Dynamik, CPC-Breite und Programmevolution.
 Nutzt patent_schema und cordis_schema.
 """
 
@@ -23,7 +23,7 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 class TemporalRepository:
-    """Async PostgreSQL-Zugriff fuer UC8 Temporal-Analysen."""
+    """Async PostgreSQL-Zugriff für UC8 Temporal-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -40,7 +40,7 @@ class TemporalRepository:
         end_year: int | None = None,
         european_only: bool = False,
     ) -> list[dict[str, Any]]:
-        """Patent-Anmelder pro Jahr fuer eine Technologie."""
+        """Patent-Anmelder pro Jahr für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -94,12 +94,12 @@ class TemporalRepository:
         end_year: int | None = None,
         european_only: bool = False,
     ) -> list[dict[str, Any]]:
-        """CORDIS-Organisationen pro Jahr fuer eine Technologie.
+        """CORDIS-Organisationen pro Jahr für eine Technologie.
 
         Bug M-002: Der JOIN projects -> organizations erzeugt
         Row-Duplikation (1 Projekt x N Organisationen).  Ohne
-        ``COUNT(DISTINCT p.id)`` wuerden Projekte pro (Jahr, Akteur)
-        mehrfach gezaehlt werden, wenn derselbe Akteur in mehreren
+        ``COUNT(DISTINCT p.id)`` würden Projekte pro (Jahr, Akteur)
+        mehrfach gezählt werden, wenn derselbe Akteur in mehreren
         Rollen am Projekt beteiligt ist.  DISTINCT ist hier zwingend.
         """
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
@@ -157,27 +157,27 @@ class TemporalRepository:
         end_year: int | None = None,
         european_only: bool = False,
     ) -> int:
-        """Anzahl DISTINCT CORDIS-Projekte fuer eine Technologie.
+        """Anzahl DISTINCT CORDIS-Projekte für eine Technologie.
 
-        Bug M-002 / C2.1: Frueher wurde ``record_count`` fuer die
+        Bug M-002 / C2.1: Früher wurde ``record_count`` für die
         CORDIS-Datenquelle aus ``len(cordis_actors_raw)`` berechnet —
         also aus den Zeilen einer ``GROUP BY (year, o.name)``-Aggregation.
-        Ein Projekt mit 5 Organisationen in 3 Laendern ueber 2 Jahre
+        Ein Projekt mit 5 Organisationen in 3 Ländern über 2 Jahre
         taucht dort als *bis zu 10 Zeilen* auf.  Bei Blockchain ergab
         das 3148 statt 322 (+877 %).
 
         Diese Methode liefert die korrekte DISTINCT-Projekt-Anzahl
         direkt aus der Datenbank.  ``european_only`` triggert den
         Organisations-JOIN — deshalb ist ``DISTINCT p.id`` im
-        ``european_only=True``-Pfad zwingend (sonst gaebe es erneut
+        ``european_only=True``-Pfad zwingend (sonst gäbe es erneut
         Row-Multiplikation pro Land/Organisation).
 
         Args:
-            technology: Suchbegriff fuer Volltextsuche.
+            technology: Suchbegriff für Volltextsuche.
             start_year: Erstes Jahr (inklusiv).
             end_year: Letztes Jahr (inklusiv).
             european_only: Nur Projekte mit mindestens einer EU/EEA-
-                Organisation beruecksichtigen.
+                Organisation berücksichtigen.
 
         Returns:
             Anzahl unterschiedlicher Projekte (``COUNT(DISTINCT p.id)``).
@@ -197,7 +197,7 @@ class TemporalRepository:
             idx += 1
 
         # european_only erfordert den Organisations-JOIN — ohne DISTINCT
-        # wird jedes Projekt pro Organisation mehrfach gezaehlt.
+        # wird jedes Projekt pro Organisation mehrfach gezählt.
         if european_only:
             conditions.append(f"o.country = ANY(${idx}::text[])")
             params.append(list(EU_EEA_COUNTRIES))
@@ -223,7 +223,7 @@ class TemporalRepository:
             return int(total or 0)
 
     # -----------------------------------------------------------------------
-    # CPC-Codes pro Jahr (fuer Technologie-Breite)
+    # CPC-Codes pro Jahr (für Technologie-Breite)
     # -----------------------------------------------------------------------
 
     async def cpc_codes_by_year(
@@ -234,7 +234,7 @@ class TemporalRepository:
         end_year: int | None = None,
         european_only: bool = False,
     ) -> list[dict[str, Any]]:
-        """CPC-Codes pro Jahr fuer Technologie-Breite-Analyse."""
+        """CPC-Codes pro Jahr für Technologie-Breite-Analyse."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -283,7 +283,7 @@ class TemporalRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Foerderung nach Instrument/Programm pro Jahr."""
+        """Förderung nach Instrument/Programm pro Jahr."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2

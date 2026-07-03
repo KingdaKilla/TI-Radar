@@ -1,5 +1,5 @@
 // =============================================================================
-// embedding.proto — Embedding Service fuer die Technology Intelligence Platform
+// embedding.proto — Embedding Service für die Technology Intelligence Platform
 // =============================================================================
 // Verwaltet das Batch-Embedding von Dokumenten (Patente, Projekte, Paper)
 // in pgvector. Der Import-Service oder ein Admin-Endpunkt triggert das
@@ -18,27 +18,27 @@ option go_package = "tip/proto/embedding";
 // Embedding Service — Batch-Embedding von Dokumenten in pgvector.
 // ---------------------------------------------------------------------------
 service EmbeddingService {
-  // Startet oder setzt das Batch-Embedding fuer eine Dokumentquelle fort.
+  // Startet oder setzt das Batch-Embedding für eine Dokumentquelle fort.
   rpc EmbedDocuments(EmbedRequest) returns (EmbedResponse);
 
-  // Gibt den aktuellen Embedding-Status fuer eine Quelle zurueck.
+  // Gibt den aktuellen Embedding-Status für eine Quelle zurück.
   rpc GetEmbeddingStatus(StatusRequest) returns (StatusResponse);
 }
 
 // ---------------------------------------------------------------------------
-// Request: Batch-Embedding fuer eine Dokumentquelle starten.
+// Request: Batch-Embedding für eine Dokumentquelle starten.
 // ---------------------------------------------------------------------------
 message EmbedRequest {
   // Dokumentquelle: "patents" | "projects" | "papers".
   string source = 1;
 
-  // Batch-Groesse pro Iteration (Standard: 1000).
+  // Batch-Größe pro Iteration (Standard: 1000).
   int32 batch_size = 2;
 
-  // Optional: nur Dokumente ab diesem Jahr einbetten (z.B. fuer Patents).
+  // Optional: nur Dokumente ab diesem Jahr einbetten (z.B. für Patents).
   int32 year_from = 3;
 
-  // Opaque Request-ID fuer verteiltes Tracing / Korrelation.
+  // Opaque Request-ID für verteiltes Tracing / Korrelation.
   string request_id = 4;
 }
 
@@ -55,7 +55,7 @@ message EmbedResponse {
   // Gesamtanzahl der Dokumente in der Quelle.
   int64 total_count = 3;
 
-  // Verstrichene Zeit in Sekunden fuer diesen Durchlauf.
+  // Verstrichene Zeit in Sekunden für diesen Durchlauf.
   float elapsed_seconds = 4;
 
   // Aktueller Status: "running" | "completed" | "error".
@@ -63,7 +63,7 @@ message EmbedResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Request: Embedding-Status fuer eine Quelle abfragen.
+// Request: Embedding-Status für eine Quelle abfragen.
 // ---------------------------------------------------------------------------
 message StatusRequest {
   // Dokumentquelle: "patents" | "projects" | "papers".

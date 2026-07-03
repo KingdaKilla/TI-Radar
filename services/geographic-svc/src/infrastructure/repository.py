@@ -1,6 +1,6 @@
-"""GeographicRepository — PostgreSQL-Datenbankzugriff fuer UC6.
+"""GeographicRepository — PostgreSQL-Datenbankzugriff für UC6.
 
-Abfragen fuer geografische Verteilung, Kooperationspaare und
+Abfragen für geografische Verteilung, Kooperationspaare und
 Cross-Border-Analyse. Nutzt patent_schema und cordis_schema.
 """
 
@@ -15,7 +15,7 @@ from shared.domain.result_types import CountryCount
 
 logger = structlog.get_logger(__name__)
 
-# EU/EEA-Laendercodes fuer european_only-Filter
+# EU/EEA-Ländercodes für european_only-Filter
 EU_EEA_COUNTRIES: frozenset[str] = frozenset({
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
     "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
@@ -26,16 +26,16 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 class GeographicRepository:
-    """Async PostgreSQL-Zugriff fuer UC6 Geographic-Analysen.
+    """Async PostgreSQL-Zugriff für UC6 Geographic-Analysen.
 
-    Alle Methoden verwenden den uebergebenen asyncpg Connection Pool.
+    Alle Methoden verwenden den übergebenen asyncpg Connection Pool.
     """
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
 
     # -----------------------------------------------------------------------
-    # Patent-Laenderverteilung
+    # Patent-Länderverteilung
     # -----------------------------------------------------------------------
 
     async def patent_country_distribution(
@@ -47,7 +47,7 @@ class GeographicRepository:
         european_only: bool = False,
         limit: int = 30,
     ) -> list[CountryCount]:
-        """Patentanzahl pro Anmelder-Land fuer eine Technologie."""
+        """Patentanzahl pro Anmelder-Land für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -97,7 +97,7 @@ class GeographicRepository:
             return [CountryCount(country=row["country"], count=row["count"]) for row in rows]
 
     # -----------------------------------------------------------------------
-    # CORDIS-Laenderverteilung
+    # CORDIS-Länderverteilung
     # -----------------------------------------------------------------------
 
     async def cordis_country_distribution(
@@ -225,7 +225,7 @@ class GeographicRepository:
         european_only: bool = False,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Laender-Kooperationspaare aus CORDIS-Projekten."""
+        """Länder-Kooperationspaare aus CORDIS-Projekten."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -255,7 +255,7 @@ class GeographicRepository:
         limit_idx = idx
 
         # Bipartiter-Jaccard-Score setzt Gesamt-Projektzahlen pro Land voraus.
-        # Deshalb ergaenzt der CTE `country_totals` die rohen co-project counts
+        # Deshalb ergänzt der CTE `country_totals` die rohen co-project counts
         # um `projects_a`/`projects_b`, sodass der Service den Score direkt
         # berechnen kann: (2 * co_projects) / (projects_a + projects_b).
         sql = f"""
@@ -319,7 +319,7 @@ class GeographicRepository:
         end_year: int | None = None,
         min_countries: int = 2,
     ) -> dict[str, int | float]:
-        """Anteil grenzueberschreitender Projekte berechnen."""
+        """Anteil grenzüberschreitender Projekte berechnen."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2

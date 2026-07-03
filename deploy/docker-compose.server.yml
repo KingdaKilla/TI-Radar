@@ -247,8 +247,8 @@ services:
       - frontend
 
   # ==================== LLM-Service (v3.5.0) ====================
-  # Stateless gRPC-Microservice (Port 50070) fuer textuelle KI-Analyse.
-  # Kein DB-Zugriff. Default-Provider: Gemini 2.0 Flash (GEMINI_API_KEY noetig).
+  # Stateless gRPC-Microservice (Port 50070) für textuelle KI-Analyse.
+  # Kein DB-Zugriff. Default-Provider: Gemini 2.0 Flash (GEMINI_API_KEY nötig).
   llm-svc:
     image: ghcr.io/${GHCR_OWNER:-kingdakilla}/ti-radar-llm-svc:${IMAGE_TAG:-latest}
     container_name: ti-radar-llm
@@ -275,7 +275,7 @@ services:
 
   # ==================== Embedding-Service (v3.6.0) ====================
   # Erzeugt vector(384)-Embeddings via sentence-transformers
-  # (intfloat/multilingual-e5-small). Port 50051 (explizit ueberschrieben,
+  # (intfloat/multilingual-e5-small). Port 50051 (explizit überschrieben,
   # Default im Image ist 50080). HF-Cache-Volume vermeidet Re-Download
   # (~230 MB) bei Container-Recreate.
   embedding-svc:
@@ -303,9 +303,9 @@ services:
       - backend
 
   # ==================== Retrieval-Service (v3.6.0) ====================
-  # Semantische Suche ueber pgvector + Cross-Encoder-Reranking.
-  # Port 50051 (explizit ueberschrieben, Default im Image ist 50081).
-  # Nutzt embedding-svc fuer Query-Embeddings.
+  # Semantische Suche über pgvector + Cross-Encoder-Reranking.
+  # Port 50051 (explizit überschrieben, Default im Image ist 50081).
+  # Nutzt embedding-svc für Query-Embeddings.
   retrieval-svc:
     image: ghcr.io/${GHCR_OWNER:-kingdakilla}/ti-radar-retrieval-svc:${IMAGE_TAG:-latest}
     container_name: ti-radar-retrieval

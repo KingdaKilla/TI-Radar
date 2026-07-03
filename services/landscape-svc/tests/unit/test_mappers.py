@@ -1,4 +1,4 @@
-"""Unit-Tests fuer landscape-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für landscape-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von LandscapeResult auf das dict-basierte
 Response-Format, inkl. CAGR-Normalisierung, Zeitreihe, Summary und Metadata.
@@ -75,7 +75,7 @@ class TestDictResponseMapperBasicFields:
         assert expected_keys == set(d.keys())
 
     def test_summary_fields(self):
-        """Summary enthaelt korrekte Totals."""
+        """Summary enthält korrekte Totals."""
         result = _make_result()
         d = landscape_result_to_dict(result)
         s = d["summary"]
@@ -128,7 +128,7 @@ class TestDictResponseMapperCagr:
         assert d["cagr_values"]["publication_cagr"] == pytest.approx(0.125, abs=0.001)
 
     def test_funding_cagr_normalized(self):
-        """Foerder-CAGR wird von Prozent auf Fraktion normiert."""
+        """Förder-CAGR wird von Prozent auf Fraktion normiert."""
         result = _make_result(cagr_funding=10.0)
         d = landscape_result_to_dict(result)
         assert d["cagr_values"]["funding_cagr"] == pytest.approx(0.10, abs=0.001)
@@ -153,7 +153,7 @@ class TestDictResponseMapperCagr:
         assert d["cagr_values"]["patent_cagr"] == pytest.approx(-0.05, abs=0.001)
 
     def test_period_years_passed_through(self):
-        """period_years wird direkt aus result.periods uebernommen."""
+        """period_years wird direkt aus result.periods übernommen."""
         result = _make_result(periods=14)
         d = landscape_result_to_dict(result)
         assert d["cagr_values"]["period_years"] == 14
@@ -167,7 +167,7 @@ class TestDictResponseMapperTimeSeries:
     """Testet Zeitreihen-Mapping."""
 
     def test_time_series_length(self):
-        """Zeitreihe hat korrekte Anzahl Eintraege."""
+        """Zeitreihe hat korrekte Anzahl Einträge."""
         result = _make_result()
         d = landscape_result_to_dict(result)
         assert len(d["time_series"]) == 2
@@ -232,7 +232,7 @@ class TestDictResponseMapperEmptyData:
         assert d["time_series"] == []
 
     def test_empty_top_countries(self):
-        """Leere Laenderliste wird korrekt durchgereicht."""
+        """Leere Länderliste wird korrekt durchgereicht."""
         result = _make_result(top_countries=[])
         d = landscape_result_to_dict(result)
         assert d["top_countries"] == []
@@ -258,7 +258,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=123)
         d = landscape_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 123
@@ -277,7 +277,7 @@ class TestDictResponseMapperMetadata:
         assert d["metadata"]["request_id"] == "req-42"
 
     def test_request_id_default_empty(self):
-        """request_id ist standardmaessig leer."""
+        """request_id ist standardmäßig leer."""
         result = _make_result()
         d = landscape_result_to_dict(result)
         assert d["metadata"]["request_id"] == ""

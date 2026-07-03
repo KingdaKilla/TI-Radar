@@ -197,7 +197,7 @@ class VectorSearchRepository(VectorSearchPort):
         for source in sources:
             cfg = _SOURCE_CONFIG.get(source)
             if cfg is None:
-                logger.warning("unbekannte_quelle_uebersprungen", source=source)
+                logger.warning("unbekannte_quelle_übersprungen", source=source)
                 continue
 
             # --- 1. Candidate-Retrieval per tsvector (schnell, nutzt FTS-Index) ---

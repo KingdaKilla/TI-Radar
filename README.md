@@ -1,8 +1,8 @@
 # TI-Radar -- Technology Intelligence Radar
 
-**Aktuelle Version:** v3.4.0 (2026-04-14) -- siehe [docs/testing/ergebnisse/konsistenz/FIX_REPORT.md](docs/testing/ergebnisse/konsistenz/FIX_REPORT.md) fuer die in dieser Version behobenen 12 Konsistenz-Bugs.
+**Aktuelle Version:** v3.6.9 (2026-04-21) -- siehe [docs/testing/ergebnisse/konsistenz/FIX_REPORT.md](docs/testing/ergebnisse/konsistenz/FIX_REPORT.md) für die in v3.4.0 behobenen 12 Konsistenz-Bugs.
 
-Webbasierte Analyseplattform fuer Technologie-Intelligence auf Basis von Patent- und Forschungsdaten. Das System integriert 5 Datenquellen -- EPO DOCDB (154.8M Patente), CORDIS (80.5K EU-Forschungsprojekte), OpenAIRE (Publikationen), Semantic Scholar (Zitationsanalyse) und GLEIF (Legal Entity Identifier) -- und stellt diese ueber 13 analytische Use Cases (UC1-UC13) als interaktives Dashboard bereit.
+Webbasierte Analyseplattform für Technologie-Intelligence auf Basis von Patent- und Forschungsdaten. Das System integriert 5 Datenquellen -- EPO DOCDB (154.8M Patente), CORDIS (80.5K EU-Forschungsprojekte), OpenAIRE (Publikationen), Semantic Scholar (Zitationsanalyse) und GLEIF (Legal Entity Identifier) -- und stellt diese über 13 analytische Use Cases (UC1-UC12 + UC-C) als interaktives Dashboard bereit.
 
 Entstanden im Rahmen einer Bachelorarbeit an der HWR Berlin.
 
@@ -47,15 +47,15 @@ graph TD
 
 ## Metriken-Konsistenz (ab v3.4.0)
 
-Alle UC-uebergreifend verwendeten Kennzahlen (Publikationen, Akteure, Patente, Reifegrad-Konfidenz, vollstaendige Jahre) sind zentral in `packages/shared/domain/` definiert und strukturell vor Divergenzen geschuetzt:
+Alle UC-übergreifend verwendeten Kennzahlen (Publikationen, Akteure, Patente, Reifegrad-Konfidenz, vollständige Jahre) sind zentral in `packages/shared/domain/` definiert und strukturell vor Divergenzen geschützt:
 
 - `publication_definitions.py` -- `PublicationScope` (CORDIS_LINKED | OPENAIRE_MATCHED | SEMANTIC_SCHOLAR_TOP)
 - `actor_definitions.py` -- `ActorScope` (ACTIVE_IN_WINDOW | CLUSTER_MEMBER | CLASSIFIED)
 - `patent_definitions.py` -- `PatentScope` (ALL_PATENTS | APPLICATIONS_ONLY | GRANTS_ONLY) + `APPLICATION_KIND_CODES`/`GRANT_KIND_CODES`
-- `year_completeness.py` -- `last_complete_year()` als Single-Source-of-Truth fuer Zeitreihen-Endjahre
+- `year_completeness.py` -- `last_complete_year()` als Single-Source-of-Truth für Zeitreihen-Endjahre
 - `metrics.py` -- `s_curve_confidence()` mit strukturellem R²-Gate (`R² < 0.5 → Konfidenz 0`)
 
-Protobuf-Feld `fit_reliability_flag` in `uc2_maturity.proto` erlaubt dem Frontend, unzuverlaessige S-Kurven-Fits explizit zu markieren.
+Protobuf-Feld `fit_reliability_flag` in `uc2_maturity.proto` erlaubt dem Frontend, unzuverlässige S-Kurven-Fits explizit zu markieren.
 
 ## Voraussetzungen
 
@@ -90,7 +90,7 @@ docker compose -f deploy/docker-compose.yml --env-file .env ps
 #    API Docs:  http://localhost:8000/docs
 ```
 
-Beim ersten Start wird automatisch das Datenbankschema angelegt und CORDIS-Demodaten geladen (~6.000 Patente, ~5.000 Projekte, ~18.000 Publikationen). Das System ist sofort nutzbar — kein manueller Datenimport noetig.
+Beim ersten Start wird automatisch das Datenbankschema angelegt und CORDIS-Demodaten geladen (~6.000 Patente, ~5.000 Projekte, ~18.000 Publikationen). Das System ist sofort nutzbar — kein manueller Datenimport nötig.
 
 > **Troubleshooting:** Falls Services nicht starten, prüfen mit `docker compose -f deploy/docker-compose.yml --env-file .env logs <service-name>`. Häufigste Ursache: `POSTGRES_PASSWORD` nicht gesetzt.
 
@@ -156,9 +156,9 @@ Docker-Images werden in der **GitHub Container Registry** (`ghcr.io`) publiziert
 
 - **Auto-Seeding:** Beim ersten Start werden automatisch CORDIS-Demodaten (4.815 Projekte, 4.034 Organisationen, 17.900 Publikationen) geladen.
 - **5 Datenquellen:** EPO DOCDB (Bulk-Import), CORDIS (Bulk-Import), OpenAIRE (Live-API, 7d TTL), Semantic Scholar (Live-API, 30d TTL), GLEIF (Live-API, 90d TTL).
-- **API-Caching:** Externe API-Antworten werden in der Datenbank gecacht mit Stale-Fallback bei API-Ausfaellen.
-- **Woechentlicher Import-Scheduler:** APScheduler im Import-Service fuehrt jeden Sonntag 02:00 UTC einen vollstaendigen Datenimport durch (konfigurierbar).
-- **GLEIF LEI Integration:** Actor-Type-Service (UC11) reichert Organisationen ueber die kostenlose GLEIF API mit Legal Entity Identifiern an.
+- **API-Caching:** Externe API-Antworten werden in der Datenbank gecacht mit Stale-Fallback bei API-Ausfällen.
+- **Wöchentlicher Import-Scheduler:** APScheduler im Import-Service führt jeden Sonntag 02:00 UTC einen vollständigen Datenimport durch (konfigurierbar).
+- **GLEIF LEI Integration:** Actor-Type-Service (UC11) reichert Organisationen über die kostenlose GLEIF API mit Legal Entity Identifiern an.
 - **Export-Formate:** CSV, XLSX, JSON und PDF (WIPO-konformer Report mit Matplotlib-Charts).
 
 ## Dokumentation

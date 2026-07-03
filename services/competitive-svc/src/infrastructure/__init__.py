@@ -1,1 +1,1 @@
-"""Infrastruktur-Schicht: Datenbankzugriff fuer UC3 Competitive."""
+"""Infrastruktur-Schicht: Datenbankzugriff für UC3 Competitive."""

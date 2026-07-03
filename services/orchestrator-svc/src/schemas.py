@@ -1,7 +1,7 @@
-"""Pydantic Request/Response-Modelle fuer die REST-API.
+"""Pydantic Request/Response-Modelle für die REST-API.
 
 Die Modelle bilden die gRPC-Protobuf-Nachrichten auf JSON-kompatible
-Pydantic-Strukturen ab. Das Frontend erhaelt ausschliesslich diese
+Pydantic-Strukturen ab. Das Frontend erhält ausschließlich diese
 JSON-Modelle — Protobuf-Details sind intern.
 """
 
@@ -38,7 +38,7 @@ _MAX_CPC_CODES = 50
 
 
 class RadarRequest(BaseModel):
-    """Anfrage fuer eine Technology-Radar-Analyse.
+    """Anfrage für eine Technology-Radar-Analyse.
 
     Entspricht der RadarRequest-Protobuf-Nachricht in radar.proto.
     """
@@ -66,25 +66,25 @@ class RadarRequest(BaseModel):
         default=10,
         ge=3,
         le=30,
-        description="Analysezeitraum in Jahren (rueckblickend ab heute)",
+        description="Analysezeitraum in Jahren (rückblickend ab heute)",
     )
     european_only: bool = Field(
         default=False,
-        description="Nur EU-27 + assoziierte Laender beruecksichtigen",
+        description="Nur EU-27 + assoziierte Länder berücksichtigen",
     )
     cpc_codes: list[str] = Field(
         default_factory=list,
-        description="Optionale CPC-Codes zur Einschraenkung der Patent-Suche",
+        description="Optionale CPC-Codes zur Einschränkung der Patent-Suche",
     )
     top_n: int = Field(
         default=0,
         ge=0,
         le=100,
-        description="Maximale Anzahl Top-N-Eintraege (0 = Service-Default)",
+        description="Maximale Anzahl Top-N-Einträge (0 = Service-Default)",
     )
     use_cases: list[str] = Field(
         default_factory=list,
-        description="Selektive UC-Ausfuehrung (leer = alle 13 UCs)",
+        description="Selektive UC-Ausführung (leer = alle 13 UCs)",
     )
 
     @field_validator("use_cases")
@@ -155,7 +155,7 @@ class UseCaseError(BaseModel):
 
 
 class ExplainabilityInfo(BaseModel):
-    """Transparenz-Metadaten aggregiert ueber alle UC-Services."""
+    """Transparenz-Metadaten aggregiert über alle UC-Services."""
 
     data_sources: list[DataSourceInfo] = Field(default_factory=list)
     methods: list[str] = Field(default_factory=list)
@@ -182,7 +182,7 @@ class UCPanel(BaseModel):
     """Typisiertes UC-Panel mit Discriminator-Feld.
 
     Das ``use_case``-Feld identifiziert den konkreten Panel-Typ (analog zu
-    TMF630 @type). ``data`` enthaelt die panel-spezifischen Ergebnisse aus
+    TMF630 @type). ``data`` enthält die panel-spezifischen Ergebnisse aus
     der Protobuf-Konvertierung. ``metadata`` liefert Panel-Metadaten.
 
     Bei Graceful Degradation: data = {}, metadata bleibt leer.
@@ -209,10 +209,10 @@ class RadarResponse(BaseModel):
 
     Jedes Panel ist als typisiertes ``UCPanel``-Objekt modelliert, wobei
     das ``use_case``-Feld als Discriminator dient (analog zu TMF630 @type).
-    Zusaetzlich bleiben die UC-Panels als flache Felder erhalten fuer
-    Abwaertskompatibilitaet.
+    Zusätzlich bleiben die UC-Panels als flache Felder erhalten für
+    Abwärtskompatibilität.
 
-    Bei Graceful Degradation enthaelt ein fehlgeschlagenes Panel ein
+    Bei Graceful Degradation enthält ein fehlgeschlagenes Panel ein
     leeres ``data: {}`` und der Fehler wird in ``uc_errors`` gemeldet.
     """
 
@@ -222,7 +222,7 @@ class RadarResponse(BaseModel):
     # Typisierte UC-Panels als Liste (neues Format mit Discriminator)
     panels: list[UCPanel] = Field(default_factory=list, description="Alle UC-Panel-Ergebnisse als typisierte Liste")
 
-    # 12 UC-Panels als flache Felder (Abwaertskompatibilitaet)
+    # 12 UC-Panels als flache Felder (Abwärtskompatibilität)
     landscape: dict[str, Any] = Field(default_factory=dict)
     maturity: dict[str, Any] = Field(default_factory=dict)
     competitive: dict[str, Any] = Field(default_factory=dict)
@@ -284,7 +284,7 @@ class HealthResponse(BaseModel):
 
 
 class SuggestionResponse(BaseModel):
-    """Autocomplete-Vorschlaege fuer das Suchfeld."""
+    """Autocomplete-Vorschläge für das Suchfeld."""
 
     suggestions: list[str] = Field(default_factory=list)
     source: str = "database"

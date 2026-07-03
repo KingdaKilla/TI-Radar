@@ -1,6 +1,6 @@
-"""LLM Analysis Servicer — duenner gRPC-Adapter.
+"""LLM Analysis Servicer — dünner gRPC-Adapter.
 
-Empfaengt gRPC-Requests, delegiert Business-Logik an die Use-Case-Klassen
+Empfängt gRPC-Requests, delegiert Business-Logik an die Use-Case-Klassen
 in use_case.py und baut gRPC-Responses.
 
 Die eigentliche Analyse-Logik (Prompt-Rendering, LLM-Aufrufe,
@@ -38,9 +38,9 @@ logger = structlog.get_logger(__name__)
 
 
 def _resolve_provider_type(provider_name: str) -> str:
-    """Provider-Typ ableiten: 'local' fuer Ollama, sonst 'cloud'.
+    """Provider-Typ ableiten: 'local' für Ollama, sonst 'cloud'.
 
-    Relevant fuer EU AI Act Transparenz (Art. 50(2)).
+    Relevant für EU AI Act Transparenz (Art. 50(2)).
     """
     return "local" if provider_name.lower() == "ollama" else "cloud"
 
@@ -60,7 +60,7 @@ class _AnthropicProvider(LLMProviderPort):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """Anthropic Claude API fuer Single-Turn-Generierung aufrufen."""
+        """Anthropic Claude API für Single-Turn-Generierung aufrufen."""
         response = await self._client.messages.create(
             model=self._settings.model_name,
             max_tokens=self._settings.max_tokens,
@@ -75,7 +75,7 @@ class _AnthropicProvider(LLMProviderPort):
     async def chat(
         self, system_prompt: str, messages: list[dict[str, str]]
     ) -> tuple[str, str]:
-        """Anthropic Claude API fuer Chat-Completion aufrufen."""
+        """Anthropic Claude API für Chat-Completion aufrufen."""
         response = await self._client.messages.create(
             model=self._settings.model_name,
             max_tokens=self._settings.max_tokens,
@@ -98,7 +98,7 @@ class _OpenAIProvider(LLMProviderPort):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """OpenAI API fuer Single-Turn-Generierung aufrufen."""
+        """OpenAI API für Single-Turn-Generierung aufrufen."""
         response = await self._client.chat.completions.create(
             model=self._settings.model_name,
             max_tokens=self._settings.max_tokens,
@@ -117,7 +117,7 @@ class _OpenAIProvider(LLMProviderPort):
     async def chat(
         self, system_prompt: str, messages: list[dict[str, str]]
     ) -> tuple[str, str]:
-        """OpenAI API fuer Chat-Completion aufrufen."""
+        """OpenAI API für Chat-Completion aufrufen."""
         full_messages = [{"role": "system", "content": system_prompt}] + messages
         response = await self._client.chat.completions.create(
             model=self._settings.model_name,
@@ -163,7 +163,7 @@ class _GeminiProvider(LLMProviderPort):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """Gemini API fuer Single-Turn-Generierung aufrufen."""
+        """Gemini API für Single-Turn-Generierung aufrufen."""
         model = self._make_model(system_prompt)
         response = await model.generate_content_async(
             user_prompt,
@@ -175,10 +175,10 @@ class _GeminiProvider(LLMProviderPort):
     async def chat(
         self, system_prompt: str, messages: list[dict[str, str]]
     ) -> tuple[str, str]:
-        """Gemini API fuer Chat-Completion aufrufen."""
+        """Gemini API für Chat-Completion aufrufen."""
         model = self._make_model(system_prompt)
 
-        # Gemini: "assistant" -> "model" fuer Rollen-Mapping
+        # Gemini: "assistant" -> "model" für Rollen-Mapping
         history = [
             {
                 "role": "model" if msg["role"] == "assistant" else msg["role"],
@@ -207,7 +207,7 @@ class _OllamaProvider(LLMProviderPort):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """Ollama API fuer Single-Turn-Generierung aufrufen."""
+        """Ollama API für Single-Turn-Generierung aufrufen."""
         response = await self._client.chat.completions.create(
             model=self._settings.model_name,
             max_tokens=self._settings.max_tokens,
@@ -226,7 +226,7 @@ class _OllamaProvider(LLMProviderPort):
     async def chat(
         self, system_prompt: str, messages: list[dict[str, str]]
     ) -> tuple[str, str]:
-        """Ollama API fuer Chat-Completion aufrufen."""
+        """Ollama API für Chat-Completion aufrufen."""
         full_messages = [{"role": "system", "content": system_prompt}] + messages
         response = await self._client.chat.completions.create(
             model=self._settings.model_name,
@@ -247,13 +247,13 @@ class _NullProvider(LLMProviderPort):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """Gibt leere Ergebnisse zurueck."""
+        """Gibt leere Ergebnisse zurück."""
         return "", ""
 
     async def chat(
         self, system_prompt: str, messages: list[dict[str, str]]
     ) -> tuple[str, str]:
-        """Gibt leere Ergebnisse zurueck."""
+        """Gibt leere Ergebnisse zurück."""
         return "", ""
 
 
@@ -263,26 +263,26 @@ class _NullProvider(LLMProviderPort):
 
 
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if llm_pb2_grpc is not None:
         return llm_pb2_grpc.LlmAnalysisServiceServicer  # type: ignore[return-value]
     return object
 
 
 class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
-    """Duenner gRPC-Adapter fuer LLM-Analyse.
+    """Dünner gRPC-Adapter für LLM-Analyse.
 
     Delegiert Business-Logik an Use-Case-Klassen:
     - AnalyzePanel -> use_case.AnalyzePanel
     - AnalyzePanelWithContext -> use_case.AnalyzePanelWithContext
     - Chat -> use_case.ChatWithContext
 
-    Unterstuetzt drei LLM-Provider:
+    Unterstützt drei LLM-Provider:
     - Google Gemini (Standard)
     - Anthropic Claude
     - OpenAI GPT
 
-    Graceful Degradation: Bei Fehler wird leere Analyse zurueckgegeben.
+    Graceful Degradation: Bei Fehler wird leere Analyse zurückgegeben.
     """
 
     def __init__(self, settings: Settings | None = None) -> None:
@@ -312,7 +312,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
                 self._ollama_client, self._settings
             )
 
-        # Default-Provider (bestehende Rueckwaertskompatibilitaet)
+        # Default-Provider (bestehende Rückwärtskompatibilität)
         self._provider: LLMProviderPort = self._providers.get(
             self._default_provider_key, _NullProvider()
         )
@@ -378,10 +378,10 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
         )
 
     def _init_client(self) -> None:
-        """Alle LLM-Clients initialisieren, fuer die API-Keys vorliegen.
+        """Alle LLM-Clients initialisieren, für die API-Keys vorliegen.
 
-        Versucht jeden Provider unabhaengig zu initialisieren, damit zur
-        Laufzeit zwischen allen verfuegbaren Providern gewechselt werden kann.
+        Versucht jeden Provider unabhängig zu initialisieren, damit zur
+        Laufzeit zwischen allen verfügbaren Providern gewechselt werden kann.
         """
         # --- Anthropic ---
         if self._settings.anthropic_api_key:
@@ -456,7 +456,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
             except ImportError:
                 logger.warning(
                     "openai_sdk_nicht_installiert",
-                    hinweis="pip install openai (fuer Ollama-Kompatibilitaet)",
+                    hinweis="pip install openai (für Ollama-Kompatibilität)",
                 )
 
         if not (self._anthropic_client or self._openai_client or self._gemini_configured or self._ollama_client):
@@ -466,7 +466,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
             )
 
     def _get_provider(self, provider_override: str = "") -> LLMProviderPort:
-        """Waehlt Provider: override -> default -> NullProvider.
+        """Wählt Provider: override -> default -> NullProvider.
 
         Args:
             provider_override: Optionaler Provider-Name (z.B. 'anthropic').
@@ -487,7 +487,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
         return self._provider
 
     # -------------------------------------------------------------------
-    # gRPC-Methoden (duenne Adapter)
+    # gRPC-Methoden (dünne Adapter)
     # -------------------------------------------------------------------
 
     async def AnalyzePanel(
@@ -495,11 +495,11 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
         request: Any,
         context: Any,
     ) -> Any:
-        """Panel-Daten analysieren und textuelle Interpretation zurueckgeben.
+        """Panel-Daten analysieren und textuelle Interpretation zurückgeben.
 
         Args:
             request: tip.llm.AnalyzePanelRequest Protobuf-Message
-            context: gRPC ServicerContext (fuer Fehlerbehandlung)
+            context: gRPC ServicerContext (für Fehlerbehandlung)
 
         Returns:
             tip.llm.AnalyzePanelResponse Protobuf-Message
@@ -517,7 +517,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
             request_id=request_id,
         )
 
-        # --- gRPC-Validierung (Abort bei ungueltigem Request) ---
+        # --- gRPC-Validierung (Abort bei ungültigem Request) ---
         if not technology or not technology.strip():
             if context is not None and grpc is not None:
                 await context.abort(
@@ -701,7 +701,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
     ) -> Any:
         """AnalyzePanelResponse bauen.
 
-        Wenn gRPC-Stubs nicht verfuegbar sind, wird ein dict zurueckgegeben.
+        Wenn gRPC-Stubs nicht verfügbar sind, wird ein dict zurückgegeben.
         """
         if llm_pb2 is not None:
             return llm_pb2.AnalyzePanelResponse(
@@ -712,7 +712,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
                 confidence=confidence,
             )
 
-        # Fallback: dict (fuer Tests und Entwicklung ohne Stubs)
+        # Fallback: dict (für Tests und Entwicklung ohne Stubs)
         return {
             "analysis_text": analysis_text,
             "model_used": model_used,
@@ -722,7 +722,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             analysis_text="",
@@ -743,7 +743,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
     ) -> Any:
         """ChatResponse bauen.
 
-        Wenn gRPC-Stubs nicht verfuegbar sind, wird ein dict zurueckgegeben.
+        Wenn gRPC-Stubs nicht verfügbar sind, wird ein dict zurückgegeben.
         """
         if llm_pb2 is not None:
             return llm_pb2.ChatResponse(
@@ -754,7 +754,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
                 processing_time_ms=processing_time_ms,
             )
 
-        # Fallback: dict (fuer Tests und Entwicklung ohne Stubs)
+        # Fallback: dict (für Tests und Entwicklung ohne Stubs)
         return {
             "answer": answer,
             "sources": sources,
@@ -765,7 +765,7 @@ class LlmAnalysisServicer(_get_base_class()):  # type: ignore[misc]
 
 
 def _get_uc_prompts_keys() -> list[str]:
-    """UC_PROMPTS Keys abrufen (lazy import um zirkulaere Imports zu vermeiden)."""
+    """UC_PROMPTS Keys abrufen (lazy import um zirkuläre Imports zu vermeiden)."""
     from src.prompts import UC_PROMPTS
 
     return list(UC_PROMPTS.keys())

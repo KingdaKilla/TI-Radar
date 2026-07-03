@@ -1,4 +1,4 @@
-"""RecursiveChunker — Adapter fuer langchain RecursiveCharacterTextSplitter.
+"""RecursiveChunker — Adapter für langchain RecursiveCharacterTextSplitter.
 
 Chunking-Strategie: 512 Token, 200 Overlap (Staebler et al. 2025).
 """

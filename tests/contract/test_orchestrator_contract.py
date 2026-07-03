@@ -1,16 +1,16 @@
-"""Consumer-driven Contract-Tests fuer den TI-Radar Orchestrator.
+"""Consumer-driven Contract-Tests für den TI-Radar Orchestrator.
 
-Prueft den Vertrag zwischen Frontend (Consumer) und Orchestrator (Provider):
-- POST /api/v1/radar gibt alle 12 UC-Schluesse zurueck
+Prüft den Vertrag zwischen Frontend (Consumer) und Orchestrator (Provider):
+- POST /api/v1/radar gibt alle 12 UC-Schlüsse zurück
 - Response-Schema entspricht RadarResponse (schemas.py)
 - Graceful Degradation: fehlgeschlagene UCs haben leere Panels + uc_errors
 - Explainability-Metadaten sind immer vorhanden
-- HTTP-Status-Codes (200, 422 bei ungueltigem Request)
+- HTTP-Status-Codes (200, 422 bei ungültigem Request)
 
 Teststrategie:
   - Consumer-Tests: Frontend definiert Erwartungen (Pact-Consumer)
   - Schema-Validation: alle Pflichtfelder vorhanden und korrekt typisiert
-  - Payload-Tests: direkte HTTP-Tests gegen gemockte App (kein Pact Broker noetig)
+  - Payload-Tests: direkte HTTP-Tests gegen gemockte App (kein Pact Broker nötig)
 
 Die Fixtures 'test_client' und 'mock_orchestrator_app' kommen aus conftest.py.
 """
@@ -27,7 +27,7 @@ import pytest
 # Konstanten
 # ===========================================================================
 
-# Alle 12 erwarteten UC-Schluesse gemaess RadarResponse (schemas.py)
+# Alle 12 erwarteten UC-Schlüsse gemäß RadarResponse (schemas.py)
 REQUIRED_UC_KEYS: frozenset[str] = frozenset({
     "landscape",
     "maturity",
@@ -71,7 +71,7 @@ REQUIRED_EXPLAINABILITY_KEYS: frozenset[str] = frozenset({
 
 
 def _post_radar(client, technology: str = "quantum computing", **kwargs) -> Any:
-    """Sendet eine POST-Anfrage an /api/v1/radar und gibt die Response zurueck."""
+    """Sendet eine POST-Anfrage an /api/v1/radar und gibt die Response zurück."""
     payload = {
         "technology": technology,
         "years": 10,
@@ -87,10 +87,10 @@ def _post_radar(client, technology: str = "quantum computing", **kwargs) -> Any:
 
 
 class TestHttpStatusCodes:
-    """Prueft korrekte HTTP-Status-Codes fuer verschiedene Anfragen."""
+    """Prüft korrekte HTTP-Status-Codes für verschiedene Anfragen."""
 
     def test_gueltige_anfrage_gibt_200(self, test_client):
-        """Eine gueltige Radar-Anfrage gibt HTTP 200 zurueck."""
+        """Eine gültige Radar-Anfrage gibt HTTP 200 zurück."""
         response = _post_radar(test_client)
         assert response.status_code == 200
 
@@ -104,7 +104,7 @@ class TestHttpStatusCodes:
         assert response.status_code == 422
 
     def test_fehlende_technology_gibt_422(self, test_client):
-        """Fehlendes Pflichtfeld 'technology' gibt HTTP 422 zurueck."""
+        """Fehlendes Pflichtfeld 'technology' gibt HTTP 422 zurück."""
         response = test_client.post(
             "/api/v1/radar",
             json={"years": 10},
@@ -123,21 +123,21 @@ class TestHttpStatusCodes:
 
 
 # ===========================================================================
-# Response-Schema: Alle 12 UC-Schluesse vorhanden
+# Response-Schema: Alle 12 UC-Schlüsse vorhanden
 # ===========================================================================
 
 
 class TestRadarResponseSchema:
-    """Prueft, dass die Response alle 12 UC-Schluesse enthaelt."""
+    """Prüft, dass die Response alle 12 UC-Schlüsse enthält."""
 
     def test_alle_12_uc_schluesse_vorhanden(self, test_client):
-        """Alle 12 UC-Panel-Schluesse sind in der Response vorhanden."""
+        """Alle 12 UC-Panel-Schlüsse sind in der Response vorhanden."""
         response = _post_radar(test_client)
         assert response.status_code == 200
 
         body = response.json()
         for schluessel in REQUIRED_UC_KEYS:
-            assert schluessel in body, f"UC-Schluessel fehlt: '{schluessel}'"
+            assert schluessel in body, f"UC-Schlüssel fehlt: '{schluessel}'"
 
     def test_alle_pflichtfelder_vorhanden(self, test_client):
         """Alle Pflichtfelder der RadarResponse sind vorhanden."""
@@ -180,7 +180,7 @@ class TestRadarResponseSchema:
         assert isinstance(body["uc_errors"], list)
 
     def test_total_uc_count_ist_12(self, test_client):
-        """total_uc_count ist 12 bei vollstaendigem Run."""
+        """total_uc_count ist 12 bei vollständigem Run."""
         response = _post_radar(test_client)
         body = response.json()
         assert body["total_uc_count"] == 12
@@ -206,7 +206,7 @@ class TestRadarResponseSchema:
 
 
 class TestExplainabilityMetadata:
-    """Prueft die ExplainabilityInfo-Struktur in der Response."""
+    """Prüft die ExplainabilityInfo-Struktur in der Response."""
 
     def test_explainability_vorhanden(self, test_client):
         """'explainability' ist immer in der Response vorhanden."""
@@ -255,7 +255,7 @@ class TestExplainabilityMetadata:
 
 
 class TestGracefulDegradation:
-    """Prueft den Contract fuer Graceful Degradation (fehlgeschlagene UCs)."""
+    """Prüft den Contract für Graceful Degradation (fehlgeschlagene UCs)."""
 
     def test_selektive_uc_ausfuehrung(self, test_client):
         """use_cases-Parameter selektiert nur die angeforderten UCs."""
@@ -267,10 +267,10 @@ class TestGracefulDegradation:
                 "use_cases": ["landscape", "funding"],
             },
         )
-        # HTTP-Status muss 200 sein (Graceful Degradation bei Teilausfuehrung)
+        # HTTP-Status muss 200 sein (Graceful Degradation bei Teilausführung)
         assert response.status_code == 200
         body = response.json()
-        # Alle 12 Schluesse sind immer in der Response (auch wenn leer)
+        # Alle 12 Schlüsse sind immer in der Response (auch wenn leer)
         for schluessel in REQUIRED_UC_KEYS:
             assert schluessel in body
 
@@ -291,7 +291,7 @@ class TestGracefulDegradation:
         """Fehlgeschlagene UC-Panels sind immer leere Dicts (nicht null/None)."""
         response = _post_radar(test_client)
         body = response.json()
-        # Bei Fehlern: betroffene Panels muessen Dicts sein (koennen leer sein)
+        # Bei Fehlern: betroffene Panels müssen Dicts sein (können leer sein)
         for schluessel in REQUIRED_UC_KEYS:
             panel = body[schluessel]
             assert panel is not None, f"Panel '{schluessel}' ist None — muss Dict sein"
@@ -309,7 +309,7 @@ class TestPactConsumerContract:
     """Consumer-driven Contract-Tests mit pact-python.
 
     Schreibt den Consumer-Contract in eine Pact-Datei, die vom Provider
-    verifiziert werden kann. Wird uebersprungen wenn pact-python fehlt.
+    verifiziert werden kann. Wird übersprungen wenn pact-python fehlt.
     """
 
     def test_frontend_erwartet_landscape_panel(self, pact_consumer):
@@ -320,7 +320,7 @@ class TestPactConsumerContract:
             (
                 pact_consumer
                 .given("Quantum-Computing-Daten sind in der DB vorhanden")
-                .upon_receiving("Eine Radar-Analyse fuer 'quantum computing'")
+                .upon_receiving("Eine Radar-Analyse für 'quantum computing'")
                 .with_request(
                     method="POST",
                     path="/api/v1/radar",
@@ -367,7 +367,7 @@ class TestPactConsumerContract:
                 )
             )
 
-            # Pact-Verifikation ausfuehren (schreibt .json-Datei)
+            # Pact-Verifikation ausführen (schreibt .json-Datei)
             with pact_consumer:
                 import httpx
 
@@ -385,10 +385,10 @@ class TestPactConsumerContract:
                 assert response.status_code == 200
 
         except Exception as exc:
-            pytest.skip(f"Pact-Consumer-Test uebersprungen: {exc}")
+            pytest.skip(f"Pact-Consumer-Test übersprungen: {exc}")
 
     def test_frontend_erwartet_alle_12_uc_schluesse(self, pact_consumer):
-        """Consumer-Contract: Frontend erwartet alle 12 UC-Schluesse im Response-Body."""
+        """Consumer-Contract: Frontend erwartet alle 12 UC-Schlüsse im Response-Body."""
         try:
             from pact import Like
 
@@ -399,8 +399,8 @@ class TestPactConsumerContract:
 
             (
                 pact_consumer
-                .given("Alle UC-Services sind verfuegbar")
-                .upon_receiving("Eine vollstaendige Radar-Analyse")
+                .given("Alle UC-Services sind verfügbar")
+                .upon_receiving("Eine vollständige Radar-Analyse")
                 .with_request(
                     method="POST",
                     path="/api/v1/radar",
@@ -420,4 +420,4 @@ class TestPactConsumerContract:
                 pass  # Contract wird aufgezeichnet; Provider-Verifikation separat
 
         except Exception as exc:
-            pytest.skip(f"Pact-Consumer-Test uebersprungen: {exc}")
+            pytest.skip(f"Pact-Consumer-Test übersprungen: {exc}")

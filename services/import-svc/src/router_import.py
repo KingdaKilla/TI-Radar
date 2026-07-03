@@ -1,4 +1,4 @@
-"""Import-Router — Endpoints fuer EPO- und CORDIS-Bulk-Import.
+"""Import-Router — Endpoints für EPO- und CORDIS-Bulk-Import.
 
 Stellt vier Endpoints bereit:
   POST /api/v1/import/epo          — EPO-Patent-Bulk-Import starten
@@ -98,7 +98,7 @@ async def _refresh_materialized_views(
     Args:
         pool: asyncpg Connection-Pool.
         views: Liste der zu refreshenden Views. None = alle 9 MVs.
-        source: Quellenangabe fuer Log-Meldungen (z.B. 'epo', 'cordis').
+        source: Quellenangabe für Log-Meldungen (z.B. 'epo', 'cordis').
 
     Returns:
         Dauer des gesamten Refresh in Sekunden.
@@ -145,12 +145,12 @@ async def _refresh_materialized_views(
 
 
 # ---------------------------------------------------------------------------
-# Pydantic-Modelle fuer Request/Response
+# Pydantic-Modelle für Request/Response
 # ---------------------------------------------------------------------------
 
 
 class ImportStatus(str, Enum):
-    """Moegliche Status eines Import-Vorgangs."""
+    """Mögliche Status eines Import-Vorgangs."""
 
     IDLE = "idle"
     RUNNING = "running"
@@ -159,18 +159,18 @@ class ImportStatus(str, Enum):
 
 
 class ImportResponse(BaseModel):
-    """Antwort-Modell fuer Import-Endpoints.
+    """Antwort-Modell für Import-Endpoints.
 
     Attribute:
         status: Aktueller Status des Imports.
         source: Datenquelle (EPO, CORDIS).
         message: Statusmeldung.
         files_processed: Anzahl verarbeiteter Dateien.
-        records_imported: Anzahl importierter Datensaetze.
-        records_skipped: Anzahl uebersprungener Datensaetze.
+        records_imported: Anzahl importierter Datensätze.
+        records_skipped: Anzahl übersprungener Datensätze.
         errors: Liste von Fehlermeldungen (max. 50).
         duration_seconds: Bisherige Laufzeit in Sekunden.
-        details: Zusaetzliche Details.
+        details: Zusätzliche Details.
         started_at: Startzeitpunkt (ISO 8601).
     """
 
@@ -187,7 +187,7 @@ class ImportResponse(BaseModel):
 
 
 class StatusResponse(BaseModel):
-    """Antwort-Modell fuer den Status-Endpoint.
+    """Antwort-Modell für den Status-Endpoint.
 
     Attribute:
         epo: Status des EPO-Imports.
@@ -199,7 +199,7 @@ class StatusResponse(BaseModel):
 
 
 class RefreshResponse(BaseModel):
-    """Antwort-Modell fuer View-Refresh.
+    """Antwort-Modell für View-Refresh.
 
     Attribute:
         status: Ergebnisstatus.
@@ -218,17 +218,17 @@ class RefreshResponse(BaseModel):
 
 
 class _ImportState:
-    """Interner Status-Tracker fuer laufende Imports.
+    """Interner Status-Tracker für laufende Imports.
 
     Hinweis: In-Memory, nicht persistent. Bei Neustart geht der Status
-    verloren. Fuer Produktionsbetrieb sollte Redis/DB verwendet werden.
+    verloren. Für Produktionsbetrieb sollte Redis/DB verwendet werden.
     """
 
     def __init__(self) -> None:
         self.epo_status: ImportStatus = ImportStatus.IDLE
         self.epo_result: dict[str, Any] = {}
         self.epo_started_at: str | None = None
-        # Live-Fortschritt fuer EPO (wird vom Background-Task aktualisiert)
+        # Live-Fortschritt für EPO (wird vom Background-Task aktualisiert)
         self.epo_files_done: int = 0
         self.epo_records_done: int = 0
         self.epo_current_file: str = ""
@@ -252,7 +252,7 @@ _state = _ImportState()
     summary="EPO-Patent-Bulk-Import starten",
     description=(
         "Liest alle XML-Dateien aus dem konfigurierten EPO-Verzeichnis, "
-        "parst DOCDB-Patent-Daten und laedt sie batchweise ueber das "
+        "parst DOCDB-Patent-Daten und lädt sie batchweise über das "
         "asyncpg COPY-Protokoll in patent_schema.patents."
     ),
     dependencies=[Depends(require_admin_key)],
@@ -263,11 +263,11 @@ async def start_epo_import(request: Request) -> ImportResponse:
     Liest XML-Dateien aus bulk_data_dir/EPO/ und importiert
     Patent-Daten in patent_schema.patents + patent_schema.patent_cpc.
     """
-    # Pruefen ob bereits ein Import laeuft
+    # Prüfen ob bereits ein Import läuft
     if _state.epo_status == ImportStatus.RUNNING:
         raise HTTPException(
             status_code=409,
-            detail="EPO-Import laeuft bereits. Bitte warten oder Status pruefen.",
+            detail="EPO-Import läuft bereits. Bitte warten oder Status prüfen.",
         )
 
     # Datenbank-Pool und Settings aus app.state holen
@@ -275,7 +275,7 @@ async def start_epo_import(request: Request) -> ImportResponse:
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbankverbindung nicht verfuegbar.",
+            detail="Datenbankverbindung nicht verfügbar.",
         )
 
     settings = request.app.state.settings
@@ -293,13 +293,13 @@ async def start_epo_import(request: Request) -> ImportResponse:
     return ImportResponse(
         status=ImportStatus.RUNNING,
         source="EPO",
-        message="EPO-Import gestartet. Status ueber GET /api/v1/import/status abrufbar.",
+        message="EPO-Import gestartet. Status über GET /api/v1/import/status abrufbar.",
         started_at=_state.epo_started_at,
     )
 
 
 async def _run_epo_import(pool: Any, settings: Any) -> None:
-    """EPO-Import als Background-Task ausfuehren mit Progress-Tracking."""
+    """EPO-Import als Background-Task ausführen mit Progress-Tracking."""
     def _progress_cb(files_done: int, records_done: int, current_file: str) -> None:
         _state.epo_files_done = files_done
         _state.epo_records_done = records_done
@@ -358,7 +358,7 @@ async def _run_epo_import(pool: Any, settings: Any) -> None:
     summary="CORDIS-Projekt-Bulk-Import starten",
     description=(
         "Liest Projekte- und Organisationen-CSVs aus dem konfigurierten "
-        "CORDIS-Verzeichnis und laedt sie batchweise in "
+        "CORDIS-Verzeichnis und lädt sie batchweise in "
         "cordis_schema.projects + cordis_schema.organizations."
     ),
     dependencies=[Depends(require_admin_key)],
@@ -369,11 +369,11 @@ async def start_cordis_import(request: Request) -> ImportResponse:
     Liest CSV-Dateien aus bulk_data_dir/CORDIS/ und importiert
     Projekte + Organisationen in cordis_schema.
     """
-    # Pruefen ob bereits ein Import laeuft
+    # Prüfen ob bereits ein Import läuft
     if _state.cordis_status == ImportStatus.RUNNING:
         raise HTTPException(
             status_code=409,
-            detail="CORDIS-Import laeuft bereits. Bitte warten oder Status pruefen.",
+            detail="CORDIS-Import läuft bereits. Bitte warten oder Status prüfen.",
         )
 
     # Datenbank-Pool und Settings aus app.state holen
@@ -381,7 +381,7 @@ async def start_cordis_import(request: Request) -> ImportResponse:
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbankverbindung nicht verfuegbar.",
+            detail="Datenbankverbindung nicht verfügbar.",
         )
 
     settings = request.app.state.settings
@@ -421,12 +421,12 @@ async def _run_cordis_import(pool: Any, settings: Any) -> ImportResponse:
         _state.cordis_status = ImportStatus.COMPLETED
         message = (
             f"CORDIS-Import abgeschlossen mit {len(result.errors)} Warnungen. "
-            f"{result.records_imported} Datensaetze importiert."
+            f"{result.records_imported} Datensätze importiert."
         )
     else:
         _state.cordis_status = ImportStatus.COMPLETED
         message = (
-            f"CORDIS-Import erfolgreich. {result.records_imported} Datensaetze "
+            f"CORDIS-Import erfolgreich. {result.records_imported} Datensätze "
             f"aus {result.files_processed} Dateien importiert."
         )
 
@@ -487,7 +487,7 @@ async def start_euroscivoc_import(request: Request) -> ImportResponse:
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbankverbindung nicht verfuegbar.",
+            detail="Datenbankverbindung nicht verfügbar.",
         )
 
     settings = request.app.state.settings
@@ -517,11 +517,11 @@ async def _run_euroscivoc_import(pool: Any, settings: Any) -> ImportResponse:
     if result.errors:
         message = (
             f"EuroSciVoc-Import abgeschlossen mit {len(result.errors)} Warnungen. "
-            f"{result.records_imported} Datensaetze importiert."
+            f"{result.records_imported} Datensätze importiert."
         )
     else:
         message = (
-            f"EuroSciVoc-Import erfolgreich. {result.records_imported} Datensaetze "
+            f"EuroSciVoc-Import erfolgreich. {result.records_imported} Datensätze "
             f"aus {result.files_processed} ZIPs importiert."
         )
 
@@ -549,14 +549,14 @@ async def _run_euroscivoc_import(pool: Any, settings: Any) -> ImportResponse:
     "/status",
     response_model=StatusResponse,
     summary="Import-Status abfragen",
-    description="Gibt den aktuellen Status beider Import-Vorgaenge zurueck.",
+    description="Gibt den aktuellen Status beider Import-Vorgänge zurück.",
 )
 async def get_import_status() -> StatusResponse:
-    """Aktuellen Import-Status fuer EPO und CORDIS zurueckgeben."""
+    """Aktuellen Import-Status für EPO und CORDIS zurückgeben."""
     epo_result = _state.epo_result
     cordis_result = _state.cordis_result
 
-    # Fuer EPO: Live-Fortschritt anzeigen wenn Import laeuft
+    # Für EPO: Live-Fortschritt anzeigen wenn Import läuft
     epo_files = epo_result.get("files_processed", 0)
     epo_records = epo_result.get("records_imported", 0)
     epo_details: dict[str, Any] = {}
@@ -601,7 +601,7 @@ def _status_message(source: str, status: ImportStatus) -> str:
     """Lesbare Statusmeldung generieren."""
     messages = {
         ImportStatus.IDLE: f"{source}-Import wurde noch nicht gestartet.",
-        ImportStatus.RUNNING: f"{source}-Import laeuft...",
+        ImportStatus.RUNNING: f"{source}-Import läuft...",
         ImportStatus.COMPLETED: f"{source}-Import abgeschlossen.",
         ImportStatus.FAILED: f"{source}-Import fehlgeschlagen.",
     }
@@ -609,17 +609,17 @@ def _status_message(source: str, status: ImportStatus) -> str:
 
 
 # ---------------------------------------------------------------------------
-# EPO Enrichment Endpoint (CPC-Codes + Laender nachladen)
+# EPO Enrichment Endpoint (CPC-Codes + Länder nachladen)
 # ---------------------------------------------------------------------------
 
 
 @router.post(
     "/enrich-epo",
     response_model=ImportResponse,
-    summary="EPO-Patente um CPC-Codes und Laender anreichern",
+    summary="EPO-Patente um CPC-Codes und Länder anreichern",
     description=(
         "Liest die EPO-DOCDB-XML-Archive erneut und aktualisiert bestehende "
-        "Patent-Eintraege mit korrekt extrahierten CPC-Codes und Applicant-Countries."
+        "Patent-Einträge mit korrekt extrahierten CPC-Codes und Applicant-Countries."
     ),
     dependencies=[Depends(require_admin_key)],
 )
@@ -627,13 +627,13 @@ async def start_epo_enrichment(request: Request) -> ImportResponse:
     """EPO-Enrichment starten.
 
     Liest die gleichen ZIP-Archive wie der Import, extrahiert aber nur
-    CPC-Codes und Laender und aktualisiert bestehende Zeilen.
+    CPC-Codes und Länder und aktualisiert bestehende Zeilen.
     """
     pool = request.app.state.db_pool
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbankverbindung nicht verfuegbar.",
+            detail="Datenbankverbindung nicht verfügbar.",
         )
 
     settings = request.app.state.settings
@@ -645,12 +645,12 @@ async def start_epo_enrichment(request: Request) -> ImportResponse:
     return ImportResponse(
         status=ImportStatus.RUNNING,
         source="EPO-Enrichment",
-        message="EPO-Enrichment gestartet. Status ueber GET /api/v1/import/status abrufbar.",
+        message="EPO-Enrichment gestartet. Status über GET /api/v1/import/status abrufbar.",
     )
 
 
 async def _run_epo_enrichment(pool: Any, settings: Any) -> None:
-    """EPO-Enrichment als Background-Task ausfuehren."""
+    """EPO-Enrichment als Background-Task ausführen."""
     try:
         result: EnrichmentResult = await enrich_epo_patents(
             pool=pool,
@@ -692,7 +692,7 @@ async def refresh_views(request: Request) -> RefreshResponse:
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbankverbindung nicht verfuegbar.",
+            detail="Datenbankverbindung nicht verfügbar.",
         )
 
     logger.info("view_refresh_gestartet")
@@ -727,16 +727,16 @@ async def refresh_views(request: Request) -> RefreshResponse:
 
 @router.post(
     "/api-delta",
-    summary="API-basierte Delta-Updates manuell ausloesen",
+    summary="API-basierte Delta-Updates manuell auslösen",
     description=(
         "Startet einen API-Delta-Update im Hintergrund. EPO OPS und CORDIS REST APIs "
-        "werden fuer die zuletzt gesuchten Technologien abgefragt. API-Daten ueberschreiben "
-        "bestehende Bulk-Eintraege (ON CONFLICT DO UPDATE)."
+        "werden für die zuletzt gesuchten Technologien abgefragt. API-Daten überschreiben "
+        "bestehende Bulk-Einträge (ON CONFLICT DO UPDATE)."
     ),
     dependencies=[Depends(require_admin_key)],
 )
 async def trigger_api_delta(request: Request) -> dict[str, str]:
-    """Manueller Trigger fuer API-basierte Delta-Updates."""
+    """Manueller Trigger für API-basierte Delta-Updates."""
     import asyncio
 
     from src.scheduler import daily_api_delta_job
@@ -756,10 +756,10 @@ async def trigger_api_delta(request: Request) -> dict[str, str]:
 @router.get(
     "/schedule",
     summary="Import-Schedule-Status abfragen",
-    description="Gibt den aktuellen Scheduler-Status, naechste Ausfuehrung und letztes Ergebnis zurueck.",
+    description="Gibt den aktuellen Scheduler-Status, nächste Ausführung und letztes Ergebnis zurück.",
 )
 async def get_schedule_status_endpoint(request: Request) -> dict[str, Any]:
-    """Scheduler-Status zurueckgeben."""
+    """Scheduler-Status zurückgeben."""
     from src.scheduler import get_schedule_status
 
     scheduler = getattr(request.app.state, "scheduler", None)

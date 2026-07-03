@@ -1,7 +1,7 @@
-"""CSV-Exporter fuer TI-Radar Analyseergebnisse.
+"""CSV-Exporter für TI-Radar Analyseergebnisse.
 
 Generiert CSV-Inhalte aus dem RadarResponse-JSON mit einer Sektion
-pro Use-Case. Jeder UC hat spezifische Spaltenkoepfe, die den
+pro Use-Case. Jeder UC hat spezifische Spaltenköpfe, die den
 jeweiligen Analyse-Dimensionen entsprechen.
 
 UC-spezifische Spalten:
@@ -30,7 +30,7 @@ logger = structlog.get_logger(__name__)
 # UC-spezifische Spaltendefinitionen
 # ---------------------------------------------------------------------------
 
-# Jeder Eintrag: (UC-Panel-Key, Anzeigename, Spaltenkoepfe, Pfad zu den Daten)
+# Jeder Eintrag: (UC-Panel-Key, Anzeigename, Spaltenköpfe, Pfad zu den Daten)
 UC_COLUMN_DEFS: dict[str, tuple[str, list[str], str]] = {
     "landscape": (
         "UC 1 Technologie-Landschaft",
@@ -99,7 +99,7 @@ UC_COLUMN_DEFS: dict[str, tuple[str, list[str], str]] = {
     ),
 }
 
-# Alle UCs sind jetzt in UC_COLUMN_DEFS — EXTRA_UC_DEFS nicht mehr benoetigt
+# Alle UCs sind jetzt in UC_COLUMN_DEFS — EXTRA_UC_DEFS nicht mehr benötigt
 EXTRA_UC_DEFS: dict[str, tuple[str, str]] = {}
 
 
@@ -111,7 +111,7 @@ EXTRA_UC_DEFS: dict[str, tuple[str, str]] = {}
 async def export_csv(data: dict[str, Any], use_cases: list[str]) -> bytes:
     """Generiert CSV-Inhalte aus RadarResponse-JSON.
 
-    Erzeugt eine zusammenhaengende CSV-Datei mit einer klar abgegrenzten
+    Erzeugt eine zusammenhängende CSV-Datei mit einer klar abgegrenzten
     Sektion pro Use-Case. Sektionen werden durch Leerzeilen und einen
     Header-Kommentar getrennt.
 
@@ -120,7 +120,7 @@ async def export_csv(data: dict[str, Any], use_cases: list[str]) -> bytes:
         use_cases: Liste der zu exportierenden UC-Namen.
 
     Returns:
-        UTF-8-kodierte CSV-Bytes mit BOM fuer Excel-Kompatibilitaet.
+        UTF-8-kodierte CSV-Bytes mit BOM für Excel-Kompatibilität.
     """
     output = io.StringIO()
     writer = csv.writer(output, dialect="excel", lineterminator="\n")
@@ -158,11 +158,11 @@ async def export_csv(data: dict[str, Any], use_cases: list[str]) -> bytes:
             sections_written += 1
 
     if sections_written == 0:
-        writer.writerow(["# Keine Daten fuer die angeforderten Use-Cases vorhanden"])
+        writer.writerow(["# Keine Daten für die angeforderten Use-Cases vorhanden"])
 
     logger.info("csv_generiert", sections=sections_written, use_cases=use_cases)
 
-    # UTF-8 BOM fuer Excel-Kompatibilitaet
+    # UTF-8 BOM für Excel-Kompatibilität
     csv_content = output.getvalue()
     return b"\xef\xbb\xbf" + csv_content.encode("utf-8")
 
@@ -177,9 +177,9 @@ def _extract_rows(
     data_key: str,
     columns: list[str],
 ) -> list[list[Any]]:
-    """Extrahiert Zeilen aus Panel-Daten anhand des Daten-Schluessels.
+    """Extrahiert Zeilen aus Panel-Daten anhand des Daten-Schlüssels.
 
-    Durchsucht verschiedene moegliche Verschachtelungsebenen im
+    Durchsucht verschiedene mögliche Verschachtelungsebenen im
     Panel-JSON, da die Protobuf-zu-JSON-Konvertierung unterschiedliche
     Strukturen erzeugen kann.
     """
@@ -248,32 +248,32 @@ def _write_generic_section(
     panel_data: dict[str, Any],
     data_key: str,
 ) -> None:
-    """Schreibt eine generische Sektion fuer UCs ohne spezifische Spaltendefinition.
+    """Schreibt eine generische Sektion für UCs ohne spezifische Spaltendefinition.
 
     Versucht die Daten als Tabelle darzustellen, falls die Struktur
-    eine Liste von Dicts enthaelt. Andernfalls werden Key-Value-Paare
+    eine Liste von Dicts enthält. Andernfalls werden Key-Value-Paare
     zeilenweise ausgegeben.
     """
     writer.writerow([f"# {display_name}"])
 
-    # Daten unter dem angegebenen Schluessel suchen
+    # Daten unter dem angegebenen Schlüssel suchen
     items = panel_data.get(data_key, []) if data_key else []
     if not items and isinstance(panel_data.get("data"), dict):
         items = panel_data["data"].get(data_key, []) if data_key else []
 
     if isinstance(items, list) and items and isinstance(items[0], dict):
-        # Spaltenkoepfe aus dem ersten Eintrag ableiten
+        # Spaltenköpfe aus dem ersten Eintrag ableiten
         columns = list(items[0].keys())
         writer.writerow(columns)
         for item in items:
             row = [item.get(col, "") for col in columns]
             writer.writerow([str(v) if v is not None else "" for v in row])
     else:
-        # Flaches Key-Value-Format fuer Skalare und einfache Strukturen
+        # Flaches Key-Value-Format für Skalare und einfache Strukturen
         writer.writerow(["key", "value"])
         for key, value in panel_data.items():
             if key in ("metadata", "data", "result"):
-                continue  # Metadaten ueberspringen
+                continue  # Metadaten überspringen
             if isinstance(value, (dict, list)):
                 writer.writerow([key, str(value)[:500]])
             else:

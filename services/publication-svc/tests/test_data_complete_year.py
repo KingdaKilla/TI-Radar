@@ -1,8 +1,8 @@
-"""Tests fuer AP8 — UC13 Response enthaelt ``data_complete_year``.
+"""Tests für AP8 — UC13 Response enthält ``data_complete_year``.
 
 Bug MAJ-7/MAJ-8: UC13 zeigte CORDIS-Pub-Trends mit Jahren bis 2026. Ohne
 ``data_complete_year`` im Response kann das Frontend nicht den
-„Daten ggf. unvollstaendig"-Hinweis rendern. AP8 fuegt das Feld
+„Daten ggf. unvollständig"-Hinweis rendern. AP8 fügt das Feld
 hinzu, abgeleitet aus :func:`shared.domain.year_completeness.last_complete_year`.
 """
 

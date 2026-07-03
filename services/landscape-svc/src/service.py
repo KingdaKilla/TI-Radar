@@ -1,8 +1,8 @@
-"""UC1 LandscapeServicer — duenner gRPC-Adapter.
+"""UC1 LandscapeServicer — dünner gRPC-Adapter.
 
-Extrahiert Request-Parameter aus Protobuf, delegiert Geschaeftslogik
+Extrahiert Request-Parameter aus Protobuf, delegiert Geschäftslogik
 an den AnalyzeLandscape Use Case und mappt das LandscapeResult
-zurueck auf gRPC-/dict-Responses.
+zurück auf gRPC-/dict-Responses.
 
 Migration von MVP v1.0:
 - SQLite FTS5 MATCH -> PostgreSQL tsvector @@ plainto_tsquery
@@ -45,16 +45,16 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc1_landscape_pb2_grpc is not None:
         return uc1_landscape_pb2_grpc.LandscapeServiceServicer  # type: ignore[return-value]
     return object
 
 
 class LandscapeServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC1 Technology Landscape.
+    """gRPC-Servicer für UC1 Technology Landscape.
 
-    Duenner Adapter: extrahiert Parameter, delegiert an Use Case,
+    Dünner Adapter: extrahiert Parameter, delegiert an Use Case,
     mappt Ergebnis auf gRPC-Response.
     """
 
@@ -77,12 +77,12 @@ class LandscapeServicer(_get_base_class()):  # type: ignore[misc]
     ) -> Any:
         """UC1: Technologie-Landschaft analysieren.
 
-        Empfaengt einen AnalysisRequest mit technology, time_range, european_only.
-        Delegiert Geschaeftslogik an den Use Case.
+        Empfängt einen AnalysisRequest mit technology, time_range, european_only.
+        Delegiert Geschäftslogik an den Use Case.
 
         Args:
             request: tip.common.AnalysisRequest Protobuf-Message
-            context: gRPC ServicerContext (fuer Fehlerbehandlung)
+            context: gRPC ServicerContext (für Fehlerbehandlung)
 
         Returns:
             tip.uc1.LandscapeResponse Protobuf-Message
@@ -122,7 +122,7 @@ class LandscapeServicer(_get_base_class()):  # type: ignore[misc]
                 )
             return self._build_empty_response(request_id)
 
-        # --- Use Case ausfuehren ---
+        # --- Use Case ausführen ---
         result = await self._use_case.execute(
             technology=technology,
             start_year=start_year,
@@ -141,6 +141,6 @@ class LandscapeServicer(_get_base_class()):  # type: ignore[misc]
 
     @staticmethod
     def _build_empty_response(request_id: str = "") -> Any:
-        """Leere Response fuer Validierungsfehler."""
+        """Leere Response für Validierungsfehler."""
         pb = landscape_result_to_proto(LandscapeResult(), request_id)
         return pb if pb is not None else landscape_result_to_dict(LandscapeResult(), request_id)

@@ -38,7 +38,7 @@ from src.domain.metrics import (
 from src.infrastructure.gleif_adapter import GLEIFAdapter
 from src.infrastructure.repository import ActorTypeRepository
 
-# UC11 zaehlt CORDIS-Organisationen mit aktiver Typ-Klassifikation
+# UC11 zählt CORDIS-Organisationen mit aktiver Typ-Klassifikation
 # (HES, PRC, REC, OTH, PUB). Scope = CLASSIFIED. Siehe Bug CRIT-3 / AP3.
 _UC11_ACTOR_SCOPE = ActorScope.CLASSIFIED
 
@@ -52,7 +52,7 @@ def _get_base_class() -> type:
 
 
 class ActorTypeServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC11 Actor Type Distribution."""
+    """gRPC-Servicer für UC11 Actor Type Distribution."""
 
     def __init__(self, pool: asyncpg.Pool, settings: Settings | None = None) -> None:
         self._pool = pool
@@ -162,7 +162,7 @@ class ActorTypeServicer(_get_base_class()):  # type: ignore[misc]
         # Aktuell gibt es keine unclassified actors in der aktuellen Datenbasis,
         # da CORDIS immer einen activity_type liefert — das Feld ist im Proto
         # aber reserviert (uc11_actor_type.proto:190) und wird in der Response
-        # konsistent mitgefuehrt. Bug-Fix: verhindert, dass das Frontend den
+        # konsistent mitgeführt. Bug-Fix: verhindert, dass das Frontend den
         # inkonsistenten Zustand `coverage=0 bei unclassified=0` sieht.
         unclassified_actors = 0
         classification_coverage = compute_classification_coverage(
@@ -186,9 +186,9 @@ class ActorTypeServicer(_get_base_class()):  # type: ignore[misc]
 
     def _build_response(self, **kwargs: Any) -> Any:
         if uc11_actor_type_pb2 is None or common_pb2 is None:
-            # Dict-Fallback fuer REST/JSON: enthaelt das kanonische
+            # Dict-Fallback für REST/JSON: enthält das kanonische
             # Akteurs-Scope-Label (Bug CRIT-3 / AP3) damit das Frontend
-            # klar zwischen UC8/UC9/UC11-Zaehlungen unterscheiden kann.
+            # klar zwischen UC8/UC9/UC11-Zählungen unterscheiden kann.
             return {
                 "type_breakdown": kwargs["type_breakdown"],
                 "type_trend": kwargs["type_trend"],

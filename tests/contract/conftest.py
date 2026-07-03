@@ -1,16 +1,16 @@
-"""Pytest-Fixtures fuer Pact-Contract-Tests.
+"""Pytest-Fixtures für Pact-Contract-Tests.
 
 Stellt Provider- und Consumer-Konfigurationen bereit:
-- ``pact_consumer``: Pact-Consumer-Konfiguration fuer das Frontend
-- ``pact_provider``: Pact-Provider-Konfiguration fuer den Orchestrator
+- ``pact_consumer``: Pact-Consumer-Konfiguration für das Frontend
+- ``pact_provider``: Pact-Provider-Konfiguration für den Orchestrator
 - ``mock_orchestrator_app``: FastAPI-Testapp mit gemockten gRPC-Clients
 - ``test_client``: httpx.AsyncClient gegen die gemockte App
 
 Pact-Dateien (Consumer-Contracts) werden im Verzeichnis
 ``tests/contract/pacts/`` abgelegt.
 
-Hinweis: pact-python >= 2.0 wird in der Legacy-API (V2-Kompatibilitaet)
-verwendet. Consumer-Tests laufen vollstaendig lokal ohne Pact Broker.
+Hinweis: pact-python >= 2.0 wird in der Legacy-API (V2-Kompatibilität)
+verwendet. Consumer-Tests laufen vollständig lokal ohne Pact Broker.
 """
 
 from __future__ import annotations
@@ -42,9 +42,9 @@ GRPC_PROVIDER_NAME = "TI-Radar-UC-Service"
 
 @pytest.fixture(scope="session")
 def pact_consumer():
-    """Pact-Consumer-Konfiguration fuer das Frontend.
+    """Pact-Consumer-Konfiguration für das Frontend.
 
-    Konfiguriert den Pact-Mock-Server fuer Consumer-driven Contract-Tests.
+    Konfiguriert den Pact-Mock-Server für Consumer-driven Contract-Tests.
     Der Consumer (Frontend) definiert, welche JSON-Struktur er vom
     Provider (Orchestrator) erwartet.
 
@@ -61,16 +61,16 @@ def pact_consumer():
         )
         yield pact
     except ImportError:
-        # Fallback: pact-python nicht installiert — Tests werden uebersprungen
-        pytest.skip("pact-python nicht installiert — Contract-Tests uebersprungen")
+        # Fallback: pact-python nicht installiert — Tests werden übersprungen
+        pytest.skip("pact-python nicht installiert — Contract-Tests übersprungen")
 
 
 @pytest.fixture(scope="session")
 def pact_grpc_provider():
-    """Pact-Provider-Konfiguration fuer den gRPC-UC-Service.
+    """Pact-Provider-Konfiguration für den gRPC-UC-Service.
 
     Yields:
-        dict mit Provider-Metadaten fuer gRPC-Contract-Validierung.
+        dict mit Provider-Metadaten für gRPC-Contract-Validierung.
     """
     return {
         "consumer": CONSUMER_NAME,
@@ -80,14 +80,14 @@ def pact_grpc_provider():
 
 
 # ---------------------------------------------------------------------------
-# Gemockte FastAPI-App fuer Consumer-Tests
+# Gemockte FastAPI-App für Consumer-Tests
 # ---------------------------------------------------------------------------
 
 
 def _build_mock_radar_response() -> dict[str, Any]:
-    """Erstellt eine repraesentative Radar-Antwort fuer Contract-Tests.
+    """Erstellt eine repräsentative Radar-Antwort für Contract-Tests.
 
-    Alle 12 UC-Panels sind vorhanden (auch wenn minimal befuellt).
+    Alle 12 UC-Panels sind vorhanden (auch wenn minimal befüllt).
     Diese Struktur definiert den Consumer-Contract.
     """
     return {
@@ -211,14 +211,14 @@ def _build_mock_radar_response() -> dict[str, Any]:
 
 @pytest_asyncio.fixture(scope="module")
 async def mock_orchestrator_app():
-    """Erstellt eine FastAPI-Testinstanz mit vollstaendig gemockten gRPC-Clients.
+    """Erstellt eine FastAPI-Testinstanz mit vollständig gemockten gRPC-Clients.
 
     Alle gRPC-Calls werden durch einen AsyncMock ersetzt, der die
-    vordefinierte Mock-Response zurueckgibt. Dadurch ist kein laufender
-    gRPC-Server noetig.
+    vordefinierte Mock-Response zurückgibt. Dadurch ist kein laufender
+    gRPC-Server nötig.
 
     Yields:
-        fastapi.FastAPI-App-Instanz fuer httpx-Tests.
+        fastapi.FastAPI-App-Instanz für httpx-Tests.
     """
     import sys
 
@@ -226,7 +226,7 @@ async def mock_orchestrator_app():
     if str(_SVC_PATH) not in sys.path:
         sys.path.insert(0, str(_SVC_PATH))
 
-    # Umgebungsvariablen fuer den Orchestrator setzen
+    # Umgebungsvariablen für den Orchestrator setzen
     os.environ.setdefault("DATABASE_URL", "postgresql://dummy:dummy@localhost/dummy")
     os.environ.setdefault("LANDSCAPE_SVC_ADDR", "localhost:50051")
     os.environ.setdefault("MATURITY_SVC_ADDR", "localhost:50052")
@@ -239,7 +239,7 @@ async def mock_orchestrator_app():
 
     mock_response = _build_mock_radar_response()
 
-    # GrpcChannelManager vollstaendig mocken
+    # GrpcChannelManager vollständig mocken
     mock_channel_manager = MagicMock()
     mock_channel_manager.call_uc = AsyncMock(return_value=mock_response)
     mock_channel_manager.get_timeout = MagicMock(return_value=30.0)
@@ -250,7 +250,7 @@ async def mock_orchestrator_app():
 
         app = create_app()
 
-        # gRPC-State direkt in die App injizieren (Lifespan ueberspringen)
+        # gRPC-State direkt in die App injizieren (Lifespan überspringen)
         app.state.grpc_channels = mock_channel_manager
         app.state.db_pool = None
 
@@ -265,7 +265,7 @@ async def test_client(mock_orchestrator_app):
     """Erstellt einen httpx.AsyncClient gegen die gemockte Orchestrator-App.
 
     Yields:
-        httpx.AsyncClient fuer HTTP-Anfragen im Test.
+        httpx.AsyncClient für HTTP-Anfragen im Test.
     """
     try:
         import httpx
@@ -274,4 +274,4 @@ async def test_client(mock_orchestrator_app):
         client = TestClient(mock_orchestrator_app, raise_server_exceptions=True)
         yield client
     except ImportError:
-        pytest.skip("httpx nicht installiert — Contract-Tests uebersprungen")
+        pytest.skip("httpx nicht installiert — Contract-Tests übersprungen")

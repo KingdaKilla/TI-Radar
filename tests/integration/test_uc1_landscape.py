@@ -1,16 +1,16 @@
-"""Integrations-Tests fuer UC1 LandscapeRepository gegen PostgreSQL Testcontainer.
+"""Integrations-Tests für UC1 LandscapeRepository gegen PostgreSQL Testcontainer.
 
-Prueft das korrekte Verhalten des Repository unter echten DB-Bedingungen:
+Prüft das korrekte Verhalten des Repository unter echten DB-Bedingungen:
 - tsvector-Volltextsuche mit plainto_tsquery
-- Jaehrliche Patent- und Projektzaehlung
-- Laenderverteilung mit LATERAL unnest
+- Jährliche Patent- und Projektzählung
+- Länderverteilung mit LATERAL unnest
 - Leere Ergebnis-Behandlung bei unbekannter Technologie
 - EU-Filter via applicant_countries && text[]
 - Funding-Zeitreihe aus cordis_schema.projects
 - Pagination via LIMIT
 
 Die Fixtures 'db_pool' und 'populated_db' kommen aus conftest.py und
-stellen einen PostgreSQL-Container mit vollstaendigem Schema und
+stellen einen PostgreSQL-Container mit vollständigem Schema und
 vorbereiteten Testdaten bereit.
 """
 
@@ -43,7 +43,7 @@ LandscapeRepository = _mod.LandscapeRepository
 
 @pytest_asyncio.fixture(scope="module")
 async def repo(populated_db):
-    """Erstellt ein LandscapeRepository gegen den befuellten Testcontainer."""
+    """Erstellt ein LandscapeRepository gegen den befüllten Testcontainer."""
     return LandscapeRepository(pool=populated_db)
 
 
@@ -53,7 +53,7 @@ async def repo(populated_db):
 
 
 class TestCountPatentsByYear:
-    """Tests fuer LandscapeRepository.count_patents_by_year()."""
+    """Tests für LandscapeRepository.count_patents_by_year()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_bekannte_technologie_liefert_ergebnisse(self, repo):
@@ -82,7 +82,7 @@ class TestCountPatentsByYear:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_jahresfilter_start(self, repo):
-        """start_year-Filter schliesst frueheres Jahr aus."""
+        """start_year-Filter schließt früheres Jahr aus."""
         alle = await repo.count_patents_by_year("quantum computing")
         gefiltert = await repo.count_patents_by_year(
             "quantum computing", start_year=2022
@@ -94,7 +94,7 @@ class TestCountPatentsByYear:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_jahresfilter_ende(self, repo):
-        """end_year-Filter schliesst spaeters Jahr aus."""
+        """end_year-Filter schließt späters Jahr aus."""
         ergebnisse = await repo.count_patents_by_year(
             "quantum computing", end_year=2020
         )
@@ -114,7 +114,7 @@ class TestCountPatentsByYear:
         eu_only = await repo.count_patents_by_year(
             "quantum computing", european_only=True
         )
-        # EU-Only-Ergebnisse duerfen nicht groesser als 'alle' sein
+        # EU-Only-Ergebnisse dürfen nicht größer als 'alle' sein
         gesamt_alle = sum(e.count for e in alle)
         gesamt_eu = sum(e.count for e in eu_only)
         assert gesamt_eu <= gesamt_alle
@@ -125,7 +125,7 @@ class TestCountPatentsByYear:
         ergebnisse = await repo.count_patents_by_year("solid state battery")
         assert len(ergebnisse) > 0
         gesamt = sum(e.count for e in ergebnisse)
-        assert gesamt >= 3  # Mindestens 3 Battery-Testpatente eingefuegt
+        assert gesamt >= 3  # Mindestens 3 Battery-Testpatente eingefügt
 
 
 # ===========================================================================
@@ -134,14 +134,14 @@ class TestCountPatentsByYear:
 
 
 class TestCountPatentsByCountry:
-    """Tests fuer LandscapeRepository.count_patents_by_country()."""
+    """Tests für LandscapeRepository.count_patents_by_country()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_laender_vorhanden(self, repo):
         """Quantum-Computing-Patente sind in DE und FR angemeldet."""
         ergebnisse = await repo.count_patents_by_country("quantum computing")
         laender = {e.country for e in ergebnisse}
-        # Beide Anmelderlaender aus den Testdaten muessen erscheinen
+        # Beide Anmelderländer aus den Testdaten müssen erscheinen
         assert "DE" in laender or "FR" in laender
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -182,7 +182,7 @@ class TestCountPatentsByCountry:
 
 
 class TestCountProjectsByYear:
-    """Tests fuer LandscapeRepository.count_projects_by_year()."""
+    """Tests für LandscapeRepository.count_projects_by_year()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_quantum_projekte_gefunden(self, repo):
@@ -230,11 +230,11 @@ class TestCountProjectsByYear:
 
 
 class TestFundingByYear:
-    """Tests fuer LandscapeRepository.funding_by_year()."""
+    """Tests für LandscapeRepository.funding_by_year()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_foerderung_vorhanden(self, repo):
-        """EU-Foerderung fuer Quantum-Computing-Projekte ist abrufbar."""
+        """EU-Förderung für Quantum-Computing-Projekte ist abrufbar."""
         ergebnisse = await repo.funding_by_year("quantum computing")
         assert len(ergebnisse) > 0
 
@@ -253,7 +253,7 @@ class TestFundingByYear:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_foerdervolumen_positiv(self, repo):
-        """Das gesamte Foerdervolumen ist groesser als Null."""
+        """Das gesamte Fördervolumen ist größer als Null."""
         ergebnisse = await repo.funding_by_year("quantum computing")
         gesamt_foerderung = sum(e.funding for e in ergebnisse)
         assert gesamt_foerderung > 0.0
@@ -271,7 +271,7 @@ class TestFundingByYear:
 
 
 class TestTopCpcCodes:
-    """Tests fuer LandscapeRepository.top_cpc_codes()."""
+    """Tests für LandscapeRepository.top_cpc_codes()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_cpc_codes_gefunden(self, repo):
@@ -299,7 +299,7 @@ class TestTopCpcCodes:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_g06f_ist_haeufigster_code(self, repo):
-        """G06F ist der haeufigste CPC-Code in den Quantum-Testdaten."""
+        """G06F ist der häufigste CPC-Code in den Quantum-Testdaten."""
         ergebnisse = await repo.top_cpc_codes("quantum computing", limit=5)
         if ergebnisse:
             # G06F sollte im Top-1 sein (sechs von sieben Quantum-Patenten)

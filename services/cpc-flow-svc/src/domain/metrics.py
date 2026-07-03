@@ -19,7 +19,7 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 def normalize_cpc(code: str, level: int = 4) -> str:
-    """CPC-Code auf ein bestimmtes Hierarchie-Level kuerzen."""
+    """CPC-Code auf ein bestimmtes Hierarchie-Level kürzen."""
     clean = code.strip().replace(" ", "")
     return clean[:level] if len(clean) >= level else clean
 
@@ -154,7 +154,7 @@ def build_year_data_from_aggregates(
     }
 
 
-# Farben fuer CPC-Sektionen (A-H + Y)
+# Farben für CPC-Sektionen (A-H + Y)
 CPC_COLORS: dict[str, str] = {
     "A": "#ef4444",
     "B": "#f97316",
@@ -182,7 +182,7 @@ def compute_whitespace_opportunities(
     jaccard_threshold: float = 0.05,
     top_n: int = 10,
 ) -> list[dict[str, Any]]:
-    """Whitespace-Analyse: Innovationsluecken in CPC-Ko-Klassifikation identifizieren."""
+    """Whitespace-Analyse: Innovationslücken in CPC-Ko-Klassifikation identifizieren."""
     import math
 
     n = len(labels)

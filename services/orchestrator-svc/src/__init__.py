@@ -1,6 +1,6 @@
-"""Orchestrator Service — API-Gateway fuer die TI-Radar v3 Plattform.
+"""Orchestrator Service — API-Gateway für die TI-Radar v3 Plattform.
 
-Empfaengt REST-Requests vom Frontend und verteilt sie per gRPC
+Empfängt REST-Requests vom Frontend und verteilt sie per gRPC
 an 13 UC-Microservices. Implementiert Graceful Degradation, Per-UC-Timeouts
 und Prometheus-Metriken.
 """

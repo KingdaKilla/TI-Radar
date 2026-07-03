@@ -1,4 +1,4 @@
-"""gRPC Server fuer den UC9 Tech Cluster Service."""
+"""gRPC Server für den UC9 Tech Cluster Service."""
 
 from __future__ import annotations
 
@@ -66,7 +66,7 @@ GRPC_REQUEST_DURATION = Histogram(
 )
 DB_POOL_SIZE = Gauge(
     "db_pool_size",
-    "Aktuelle DB Connection Pool Groesse",
+    "Aktuelle DB Connection Pool Größe",
     ["service"],
 )
 
@@ -110,7 +110,7 @@ async def serve() -> None:
         uc9_tech_cluster_pb2_grpc.add_TechClusterServiceServicer_to_server(servicer, server)
         logger.info("servicer_registriert", service="TechClusterService")
     else:
-        logger.warning("stubs_nicht_verfuegbar")
+        logger.warning("stubs_nicht_verfügbar")
 
     if grpc_health is not None and health_pb2_grpc is not None:
         health_servicer = grpc_health.HealthServicer()

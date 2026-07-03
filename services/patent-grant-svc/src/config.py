@@ -1,4 +1,4 @@
-"""Konfiguration fuer den Patent-Grant-Service."""
+"""Konfiguration für den Patent-Grant-Service."""
 
 from __future__ import annotations
 

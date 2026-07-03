@@ -1,4 +1,4 @@
-"""Konfiguration fuer den Actor-Type-Service."""
+"""Konfiguration für den Actor-Type-Service."""
 
 from __future__ import annotations
 

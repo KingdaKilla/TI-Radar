@@ -1,4 +1,4 @@
-"""Konfiguration fuer den Tech-Cluster-Service."""
+"""Konfiguration für den Tech-Cluster-Service."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     metrics_port: int = 9099
 
-    db_query_timeout_s: float = 60.0  # Clustering kann laenger dauern
+    db_query_timeout_s: float = 60.0  # Clustering kann länger dauern
 
     model_config = {
         "env_file": ".env",

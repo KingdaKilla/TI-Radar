@@ -44,7 +44,7 @@ def _get_base_class() -> type:
 
 
 class PatentGrantServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC12 Patent Grant Rate Analysis.
+    """gRPC-Servicer für UC12 Patent Grant Rate Analysis.
 
     Koordiniert:
     1. Kind-Code-Verteilung (PostgreSQL)
@@ -123,7 +123,7 @@ class PatentGrantServicer(_get_base_class()):  # type: ignore[misc]
                 totals = cast(dict[str, int], result)
 
         # --- Summary berechnen ---
-        # Primaerquelle: total_patent_counts — konsistent mit UC1-Header.
+        # Primärquelle: total_patent_counts — konsistent mit UC1-Header.
         # Fallback: Aggregation aus year_trend (z.B. wenn totals-Query fehlschlug).
         if totals:
             total_applications = int(totals.get(PatentScope.APPLICATIONS_ONLY.value, 0))
@@ -138,7 +138,7 @@ class PatentGrantServicer(_get_base_class()):  # type: ignore[misc]
             median_time_to_grant_months=time_to_grant.get("median_months", 0.0),
         )
 
-        # Kind-Code Beschreibungen hinzufuegen
+        # Kind-Code Beschreibungen hinzufügen
         for kc in kind_codes:
             kc["description"] = KIND_CODE_DESCRIPTIONS.get(str(kc["kind_code"]), "")
 
@@ -163,9 +163,9 @@ class PatentGrantServicer(_get_base_class()):  # type: ignore[misc]
     def _build_response(self, **kwargs: Any) -> Any:
         if uc12_patent_grant_pb2 is None or common_pb2 is None:
             # MAJ-7/MAJ-8: ``data_complete_year`` markiert das letzte
-            # vollstaendige Kalenderjahr. Das Frontend nutzt den Wert,
+            # vollständige Kalenderjahr. Das Frontend nutzt den Wert,
             # um auf dem Anmeldungs/Erteilungs-Chart einen
-            # ReferenceArea-Hinweis "Daten ggf. unvollstaendig" zu rendern.
+            # ReferenceArea-Hinweis "Daten ggf. unvollständig" zu rendern.
             return {
                 "summary": kwargs["summary"],
                 "year_trend": kwargs["year_trend"],

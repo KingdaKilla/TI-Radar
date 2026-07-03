@@ -1,7 +1,7 @@
-"""Unit-Tests fuer actor-type-svc dict_response Mapper.
+"""Unit-Tests für actor-type-svc dict_response Mapper.
 
 Testet die Konvertierung von ActorTypeResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 
 Besonderer Fokus: Feld-Renaming (top_actors -> top_actors_by_type,
 total_classified -> total_classified_actors).
@@ -86,7 +86,7 @@ class TestDictResponseMapper:
 # ---------------------------------------------------------------------------
 
 class TestFieldRenaming:
-    """Testet korrekte Umbenennung der Felder fuer die API-Response.
+    """Testet korrekte Umbenennung der Felder für die API-Response.
 
     - top_actors -> top_actors_by_type
     - total_classified -> total_classified_actors
@@ -191,7 +191,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Default-Result."""
+    """Testet Randfälle: leere Listen, Default-Result."""
 
     def test_empty_lists(self):
         result = _make_result(

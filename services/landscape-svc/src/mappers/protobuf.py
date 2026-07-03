@@ -1,7 +1,7 @@
 """Mapper: LandscapeResult -> gRPC Protobuf LandscapeResponse.
 
-Kapselt die gesamte Protobuf-Konstruktionslogik fuer UC1.
-Gibt None zurueck, wenn die gRPC-Stubs nicht verfuegbar sind.
+Kapselt die gesamte Protobuf-Konstruktionslogik für UC1.
+Gibt None zurück, wenn die gRPC-Stubs nicht verfügbar sind.
 """
 
 from __future__ import annotations
@@ -71,7 +71,7 @@ def landscape_result_to_proto(
         total_publications=result.total_publications,
         total_funding_eur=result.total_funding,
         active_countries=result.active_countries,
-        active_actors=0,  # Wird spaeter via Entity Resolution befuellt
+        active_actors=0,  # Wird später via Entity Resolution befüllt
     )
 
     # --- Top CPC Codes ---

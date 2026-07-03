@@ -1,6 +1,6 @@
-"""ActorTypeRepository — PostgreSQL-Datenbankzugriff fuer UC11.
+"""ActorTypeRepository — PostgreSQL-Datenbankzugriff für UC11.
 
-Abfragen fuer Akteur-Typ-Verteilung aus CORDIS project_participants.
+Abfragen für Akteur-Typ-Verteilung aus CORDIS project_participants.
 Nutzt das activity_type Feld (HES, PRC, REC, OTH, PUB).
 """
 
@@ -15,7 +15,7 @@ logger = structlog.get_logger(__name__)
 
 
 class ActorTypeRepository:
-    """Async PostgreSQL-Zugriff fuer UC11 Actor-Type-Analysen."""
+    """Async PostgreSQL-Zugriff für UC11 Actor-Type-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -27,7 +27,7 @@ class ActorTypeRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Akteur-Typ-Verteilung fuer eine Technologie."""
+        """Akteur-Typ-Verteilung für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -166,7 +166,7 @@ class ActorTypeRepository:
             ]
 
     async def sme_count(self, technology: str) -> dict[str, int]:
-        """Zaehlung der SME-Akteure unter PRC-Typ."""
+        """Zählung der SME-Akteure unter PRC-Typ."""
         sql = """
             SELECT COUNT(DISTINCT CASE WHEN o.sme = true THEN o.name END) AS sme_count,
                    COUNT(DISTINCT o.name) AS total_prc

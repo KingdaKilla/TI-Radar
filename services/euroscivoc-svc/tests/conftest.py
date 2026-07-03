@@ -1,8 +1,8 @@
-"""pytest conftest fuer euroscivoc-svc.
+"""pytest conftest für euroscivoc-svc.
 
-Fuegt den `src/`-Pfad des Service zum sys.path hinzu, damit
+Fügt den `src/`-Pfad des Service zum sys.path hinzu, damit
 `from src.domain.metrics import ...` auch ohne `pip install -e .`
-lauffaehig ist.
+lauffähig ist.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.analysis_text — Deterministische Textgenerierung."""
+"""Tests für shared.domain.analysis_text — Deterministische Textgenerierung."""
 
 from __future__ import annotations
 
@@ -66,7 +66,7 @@ class TestFormatHelpers:
         assert "solides" in _trend_word(10)
         assert "leichtes" in _trend_word(2)
         assert "Stagnation" in _trend_word(-2)
-        assert "Rueckgang" in _trend_word(-10)
+        assert "Rückgang" in _trend_word(-10)
 
 
 # ============================================================================

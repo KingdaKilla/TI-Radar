@@ -1,1 +1,1 @@
-"""Infrastruktur-Schicht: Datenbankzugriff fuer UC4 Funding."""
+"""Infrastruktur-Schicht: Datenbankzugriff für UC4 Funding."""

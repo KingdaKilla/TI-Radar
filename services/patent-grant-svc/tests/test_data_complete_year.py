@@ -1,7 +1,7 @@
-"""Tests fuer AP8 — UC12 Response enthaelt ``data_complete_year``.
+"""Tests für AP8 — UC12 Response enthält ``data_complete_year``.
 
 Bug MAJ-7/MAJ-8: UC12 zeigte Anmeldungen/Erteilungen/Quote bis 2026 —
-2025/2026 sind aber wegen EPO-Bulk-Verzoegerung nur teilweise vorhanden.
+2025/2026 sind aber wegen EPO-Bulk-Verzögerung nur teilweise vorhanden.
 ``data_complete_year`` aus dem shared-Helper macht den Cutoff explizit.
 """
 

@@ -1,18 +1,18 @@
-"""Schema-Bootstrap fuer den Export-Service.
+"""Schema-Bootstrap für den Export-Service.
 
 Stellt sicher, dass `export_schema` mit `analysis_cache` und `export_log`
 existiert. **Read-first**-Strategie: vor jeder DDL wird via
-`information_schema` geprueft, ob das Objekt bereits existiert. Nur dann,
+`information_schema` geprüft, ob das Objekt bereits existiert. Nur dann,
 wenn es wirklich fehlt, wird ein CREATE versucht.
 
 Hintergrund: Im Production-Deploy stammt das Schema aus
 `database/sql/002_schema.sql` (vom DB-Init). `svc_export` hat dort USAGE
 + DML, aber **kein OWNER**-Recht. Ein blindes `CREATE TABLE IF NOT EXISTS`
-loest in PostgreSQL trotzdem einen ERROR-Eintrag im DB-Log aus
+löst in PostgreSQL trotzdem einen ERROR-Eintrag im DB-Log aus
 ("permission denied" / "must be owner"), weil der Server zwar nichts tut,
-aber die Anfrage prueft. Dieser Modul-Pfad vermeidet das.
+aber die Anfrage prüft. Dieser Modul-Pfad vermeidet das.
 
-Reine Funktionen ohne FastAPI/uvicorn-Abhaengigkeit, damit isoliert
+Reine Funktionen ohne FastAPI/uvicorn-Abhängigkeit, damit isoliert
 testbar.
 """
 
@@ -71,7 +71,7 @@ async def ensure_schema(pool: Any) -> None:
     """Stellt sicher, dass export_schema + Tabellen existieren — ohne DB-Log-Spam.
 
     Args:
-        pool: asyncpg.Pool-aehnliches Objekt mit `.acquire()`-Context-Manager.
+        pool: asyncpg.Pool-ähnliches Objekt mit `.acquire()`-Context-Manager.
     """
     async with pool.acquire() as conn:
         # 1. Schema existiert?

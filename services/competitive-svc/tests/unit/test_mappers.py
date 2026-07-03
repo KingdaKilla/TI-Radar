@@ -1,4 +1,4 @@
-"""Unit-Tests fuer competitive-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für competitive-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von CompetitiveResult auf das dict-basierte
 Response-Format, inkl. HHI-Rundung, CR4, Akteur-Listen und Netzwerk-Daten.
@@ -89,7 +89,7 @@ class TestDictResponseMapperBasicFields:
         assert d["hhi_level"] == "High"
 
     def test_total_actors(self):
-        """total_actors wird korrekt uebertragen."""
+        """total_actors wird korrekt übertragen."""
         result = _make_result(total_actors=45)
         d = competitive_result_to_dict(result)
         assert d["total_actors"] == 45
@@ -214,7 +214,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=78)
         d = competitive_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 78

@@ -2,8 +2,8 @@
 
 /* ──────────────────────────────────────────────
  * TI-Radar v3 -- UC1: Technologie-Landschaft (Detailansicht)
- * Dual-Y-Axes Zeitreihe, Aktivitaetsverteilung,
- * berechnete Insights, vollstaendige CPC-Tabelle
+ * Dual-Y-Axes Zeitreihe, Aktivitätsverteilung,
+ * berechnete Insights, vollständige CPC-Tabelle
  * ────────────────────────────────────────────── */
 
 import {
@@ -84,7 +84,7 @@ export default function LandscapeDetail({ data, dataCompleteYear }: LandscapeDet
         )}
       </div>
 
-      {/* --- #10: Aktivitaetsverteilung Mini-Donut + #2: Dual-Y-Axes Chart --- */}
+      {/* --- #10: Aktivitätsverteilung Mini-Donut + #2: Dual-Y-Axes Chart --- */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[200px_1fr]">
         {/* Donut */}
         {distributionData.length > 1 && (
@@ -227,7 +227,7 @@ export default function LandscapeDetail({ data, dataCompleteYear }: LandscapeDet
                 <Line yAxisId="right" type="monotone" dataKey="publications" stroke={SEMANTIC_COLORS.publications} strokeWidth={2} dot={false} activeDot={{ r: 5 }} />
               )}
 
-              {/* #4: Datenvollstaendigkeit */}
+              {/* #4: Datenvollständigkeit */}
               {dataCompleteYear && ts.length > 0 && ts[ts.length - 1].year > dataCompleteYear && (
                 <ReferenceArea
                   yAxisId="left"
@@ -244,7 +244,7 @@ export default function LandscapeDetail({ data, dataCompleteYear }: LandscapeDet
       </div>
 
       {/* --- #5: Berechnete Analyse-Insights --- */}
-      {/* --- #7: Vollstaendige Zeitreihen-Tabelle --- */}
+      {/* --- #7: Vollständige Zeitreihen-Tabelle --- */}
       <DetailDataSection title="Zeitreihe (vollständig)">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

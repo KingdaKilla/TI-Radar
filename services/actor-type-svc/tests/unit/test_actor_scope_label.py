@@ -1,6 +1,6 @@
-"""Unit-Test fuer AP3 — UC11 Response enthaelt kanonisches Scope-Label.
+"""Unit-Test für AP3 — UC11 Response enthält kanonisches Scope-Label.
 
-Bug CRIT-3: UC11 zaehlt *klassifizierte Organisationen* (alle CORDIS-Orgs
+Bug CRIT-3: UC11 zählt *klassifizierte Organisationen* (alle CORDIS-Orgs
 mit aktivem ``activity_type``). Das Label muss
 ``klassifizierte Organisationen`` (``ActorScope.CLASSIFIED``) sein.
 """
@@ -13,7 +13,7 @@ from shared.domain.actor_definitions import ActorScope, canonical_actor_label
 
 
 class TestUc11ActorScopeLabel:
-    """Prueft, dass der UC11-dict-Response das Scope-Label enthaelt.
+    """Prüft, dass der UC11-dict-Response das Scope-Label enthält.
 
     Das dict-Response wird durch die REST/JSON-Auslieferung genutzt, wenn
     Protobuf-Imports fehlen. Wir erzwingen diesen Pfad, indem wir die

@@ -3,7 +3,7 @@
 /* ──────────────────────────────────────────────
  * TI-Radar v3 -- UC5: Whitespace Opportunity Heatmap
  * Visualisiert Opportunity Scores als Heatmap
- * ueber der Whitespace-Analyse-Tabelle
+ * über der Whitespace-Analyse-Tabelle
  * ────────────────────────────────────────────── */
 
 import { ResponsiveHeatMap } from "@nivo/heatmap";
@@ -37,7 +37,7 @@ export default function WhitespaceHeatmap({
     pairMap.set(keyBA, ws);
   }
 
-  // Max-Wert fuer Farbskala
+  // Max-Wert für Farbskala
   const maxScore = Math.max(
     0.01,
     ...opportunities.map((ws) => ws.opportunity_score),
@@ -51,7 +51,7 @@ export default function WhitespaceHeatmap({
       return {
         x: colCode,
         y: pair ? pair.opportunity_score : 0,
-        // Zusaetzliche Tooltip-Daten
+        // Zusätzliche Tooltip-Daten
         jaccard: pair?.jaccard ?? 0,
         freqA: pair?.freq_a ?? 0,
         freqB: pair?.freq_b ?? 0,

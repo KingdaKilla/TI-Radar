@@ -1,6 +1,6 @@
-"""Unit-Test fuer AP3 — UC9 Response enthaelt kanonisches Scope-Label.
+"""Unit-Test für AP3 — UC9 Response enthält kanonisches Scope-Label.
 
-Bug CRIT-3: UC9 zaehlt *Cluster-Mitglieder* (Akteure, die via CPC-Co-
+Bug CRIT-3: UC9 zählt *Cluster-Mitglieder* (Akteure, die via CPC-Co-
 Occurrence einem Tech-Cluster zugeordnet sind). Das Label muss
 ``Cluster-Mitglieder`` (``ActorScope.CLUSTER_MEMBER``) sein.
 """
@@ -13,7 +13,7 @@ from shared.domain.actor_definitions import ActorScope, canonical_actor_label
 
 
 class TestUc9ActorScopeLabel:
-    """Prueft, dass der UC9-dict-Response das Scope-Label enthaelt.
+    """Prüft, dass der UC9-dict-Response das Scope-Label enthält.
 
     Wir erzwingen den Dict-Pfad, indem wir die pb2-Imports auf ``None``
     setzen. Das dict-Response wird in der REST/JSON-Auslieferung genutzt.

@@ -126,7 +126,7 @@ function trendOf(v: number): "up" | "down" | "neutral" {
 /* ── Komponente ── */
 
 export default function FundingDetail({ data }: FundingDetailProps) {
-  const dataCompleteYear = 2024; // CORDIS-Foerderdaten 2025 noch unvollstaendig
+  const dataCompleteYear = 2024; // CORDIS-Förderdaten 2025 noch unvollständig
 
   const avgPerProject =
     data.total_projects > 0 ? data.total_funding / data.total_projects : 0;

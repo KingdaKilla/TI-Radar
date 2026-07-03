@@ -1,1 +1,1 @@
-"""Retrieval Service — Semantische Suche ueber pgvector fuer RAG-Pipeline."""
+"""Retrieval Service — Semantische Suche über pgvector für RAG-Pipeline."""

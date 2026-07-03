@@ -128,7 +128,7 @@ function transformMaturity(raw: any): MaturityPanel | null {
     declining: "decline",
     decline: "decline",
     // Bug MAJ-9: Backend liefert "Unknown"/TECHNOLOGY_PHASE_UNSPECIFIED bei
-    // unzuverlaessigem Fit; Frontend muss das deterministisch als "unknown"
+    // unzuverlässigem Fit; Frontend muss das deterministisch als "unknown"
     // erkennen, damit Phase-Badge ausgegraut werden kann (statt Default
     // "emergence" anzuzeigen — das war die alte Scheinsicherheit).
     unknown: "unknown",
@@ -180,7 +180,7 @@ function transformMaturity(raw: any): MaturityPanel | null {
     confidence,
     fit_reliability_flag: isReliable,
     // Overfitting-Warnung: Backend liefert overfit_warning als bool, wenn
-    // R² > 0.98 UND n < 30. Feld ist optional (aeltere Backends kennen es nicht).
+    // R² > 0.98 UND n < 30. Feld ist optional (ältere Backends kennen es nicht).
     overfit_warning: Boolean(raw.overfit_warning),
   };
 }
@@ -345,8 +345,8 @@ function transformCpcFlow(raw: any): CpcFlowPanel | null {
   if (!raw) return null;
 
   // Jaccard-Lookup aus jaccard_matrix UND top_pairs aufbauen.
-  // jaccard_matrix enthaelt ALLE Paare oberhalb des Schwellenwerts,
-  // top_pairs nur die Top-N — beides zusammen ergibt vollstaendige Abdeckung.
+  // jaccard_matrix enthält ALLE Paare oberhalb des Schwellenwerts,
+  // top_pairs nur die Top-N — beides zusammen ergibt vollständige Abdeckung.
   const jaccardLookup = new Map<string, number>();
   if (Array.isArray(raw.jaccard_matrix)) {
     for (const entry of raw.jaccard_matrix) {
@@ -447,7 +447,7 @@ function transformCpcFlow(raw: any): CpcFlowPanel | null {
     }
   }
 
-  // Whitespace-Analyse: Paare mit hoher Einzelaktivitaet aber niedriger Ko-Klassifikation
+  // Whitespace-Analyse: Paare mit hoher Einzelaktivität aber niedriger Ko-Klassifikation
   const whitespaceOpportunities: Array<{
     code_a: string; code_b: string; jaccard: number;
     freq_a: number; freq_b: number; opportunity_score: number;

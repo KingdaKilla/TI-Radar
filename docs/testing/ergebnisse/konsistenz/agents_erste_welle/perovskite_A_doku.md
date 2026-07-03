@@ -18,7 +18,7 @@ _Rolle A — reines Protokoll, keine Interpretation. Datenquelle: `docs/testing/
 
 ## Allgemeiner Befund zum Dump
 
-Alle 13 Panels im JSON liefern **identischen** `mainText` (~2.500 Zeichen): Kopfzeile + die Cluster-Info-Boilerplate („Dieser Analysebereich umfasst: … Klicken zum Zurueck …"). Das `activeTab`-Feld lautet in **jedem** Panel `"Neue Analyse"` statt des erwarteten Tab-Namens. Es wurden für perovskite solar cell **keine panel-spezifischen Nutzdaten** erfasst (keine HHI-Zahlen, keine CAGR-Werte, keine Länder-Rankings, keine h-Index-/Zitations-Werte, keine CPC-Klassen, keine Jahreszeiträume, keine Akteurs-Typ-Prozente, keine Grant-Rate, keine EuroSciVoc-Zuordnungen, keine Konvergenz-Whitespaces).
+Alle 13 Panels im JSON liefern **identischen** `mainText` (~2.500 Zeichen): Kopfzeile + die Cluster-Info-Boilerplate („Dieser Analysebereich umfasst: … Klicken zum Zurück …"). Das `activeTab`-Feld lautet in **jedem** Panel `"Neue Analyse"` statt des erwarteten Tab-Namens. Es wurden für perovskite solar cell **keine panel-spezifischen Nutzdaten** erfasst (keine HHI-Zahlen, keine CAGR-Werte, keine Länder-Rankings, keine h-Index-/Zitations-Werte, keine CPC-Klassen, keine Jahreszeiträume, keine Akteurs-Typ-Prozente, keine Grant-Rate, keine EuroSciVoc-Zuordnungen, keine Konvergenz-Whitespaces).
 
 Das bedeutet: Der Snapshot zeigt die **Landing-/Intro-Ansicht** eines jeden Tabs, nicht den tatsächlich gerenderten Panel-Inhalt. Inhaltlich ist pro UC nur ablesbar, was ohnehin schon in der Header-Zeile steht (Patent-/Projekt-/Publikationszahl, Phase-Badge, Förderungs-Summe, Impact-Label).
 

@@ -1,6 +1,6 @@
 """CORDIS REST API Adapter — EU-Forschungsprojekte per Technologie-Suche abrufen.
 
-Nutzt die oeffentliche CORDIS Search API (kein API-Key erforderlich):
+Nutzt die öffentliche CORDIS Search API (kein API-Key erforderlich):
     GET https://cordis.europa.eu/api/search?q={technology}&type=project&page={n}&pageSize={size}
 
 Caching in cordis_schema.cordis_api_cache (JSONB, 7-Tage-TTL).
@@ -8,7 +8,7 @@ Rate-Limiting: konservativ 30 RPM via Semaphore + Mindest-Intervall.
 Exponentielles Backoff bei HTTP 429 / Timeout (1s, 2s, 4s).
 Stale-Cache-Fallback bei API-Fehlern.
 Upsert in cordis_schema.projects mit ON CONFLICT DO UPDATE — API-Daten
-ueberschreiben aeltere Bulk-Daten.
+überschreiben ältere Bulk-Daten.
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ _MAX_PAGE_SIZE = 100
 
 
 def _safe_str(value: Any, max_len: int | None = None) -> str | None:
-    """Sicherer String-Zugriff mit optionaler Laengenbegrenzung."""
+    """Sicherer String-Zugriff mit optionaler Längenbegrenzung."""
     if value is None:
         return None
     s = str(value).strip()
@@ -70,7 +70,7 @@ def _safe_int(value: Any) -> int | None:
 def _parse_date(date_str: str | None) -> date | None:
     """Datum aus verschiedenen CORDIS-Formaten parsen.
 
-    Unterstuetzte Formate:
+    Unterstützte Formate:
         YYYY-MM-DD, DD/MM/YYYY, YYYY-MM-DDTHH:MM:SS
     """
     if not date_str or (isinstance(date_str, str) and not date_str.strip()):
@@ -127,11 +127,11 @@ def _detect_framework(record: dict[str, Any]) -> str:
 
 
 class CordisApiAdapter:
-    """Async-Adapter fuer die CORDIS REST API mit PostgreSQL-Cache.
+    """Async-Adapter für die CORDIS REST API mit PostgreSQL-Cache.
 
     Ablauf von ``search_projects()``:
-    1. Cache-Pruefung (cordis_schema.cordis_api_cache, 7-Tage-TTL)
-    2. Cache-Hit (frisch) -> sofort zurueckgeben
+    1. Cache-Prüfung (cordis_schema.cordis_api_cache, 7-Tage-TTL)
+    2. Cache-Hit (frisch) -> sofort zurückgeben
     3. Cache-Miss -> CORDIS API aufrufen (paginiert, max 100 pro Seite)
     4. Ergebnis im Cache speichern + Upsert in cordis_schema.projects
     5. API-Fehler -> stale Cache als Fallback, sonst leere Liste
@@ -145,13 +145,13 @@ class CordisApiAdapter:
     ) -> None:
         self._pool: asyncpg.Pool | None = pool
         self._timeout = httpx.Timeout(timeout)
-        # Semaphore: maximal 3 gleichzeitige Requests (konservativ fuer 30 RPM)
+        # Semaphore: maximal 3 gleichzeitige Requests (konservativ für 30 RPM)
         self._semaphore = asyncio.Semaphore(min(max(rate_limit_rpm // 10, 1), 3))
         self._min_interval = 60.0 / rate_limit_rpm
         self._last_request_time = 0.0
 
     # ------------------------------------------------------------------
-    # Oeffentliche API
+    # Öffentliche API
     # ------------------------------------------------------------------
 
     async def search_projects(
@@ -162,13 +162,13 @@ class CordisApiAdapter:
     ) -> list[dict]:
         """Projekte zu einer Technologie suchen.
 
-        Prueft zuerst den Cache. Bei Cache-Miss wird die CORDIS API
+        Prüft zuerst den Cache. Bei Cache-Miss wird die CORDIS API
         abgefragt und die Ergebnisse sowohl gecacht als auch per Upsert
         in cordis_schema.projects geschrieben.
 
         Args:
             technology: Suchbegriff (z.B. 'quantum computing').
-            max_results: Maximale Anzahl zurueckzugebender Projekte.
+            max_results: Maximale Anzahl zurückzugebender Projekte.
 
         Returns:
             Liste von Projekt-Dicts (kann leer sein bei Fehler).
@@ -177,7 +177,7 @@ class CordisApiAdapter:
         if not technology:
             return []
 
-        # 1. Cache pruefen (frisch)
+        # 1. Cache prüfen (frisch)
         cached = await self._read_cache(technology)
         if cached is not None:
             logger.info(
@@ -239,7 +239,7 @@ class CordisApiAdapter:
 
         Implementiert exponentielles Backoff bei HTTP 429 und Timeouts.
         Sammelt Ergebnisse seitenweise bis ``max_results`` oder alle
-        verfuegbaren Ergebnisse abgerufen sind.
+        verfügbaren Ergebnisse abgerufen sind.
 
         Args:
             technology: Suchbegriff.
@@ -259,10 +259,10 @@ class CordisApiAdapter:
             page_data = await self._fetch_page(technology, page=page, page_size=page_size)
 
             if page_data is None:
-                # Erster Seitenaufruf fehlgeschlagen -> None zurueck
+                # Erster Seitenaufruf fehlgeschlagen -> None zurück
                 if not all_projects:
                     return None
-                # Spaetere Seite fehlgeschlagen -> bisherige Ergebnisse behalten
+                # Spätere Seite fehlgeschlagen -> bisherige Ergebnisse behalten
                 break
 
             results = page_data.get("results", [])
@@ -386,7 +386,7 @@ class CordisApiAdapter:
             record: Rohes Projekt-Dict aus der API-Response.
 
         Returns:
-            Normalisiertes Projekt-Dict oder None bei ungueltigem Record.
+            Normalisiertes Projekt-Dict oder None bei ungültigem Record.
         """
         try:
             project_id = record.get("id")
@@ -436,11 +436,11 @@ class CordisApiAdapter:
         *,
         allow_stale: bool = False,
     ) -> list[dict] | None:
-        """Cache-Eintrag fuer eine Technologie lesen.
+        """Cache-Eintrag für eine Technologie lesen.
 
         Args:
             technology: Suchbegriff (Cache-Key).
-            allow_stale: Auch abgelaufene Eintraege zurueckgeben.
+            allow_stale: Auch abgelaufene Einträge zurückgeben.
 
         Returns:
             Liste von Projekt-Dicts oder None bei Cache-Miss.
@@ -469,7 +469,7 @@ class CordisApiAdapter:
                 return None
 
             result_json = row["result_json"]
-            # asyncpg liefert JSONB als Python-Objekt (list/dict) zurueck
+            # asyncpg liefert JSONB als Python-Objekt (list/dict) zurück
             if isinstance(result_json, str):
                 return json.loads(result_json)
             return result_json
@@ -493,7 +493,7 @@ class CordisApiAdapter:
             return
 
         try:
-            # Daten fuer JSONB serialisieren (date/Decimal nicht JSON-faehig)
+            # Daten für JSONB serialisieren (date/Decimal nicht JSON-fähig)
             serializable = json.dumps(
                 projects, default=str, ensure_ascii=False,
             )
@@ -523,7 +523,7 @@ class CordisApiAdapter:
         """Projekte per Upsert in cordis_schema.projects schreiben.
 
         Wichtig: ON CONFLICT (id) DO UPDATE SET — API-Daten sind aktueller
-        als Bulk-Imports und ueberschreiben diese daher bewusst.
+        als Bulk-Imports und überschreiben diese daher bewusst.
 
         Args:
             projects: Liste von normalisierten Projekt-Dicts.

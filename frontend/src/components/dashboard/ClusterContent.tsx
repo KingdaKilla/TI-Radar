@@ -160,13 +160,13 @@ export default function ClusterContent({
             error={err}
             onDetailClick={detail}
             queryTimeSeconds={qts}
-            // MIN-11: Header-Projektzaehler (UC1) durchreichen, damit die
+            // MIN-11: Header-Projektzähler (UC1) durchreichen, damit die
             // explizite "Pub/Projekt × Projekte ≈ Publikationen"-Zeile
-            // dieselbe Bezugsgroesse verwendet wie der Header.
+            // dieselbe Bezugsgröße verwendet wie der Header.
             projectsCount={data.landscape?.total_projects}
             // MAJ-7/MAJ-8: Auch UC13 zeigt jetzt den Hinweis "Daten ggf.
-            // unvollstaendig" wie UC1 und UC2, falls die Pub-Trend-Daten
-            // ueber das letzte vollstaendige Jahr hinausgehen.
+            // unvollständig" wie UC1 und UC2, falls die Pub-Trend-Daten
+            // über das letzte vollständige Jahr hinausgehen.
             dataCompleteYear={dataCompleteYear}
           />
         );

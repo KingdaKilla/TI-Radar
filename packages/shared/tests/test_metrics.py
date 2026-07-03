@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.metrics — CAGR, HHI, S-Curve-Konfidenz, Phasenklassifikation."""
+"""Tests für shared.domain.metrics — CAGR, HHI, S-Curve-Konfidenz, Phasenklassifikation."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ from shared.domain.metrics import (
 
 class TestCagr:
     def test_positive_growth(self):
-        # 100 -> 200 ueber 5 Jahre = ca. 14.87%
+        # 100 -> 200 über 5 Jahre = ca. 14.87%
         result = cagr(100.0, 200.0, 5)
         assert result == pytest.approx(14.87, abs=0.1)
 
@@ -209,7 +209,7 @@ class TestSCurveConfidenceR2Coupling:
     """
 
     def test_r_squared_zero_returns_zero(self):
-        """R² = 0.0 muss exakt 0.0 zurueckgeben — kein 0.1-Floor mehr."""
+        """R² = 0.0 muss exakt 0.0 zurückgeben — kein 0.1-Floor mehr."""
         assert s_curve_confidence(0.0, 10, 100) == 0.0
 
     def test_r_squared_below_threshold_returns_zero(self):
@@ -231,7 +231,7 @@ class TestSCurveConfidenceR2Coupling:
         assert result > 0.7
 
     def test_threshold_constant_exposed(self):
-        """Konstante R2_RELIABILITY_THRESHOLD ist oeffentlich verfuegbar."""
+        """Konstante R2_RELIABILITY_THRESHOLD ist öffentlich verfügbar."""
         assert R2_RELIABILITY_THRESHOLD == 0.5
 
     def test_negative_r_squared_clamped_to_zero(self):
@@ -239,7 +239,7 @@ class TestSCurveConfidenceR2Coupling:
         assert s_curve_confidence(-0.5, 10, 100) == 0.0
 
     def test_none_r_squared_treated_as_zero(self):
-        """None-R² (kein Fit moeglich) → Konfidenz = 0.0."""
+        """None-R² (kein Fit möglich) → Konfidenz = 0.0."""
         assert s_curve_confidence(None, 10, 100) == 0.0  # type: ignore[arg-type]
 
 
@@ -254,11 +254,11 @@ class TestDetectDecline:
         assert detect_decline([10, 20, 30, 40]) is False
 
     def test_decline_detected(self):
-        """Zwei konsekutive Rueckgaenge erkennen Decline."""
+        """Zwei konsekutive Rückgänge erkennen Decline."""
         assert detect_decline([100, 90, 80]) is True
 
     def test_single_dip_not_decline(self):
-        """Ein einzelner Rueckgang gefolgt von Erholung ist kein Decline."""
+        """Ein einzelner Rückgang gefolgt von Erholung ist kein Decline."""
         assert detect_decline([100, 90, 95]) is False
 
     def test_insufficient_data(self):
@@ -270,21 +270,21 @@ class TestDetectDecline:
         assert detect_decline([100, 100, 100]) is False
 
     def test_three_consecutive_declines(self):
-        """Drei konsekutive Rueckgaenge mit consecutive_years=3."""
+        """Drei konsekutive Rückgänge mit consecutive_years=3."""
         assert detect_decline([100, 90, 80, 70], consecutive_years=3) is True
 
     def test_two_values_insufficient(self):
-        """Zwei Werte reichen nicht fuer consecutive_years=2."""
+        """Zwei Werte reichen nicht für consecutive_years=2."""
         assert detect_decline([100, 90]) is False
 
     def test_decline_at_end_only(self):
-        """Decline wird nur an den letzten Werten geprueft."""
+        """Decline wird nur an den letzten Werten geprüft."""
         # Wachstum gefolgt von Decline am Ende
         assert detect_decline([10, 20, 30, 25, 20]) is True
 
     def test_custom_consecutive_years(self):
         """Benutzerdefinierte Anzahl konsekutiver Jahre."""
-        # 2 Rueckgaenge reichen nicht bei consecutive_years=3
+        # 2 Rückgänge reichen nicht bei consecutive_years=3
         assert detect_decline([100, 90, 80], consecutive_years=3) is False
 
 
@@ -438,18 +438,18 @@ class TestMergeCountryData:
 
 
 # ============================================================================
-# is_potentially_overfit() — Overfitting-Warnung fuer UC2 Maturity
+# is_potentially_overfit() — Overfitting-Warnung für UC2 Maturity
 # ============================================================================
 
 
 class TestOverfitWarning:
-    """Overfitting-Heuristik fuer S-Curve-Fits (3-Parameter Sigmoid).
+    """Overfitting-Heuristik für S-Curve-Fits (3-Parameter Sigmoid).
 
     Hintergrund: R² nahe 1.0 bei wenigen Datenpunkten ist ein klassisches
     Overfitting-Signal. Die bestehende R²-Kopplung (MAJ-9) greift nur den
     umgekehrten Fall (R² < 0.5 → Konfidenz 0). Overfitting blieb bisher
     unbemerkt — Live-Fall: Semiconductor Laser v3.4.0 hatte R²=0.9983 bei
-    nur n=9 vollstaendigen Jahresdatenpunkten.
+    nur n=9 vollständigen Jahresdatenpunkten.
 
     Schwellen: R² > OVERFIT_R2_THRESHOLD (0.98) UND n < OVERFIT_MIN_DATAPOINTS (30).
     """
@@ -471,7 +471,7 @@ class TestOverfitWarning:
         assert is_potentially_overfit(0.99, 29) is True
 
     def test_none_r_squared_no_warning(self):
-        """None-R² (kein Fit moeglich) -> keine Warnung (defensiv)."""
+        """None-R² (kein Fit möglich) -> keine Warnung (defensiv)."""
         assert is_potentially_overfit(None, 5) is False
 
     def test_zero_r_squared_no_warning(self):
@@ -479,6 +479,6 @@ class TestOverfitWarning:
         assert is_potentially_overfit(0.0, 5) is False
 
     def test_constants_exposed(self):
-        """Konstanten OVERFIT_R2_THRESHOLD und OVERFIT_MIN_DATAPOINTS sind oeffentlich."""
+        """Konstanten OVERFIT_R2_THRESHOLD und OVERFIT_MIN_DATAPOINTS sind öffentlich."""
         assert OVERFIT_R2_THRESHOLD == 0.98
         assert OVERFIT_MIN_DATAPOINTS == 30

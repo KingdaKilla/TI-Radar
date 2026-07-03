@@ -1,1 +1,1 @@
-# Contract-Tests fuer TI-Radar v2
+# Contract-Tests für TI-Radar v2

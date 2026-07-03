@@ -83,7 +83,7 @@ export default function TemporalDetail({ data }: TemporalDetailProps) {
         )}
       </div>
 
-      {/* ── Akteur-Dynamik (vergroessert) ── */}
+      {/* ── Akteur-Dynamik (vergrößert) ── */}
       {data.entrant_trend.length > 0 && (
         <DetailChartSection ariaLabel="Akteur-Dynamik: Neue, persistente und ausgeschiedene Akteure pro Jahr">
           <ResponsiveContainer width="100%" height="100%">

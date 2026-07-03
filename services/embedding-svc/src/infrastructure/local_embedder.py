@@ -17,7 +17,7 @@ class LocalEmbedder(EmbeddingProviderPort):
     def __init__(self, settings: Settings) -> None:
         device = settings.device
         if device == "cuda" and not torch.cuda.is_available():
-            logger.warning("cuda_nicht_verfuegbar_fallback_cpu")
+            logger.warning("cuda_nicht_verfügbar_fallback_cpu")
             device = "cpu"
 
         self._model = SentenceTransformer(settings.embedding_model, device=device)

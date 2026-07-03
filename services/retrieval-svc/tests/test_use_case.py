@@ -1,6 +1,6 @@
-"""Unit-Tests fuer RetrieveDocuments Use Case (3-Stage Pipeline).
+"""Unit-Tests für RetrieveDocuments Use Case (3-Stage Pipeline).
 
-Alle externen Abhaengigkeiten (VectorSearch, SparseSearch, Reranker,
+Alle externen Abhängigkeiten (VectorSearch, SparseSearch, Reranker,
 QueryEmbedder) werden durch AsyncMock-Objekte ersetzt.
 Kein IO, kein gRPC, kein Protobuf.
 """
@@ -44,7 +44,7 @@ def _make_mocks(
     reranked_docs: list[RetrievedDoc] | None = None,
     embedding: list[float] | None = None,
 ) -> tuple[AsyncMock, AsyncMock, AsyncMock, AsyncMock]:
-    """Erstellt Mocks fuer alle 4 Ports: dense, sparse, reranker, embedder."""
+    """Erstellt Mocks für alle 4 Ports: dense, sparse, reranker, embedder."""
     dense_search = AsyncMock()
     dense_search.search.return_value = dense_docs if dense_docs is not None else []
 
@@ -293,7 +293,7 @@ class TestThreeStagePipeline:
         assert "paper:S1" in fused_ids
 
     async def test_reranker_called_with_fused_docs(self):
-        """Verifiziert dass der Reranker die fusionierten Dokumente erhaelt."""
+        """Verifiziert dass der Reranker die fusionierten Dokumente erhält."""
         doc_a = _make_doc(source="patent", source_id="A", similarity_score=0.9)
         doc_b = _make_doc(source="paper", source_id="B", similarity_score=0.7)
 
@@ -382,7 +382,7 @@ class TestThreeStagePipeline:
         assert sparse.search.call_args.kwargs["top_k"] == 75
 
     async def test_fusion_top_n_limits_candidates(self):
-        """Verifiziert dass fusion_top_n die Anzahl der Kandidaten fuer Reranking begrenzt."""
+        """Verifiziert dass fusion_top_n die Anzahl der Kandidaten für Reranking begrenzt."""
         # Create many docs so fusion_top_n actually limits
         dense_docs = [
             _make_doc(source="patent", source_id=str(i), similarity_score=0.9 - i * 0.01)

@@ -1,31 +1,31 @@
-"""PDF-Exporter fuer TI-Radar Analyseergebnisse.
+"""PDF-Exporter für TI-Radar Analyseergebnisse.
 
 Erzeugt professionelle Patent Landscape Reports im PDF-Format
-gemaess WIPO Guidelines for Preparing Patent Landscape Reports (Pub. 946).
+gemäß WIPO Guidelines for Preparing Patent Landscape Reports (Pub. 946).
 
 Report-Struktur (18 Sektionen):
   1.  Titelseite (Technologie, Zeitraum, Datum, Datenquellen)
   2.  Inhaltsverzeichnis (automatisch generiert)
   3.  Executive Summary (Zusammenfassung der Kernerkenntnisse)
   4.  Methodik (Suchstrategie, Datenbanken, Zeitraum, Metriken)
-  5.  Technologie-Uebersicht (UC1: Landschaft — Zeitreihe, CAGR)
+  5.  Technologie-Übersicht (UC1: Landschaft — Zeitreihe, CAGR)
   6.  Reifegrad-Analyse (UC2: S-Kurve, Phase, R², AICc)
   7.  Wettbewerbsanalyse (UC3: Top-Akteure, HHI, CR4)
-  8.  Foerderungsanalyse (UC4: Programme, Instrumente)
+  8.  Förderungsanalyse (UC4: Programme, Instrumente)
   9.  Technologiefluss (UC5: Jaccard-Heatmap, Top-CPC-Paare)
-  10. Geographische Verteilung (UC6: Laender, EU-Anteil)
+  10. Geographische Verteilung (UC6: Länder, EU-Anteil)
   11. Forschungsimpact (UC7: h-Index, Journals, Zitations-Trend)
   12. Zeitliche Dynamik (UC8: Akteur-Dynamik, Themen)
   13. Technologie-Cluster (UC9: Radar-Dimensionen, Cluster-Tabelle)
   14. Wissenschaftsdisziplinen (UC10: EuroSciVoc, Shannon-Index)
-  15. Akteurs-Typverteilung (UC11: Donut, Typ-Erklaerungen)
+  15. Akteurs-Typverteilung (UC11: Donut, Typ-Erklärungen)
   16. Erteilungsquoten (UC12: Anmeldungen/Erteilungen, Quote)
-  17. Datenqualitaetshinweise (Truncation Bias, Abdeckung, Limitierungen)
+  17. Datenqualitätshinweise (Truncation Bias, Abdeckung, Limitierungen)
   18. Anhang (Datenquellen-Details, Methodenbeschreibung)
 
 Verwendet Jinja2-Templates mit eingebettetem CSS — gerendert via WeasyPrint.
 Verwendet dieselben UC-Spaltendefinitionen wie CSV-/Excel-Exporter
-fuer konsistente Datenstruktur ueber alle Export-Formate.
+für konsistente Datenstruktur über alle Export-Formate.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ from pathlib import Path
 from typing import Any
 
 import matplotlib
-matplotlib.use("Agg")  # Non-interactive backend fuer Server
+matplotlib.use("Agg")  # Non-interactive backend für Server
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import structlog
@@ -55,7 +55,7 @@ from src.exporters.csv_exporter import (
 logger = structlog.get_logger(__name__)
 
 # ---------------------------------------------------------------------------
-# Verzeichnisse fuer Templates
+# Verzeichnisse für Templates
 # ---------------------------------------------------------------------------
 
 _TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -67,10 +67,10 @@ _STYLES_CSS_PATH = _TEMPLATE_DIR / "report_styles.css"
 # UC-Metadaten: Anzeigename, Beschreibung (deutsch), WIPO-Sektionsnummer
 # ---------------------------------------------------------------------------
 
-# Reihenfolge und Sektionsnummern gemaess WIPO Pub. 946 Mapping
+# Reihenfolge und Sektionsnummern gemäß WIPO Pub. 946 Mapping
 # Sektionen 1-2 = Executive Summary + Methodik (fest)
 # Sektionen 3-14 = UC-Analysen (dynamisch)
-# Sektion 15/16/17/18 = Datenqualitaet + Anhang (fest)
+# Sektion 15/16/17/18 = Datenqualität + Anhang (fest)
 
 UC_DISPLAY_META: dict[str, tuple[str, str, int]] = {
     # Cluster 1: Technologie & Reife
@@ -139,7 +139,7 @@ UC_DISPLAY_META: dict[str, tuple[str, str, int]] = {
     ),
 }
 
-# Deutsche Spalten-Labels fuer die Tabellen-Header
+# Deutsche Spalten-Labels für die Tabellen-Header
 COLUMN_LABELS_DE: dict[str, str] = {
     "year": "Jahr",
     "patent_count": "Patente",
@@ -232,15 +232,15 @@ async def generate_pdf(
     analysis_data: dict[str, Any],
     uc_keys: list[str],
 ) -> bytes:
-    """Generiert einen PDF-Report gemaess WIPO Pub. 946 Struktur.
+    """Generiert einen PDF-Report gemäß WIPO Pub. 946 Struktur.
 
-    Laedt das Jinja2-HTML-Template und CSS, baut den vollstaendigen
+    Lädt das Jinja2-HTML-Template und CSS, baut den vollständigen
     Template-Kontext auf und rendert das finale Dokument via WeasyPrint.
 
     Args:
         technology: Name der analysierten Technologie.
-        analysis_data: Vollstaendiges RadarResponse-JSON vom Orchestrator.
-        uc_keys: Liste der zu exportierenden UC-Schluessel.
+        analysis_data: Vollständiges RadarResponse-JSON vom Orchestrator.
+        uc_keys: Liste der zu exportierenden UC-Schlüssel.
 
     Returns:
         PDF-Datei als Bytes.
@@ -257,16 +257,16 @@ async def generate_pdf(
     export_date = datetime.now().strftime("%d.%m.%Y um %H:%M Uhr")
     data_sources = "EPO OPS, CORDIS, OpenAIRE, Semantic Scholar, GLEIF"
 
-    # Inhaltsverzeichnis-Eintraege aufbauen
+    # Inhaltsverzeichnis-Einträge aufbauen
     toc_entries = _build_toc_entries(uc_keys)
 
-    # Sektionsnummer fuer Datenqualitaet berechnen (nach letztem UC)
+    # Sektionsnummer für Datenqualität berechnen (nach letztem UC)
     toc_quality_number = _get_quality_section_number(uc_keys)
 
-    # UC-Panel-Daten als dict bereitstellen (fuer direkten Zugriff im Template)
+    # UC-Panel-Daten als dict bereitstellen (für direkten Zugriff im Template)
     panel_data = {uc_key: analysis_data.get(uc_key, {}) for uc_key in uc_keys}
 
-    # Datentabellen fuer alle UCs vorrendern
+    # Datentabellen für alle UCs vorrendern
     table_html_map = _build_all_tables(analysis_data, uc_keys)
 
     # Explainability-Sektion (falls im Response vorhanden)
@@ -290,7 +290,7 @@ async def generate_pdf(
         "toc_quality_number": toc_quality_number,
         # Executive Summary
         "executive_summary_text": executive_summary_text,
-        # UC-Panel-Daten (fuer KPI-Zugriff im Template)
+        # UC-Panel-Daten (für KPI-Zugriff im Template)
         "landscape": panel_data.get("landscape", {}),
         "maturity": panel_data.get("maturity", {}),
         "competitive": panel_data.get("competitive", {}),
@@ -380,7 +380,7 @@ async def generate_pdf(
 
 
 def _build_toc_entries(uc_keys: list[str]) -> list[dict[str, Any]]:
-    """Erzeugt strukturierte TOC-Eintraege fuer die UC-Sektionen."""
+    """Erzeugt strukturierte TOC-Einträge für die UC-Sektionen."""
     entries: list[dict[str, Any]] = []
 
     for uc_key in uc_keys:
@@ -398,9 +398,9 @@ def _build_toc_entries(uc_keys: list[str]) -> list[dict[str, Any]]:
 
 
 def _get_quality_section_number(uc_keys: list[str]) -> int:
-    """Berechnet die Sektionsnummer fuer 'Datenqualitaetshinweise'.
+    """Berechnet die Sektionsnummer für 'Datenqualitätshinweise'.
 
-    Basiert auf der hoechsten UC-Sektionsnummer + 1.
+    Basiert auf der höchsten UC-Sektionsnummer + 1.
     """
     max_section = 2  # Mindestens nach Methodik
     for uc_key in uc_keys:
@@ -411,12 +411,12 @@ def _get_quality_section_number(uc_keys: list[str]) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Datentabellen fuer alle UCs
+# Datentabellen für alle UCs
 # ---------------------------------------------------------------------------
 
 
 def _build_all_tables(data: dict[str, Any], uc_keys: list[str]) -> dict[str, Markup]:
-    """Baut HTML-Datentabellen fuer alle angeforderten Use-Cases.
+    """Baut HTML-Datentabellen für alle angeforderten Use-Cases.
 
     Returns:
         Dict mit UC-Key -> HTML-String der Datentabelle.
@@ -436,7 +436,7 @@ def _build_all_tables(data: dict[str, Any], uc_keys: list[str]) -> dict[str, Mar
 
 
 def _build_data_table(uc_key: str, panel_data: dict[str, Any]) -> str:
-    """Erzeugt eine HTML-Datentabelle fuer den jeweiligen Use-Case.
+    """Erzeugt eine HTML-Datentabelle für den jeweiligen Use-Case.
 
     Verwendet dieselben Spaltendefinitionen wie CSV-/Excel-Exporter.
     """
@@ -549,10 +549,10 @@ def _extract_generic_rows(
 ) -> tuple[list[str], list[list[Any]]]:
     """Extrahiert Spalten und Zeilen aus generischen Panel-Daten.
 
-    Wird fuer UCs ohne spezifische Spaltendefinition verwendet.
+    Wird für UCs ohne spezifische Spaltendefinition verwendet.
 
     Returns:
-        Tuple aus (Spaltenkoepfe, Zeilendaten).
+        Tuple aus (Spaltenköpfe, Zeilendaten).
     """
     items = panel_data.get(data_key, []) if data_key else []
     if not items and isinstance(panel_data.get("data"), dict):
@@ -580,7 +580,7 @@ def _extract_generic_rows(
 
 
 def _format_kpi_value(value: Any) -> str:
-    """Formatiert einen KPI-Wert fuer die Anzeige.
+    """Formatiert einen KPI-Wert für die Anzeige.
 
     Jinja2-Filter: {{ value | format_kpi }}
     """
@@ -600,7 +600,7 @@ def _format_kpi_value(value: Any) -> str:
 
 
 def _format_currency_value(value: Any) -> str:
-    """Formatiert einen Waehrungswert fuer die Anzeige.
+    """Formatiert einen Währungswert für die Anzeige.
 
     Jinja2-Filter: {{ value | format_currency }}
     """
@@ -620,7 +620,7 @@ def _format_currency_value(value: Any) -> str:
 def _format_cell_value(column: str, value: Any) -> str:
     """Formatiert einen Zellenwert basierend auf dem Spaltentyp."""
     if value is None or value == "":
-        return "\u2014"  # Em-Dash fuer leere Werte
+        return "\u2014"  # Em-Dash für leere Werte
 
     if column in ("ec_funding", "total_funding", "funding_amount"):
         try:
@@ -645,7 +645,7 @@ def _format_cell_value(column: str, value: Any) -> str:
         except (ValueError, TypeError):
             return str(value)
 
-    # Lange Texte kuerzen (z.B. paper_title)
+    # Lange Texte kürzen (z.B. paper_title)
     s = str(value)
     if len(s) > 80:
         return s[:77] + "..."
@@ -653,7 +653,7 @@ def _format_cell_value(column: str, value: Any) -> str:
 
 
 def _cell_css_class(column: str, value: Any) -> str:
-    """Bestimmt die CSS-Klasse fuer eine Tabellenzelle."""
+    """Bestimmt die CSS-Klasse für eine Tabellenzelle."""
     numeric_columns = {
         "patent_count", "project_count", "citations", "year",
         "co_occurrence_count", "persistence_years", "cumulative_patents",
@@ -668,12 +668,12 @@ def _cell_css_class(column: str, value: Any) -> str:
 
 
 def _esc(text: str) -> str:
-    """HTML-Escaping fuer sicheres Einbetten von Nutzerdaten."""
+    """HTML-Escaping für sicheres Einbetten von Nutzerdaten."""
     return html.escape(str(text), quote=True)
 
 
 # ---------------------------------------------------------------------------
-# Matplotlib-basierte Chart-Generierung (PNG Base64 fuer WeasyPrint)
+# Matplotlib-basierte Chart-Generierung (PNG Base64 für WeasyPrint)
 # ---------------------------------------------------------------------------
 
 _CHART_COLOR = "#2a4365"
@@ -767,7 +767,7 @@ def _build_horizontal_bar_svg(
     if not entries:
         return ""
 
-    labels, values = zip(*reversed(entries))  # reversed fuer top-to-bottom
+    labels, values = zip(*reversed(entries))  # reversed für top-to-bottom
     n = len(labels)
     fig_h = max(2.0, 0.35 * n + 0.8)
 

@@ -1,6 +1,6 @@
-"""Conftest fuer research-impact-svc Tests.
+"""Conftest für research-impact-svc Tests.
 
-Fuegt Projekt-Root, Service-Root und ``packages/`` zum sys.path hinzu.
+Fügt Projekt-Root, Service-Root und ``packages/`` zum sys.path hinzu.
 """
 
 from __future__ import annotations

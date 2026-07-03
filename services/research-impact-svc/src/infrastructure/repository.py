@@ -1,7 +1,7 @@
-"""ResearchImpactRepository — PostgreSQL-Datenbankzugriff fuer UC7.
+"""ResearchImpactRepository — PostgreSQL-Datenbankzugriff für UC7.
 
-Primaere Datenquelle fuer Publikationsmetriken ist Semantic Scholar.
-CORDIS-Organisationen dienen als Proxy fuer Top-Institutionen,
+Primäre Datenquelle für Publikationsmetriken ist Semantic Scholar.
+CORDIS-Organisationen dienen als Proxy für Top-Institutionen,
 da Semantic Scholar keine Institutionsdaten liefert.
 
 **CRIT-1 — Scope-Abgrenzung:** UC7 liefert ``total_publications`` aus
@@ -11,8 +11,8 @@ Semantic Scholar — das entspricht dem Scope
 Top-Autoren).  Diese Zahl ist **nicht** mit dem Header (UC1) oder UC13
 vergleichbar — beide nutzen den ``CORDIS_LINKED``-Scope.
 
-Die Methode ``get_top_institutions()`` zaehlt **Organisationen** (nicht
-Publikationen) und wird ausschliesslich fuer die UI-Karte
+Die Methode ``get_top_institutions()`` zählt **Organisationen** (nicht
+Publikationen) und wird ausschließlich für die UI-Karte
 "Top-Institutionen" verwendet.  ``project_count`` = wie viele CORDIS-
 Projekte die Organisation mitgetragen hat — kein Publikations-Count.
 """
@@ -39,7 +39,7 @@ UC7_PUBLICATION_LABEL: str = canonical_publication_label(UC7_PUBLICATION_SCOPE)
 
 
 class ResearchImpactRepository:
-    """Async PostgreSQL-Zugriff fuer UC7 Research-Impact.
+    """Async PostgreSQL-Zugriff für UC7 Research-Impact.
 
     Stellt CORDIS-basierte Institutionsabfragen und Health-Checks bereit.
     """
@@ -63,11 +63,11 @@ class ResearchImpactRepository:
 
         Sucht CORDIS-Projekte, deren Titel oder Objective den Suchbegriff
         enthalten (via tsvector full-text search), und gruppiert die
-        beteiligten Organisationen nach Name, Land und Aktivitaetstyp.
+        beteiligten Organisationen nach Name, Land und Aktivitätstyp.
 
         Args:
             technology: Suchbegriff (Technologie).
-            limit: Maximale Anzahl zurueckgegebener Institutionen.
+            limit: Maximale Anzahl zurückgegebener Institutionen.
 
         Returns:
             Liste von Dicts mit name, project_count, country, activity_type.

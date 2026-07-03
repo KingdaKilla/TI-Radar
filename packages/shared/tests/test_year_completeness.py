@@ -1,8 +1,8 @@
-"""Tests fuer shared.domain.year_completeness — Jahres-Vollstaendigkeits-Helfer.
+"""Tests für shared.domain.year_completeness — Jahres-Vollständigkeits-Helfer.
 
-Hintergrund: Bug MAJ-7/MAJ-8 — Zeitreihen enthielten das laufende (unvollstaendige)
-Kalenderjahr, was CAGR/S-Curve-Fit verfaelscht hat. Diese Helper stellen sicher,
-dass Services nur ueber vollstaendig abgeschlossene Jahre rechnen.
+Hintergrund: Bug MAJ-7/MAJ-8 — Zeitreihen enthielten das laufende (unvollständige)
+Kalenderjahr, was CAGR/S-Curve-Fit verfälscht hat. Diese Helper stellen sicher,
+dass Services nur über vollständig abgeschlossene Jahre rechnen.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ class TestLastCompleteYear:
     def test_uses_today_by_default(self):
         """Ohne Argument nutzt die Funktion das heutige Datum."""
         result = last_complete_year()
-        # Muss ein plausibles Jahr zurueckliefern (>= 2024)
+        # Muss ein plausibles Jahr zurückliefern (>= 2024)
         assert isinstance(result, int)
         assert result >= 2024
 
@@ -63,11 +63,11 @@ class TestIsYearComplete:
         assert is_year_complete(2026, date(2026, 4, 14)) is False
 
     def test_future_year_not_complete(self):
-        """Zukuenftige Jahre sind nicht abgeschlossen."""
+        """Zukünftige Jahre sind nicht abgeschlossen."""
         assert is_year_complete(2030, date(2026, 4, 14)) is False
 
     def test_old_year_complete(self):
-        """Weit zurueckliegende Jahre sind abgeschlossen."""
+        """Weit zurückliegende Jahre sind abgeschlossen."""
         assert is_year_complete(2000, date(2026, 4, 14)) is True
 
     def test_boundary_january_first(self):
@@ -96,7 +96,7 @@ class TestClipToCompleteYears:
         assert result == [2024, 2025]
 
     def test_keeps_all_when_all_complete(self):
-        """Alle Jahre vollstaendig abgeschlossen → Liste bleibt erhalten."""
+        """Alle Jahre vollständig abgeschlossen → Liste bleibt erhalten."""
         result = clip_to_complete_years([2020, 2021, 2022], date(2026, 4, 14))
         assert result == [2020, 2021, 2022]
 
@@ -110,7 +110,7 @@ class TestClipToCompleteYears:
         assert result == [2025, 2023, 2024]
 
     def test_removes_only_incomplete(self):
-        """Nur unvollstaendige Jahre werden entfernt, nicht sortiert."""
+        """Nur unvollständige Jahre werden entfernt, nicht sortiert."""
         result = clip_to_complete_years([2023, 2026, 2024], date(2026, 4, 14))
         assert result == [2023, 2024]
 

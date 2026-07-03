@@ -1,13 +1,13 @@
-"""Entity Resolution — Normalisierung und Fuzzy-Matching fuer Akteure.
+"""Entity Resolution — Normalisierung und Fuzzy-Matching für Akteure.
 
 Pipeline zur Vereinheitlichung von Organisationsnamen aus EPO, CORDIS und GLEIF.
 Reine Funktionen ohne IO — testbar, auditierbar, reproduzierbar.
 
 Matching-Strategie:
-1. Normalisierung (5 Schritte): Gross-/Kleinschreibung, Rechtsformen, Abkuerzungen
-2. Blocking: Erstes Zeichen + Laendercode (reduziert Vergleichsraum)
+1. Normalisierung (5 Schritte): Groß-/Kleinschreibung, Rechtsformen, Abkürzungen
+2. Blocking: Erstes Zeichen + Ländercode (reduziert Vergleichsraum)
 3. Fuzzy Matching: Levenshtein (0.4) + TF-IDF Cosine (0.6) kombiniert
-4. Schwellwert: Combined Score > 0.8 fuer Match
+4. Schwellwert: Combined Score > 0.8 für Match
 """
 
 from __future__ import annotations
@@ -25,14 +25,14 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Rechtsformen: werden bei Normalisierung entfernt
 # ---------------------------------------------------------------------------
-# Sortierung nach Laenge absteigend, damit laengere Formen zuerst gematcht werden
+# Sortierung nach Länge absteigend, damit längere Formen zuerst gematcht werden
 # (z.B. "S.A.S." vor "S.A.", "GmbH" vor "G")
 LEGAL_FORMS: list[str] = sorted(
     [
         "AG", "GmbH", "Ltd", "S.A.", "B.V.", "Inc.", "Corp.", "S.p.A.",
         "S.r.l.", "AB", "AS", "Oy", "NV", "SE", "plc", "LLC", "Co.",
         "KG", "OHG", "e.V.", "S.L.", "S.A.S.", "GbR", "UG",
-        # Zusaetzliche Varianten ohne Punkte
+        # Zusätzliche Varianten ohne Punkte
         "SA", "BV", "SPA", "SRL", "SAS", "SL", "eV", "PLC",
         "INC", "CORP", "LTD", "LIMITED", "CORPORATION", "INCORPORATED",
         "GMBH", "GESELLSCHAFT MIT BESCHRAENKTER HAFTUNG",
@@ -41,14 +41,14 @@ LEGAL_FORMS: list[str] = sorted(
     reverse=True,
 )
 
-# Regex-Pattern fuer Rechtsformen (Word-Boundary-basiert)
+# Regex-Pattern für Rechtsformen (Word-Boundary-basiert)
 _LEGAL_FORM_PATTERN: re.Pattern[str] = re.compile(
     r"\b(" + "|".join(re.escape(lf) for lf in LEGAL_FORMS) + r")\b",
     re.IGNORECASE,
 )
 
 # ---------------------------------------------------------------------------
-# Abkuerzungs-Expansion
+# Abkürzungs-Expansion
 # ---------------------------------------------------------------------------
 ABBREVIATIONS: dict[str, str] = {
     "UNIV": "UNIVERSITY",
@@ -64,7 +64,7 @@ ABBREVIATIONS: dict[str, str] = {
     "ENG": "ENGINEERING",
 }
 
-# Regex-Pattern fuer Abkuerzungs-Expansion (ganze Woerter)
+# Regex-Pattern für Abkürzungs-Expansion (ganze Wörter)
 _ABBREVIATION_PATTERN: re.Pattern[str] = re.compile(
     r"\b(" + "|".join(re.escape(abbr) for abbr in ABBREVIATIONS) + r")\b",
 )
@@ -87,7 +87,7 @@ def normalize_actor_name(name: str) -> str:
 
     1. UPPER(), TRIM()
     2. Rechtsformen entfernen (AG, GmbH, Ltd, etc.)
-    3. Abkuerzungen expandieren (Univ -> University, etc.)
+    3. Abkürzungen expandieren (Univ -> University, etc.)
     4. Sonderzeichen entfernen (nur alphanumerisch + Leerzeichen)
     5. Mehrfach-Leerzeichen kollabieren
 
@@ -95,21 +95,21 @@ def normalize_actor_name(name: str) -> str:
         name: Roher Organisationsname
 
     Returns:
-        Normalisierter Name (Grossbuchstaben, bereinigt)
+        Normalisierter Name (Großbuchstaben, bereinigt)
     """
     if not name or not name.strip():
         return ""
 
-    # Schritt 1: Grossbuchstaben + Trim
+    # Schritt 1: Großbuchstaben + Trim
     result = name.strip().upper()
 
-    # Akzente entfernen (oe -> o, etc.) fuer konsistenten Vergleich
+    # Akzente entfernen (oe -> o, etc.) für konsistenten Vergleich
     result = _strip_accents(result)
 
     # Schritt 2: Rechtsformen entfernen
     result = _LEGAL_FORM_PATTERN.sub("", result)
 
-    # Schritt 3: Abkuerzungen expandieren
+    # Schritt 3: Abkürzungen expandieren
     result = _ABBREVIATION_PATTERN.sub(
         lambda m: ABBREVIATIONS[m.group(0)],
         result,
@@ -131,17 +131,17 @@ def normalize_actor_name(name: str) -> str:
 
 def generate_blocking_key(name: str, country: str) -> str:
     """
-    Blocking-Key aus erstem Zeichen des normalisierten Namens + Laendercode.
+    Blocking-Key aus erstem Zeichen des normalisierten Namens + Ländercode.
 
     Reduziert den Vergleichsraum: Nur Akteure im selben Block
     werden paarweise verglichen.
 
     Args:
         name: Normalisierter Organisationsname
-        country: ISO-3166-1 Alpha-2 Laendercode (z.B. "DE")
+        country: ISO-3166-1 Alpha-2 Ländercode (z.B. "DE")
 
     Returns:
-        Blocking-Key (z.B. "F_DE" fuer Fraunhofer in Deutschland)
+        Blocking-Key (z.B. "F_DE" für Fraunhofer in Deutschland)
     """
     normalized = normalize_actor_name(name) if name else ""
     first_char = normalized[0] if normalized else "_"
@@ -156,19 +156,19 @@ def generate_blocking_key(name: str, country: str) -> str:
 
 def levenshtein_similarity(a: str, b: str) -> float:
     """
-    Normalisierte Levenshtein-Aehnlichkeit (0.0 = voellig verschieden, 1.0 = identisch).
+    Normalisierte Levenshtein-Ähnlichkeit (0.0 = völlig verschieden, 1.0 = identisch).
 
     Formel: 1.0 - (edit_distance / max(len(a), len(b)))
 
-    Versucht rapidfuzz (C-Extension, schneller), faellt auf eigene
-    Implementierung zurueck falls nicht installiert.
+    Versucht rapidfuzz (C-Extension, schneller), fällt auf eigene
+    Implementierung zurück falls nicht installiert.
 
     Args:
         a: Erster Name (normalisiert)
         b: Zweiter Name (normalisiert)
 
     Returns:
-        Aehnlichkeitswert zwischen 0.0 und 1.0
+        Ähnlichkeitswert zwischen 0.0 und 1.0
     """
     if not a and not b:
         return 1.0
@@ -192,7 +192,7 @@ def levenshtein_similarity(a: str, b: str) -> float:
 
 
 def _levenshtein_dp(a: str, b: str) -> float:
-    """Levenshtein-Aehnlichkeit via Dynamic Programming (Fallback)."""
+    """Levenshtein-Ähnlichkeit via Dynamic Programming (Fallback)."""
     n, m = len(a), len(b)
     if n == 0 or m == 0:
         return 0.0
@@ -206,8 +206,8 @@ def _levenshtein_dp(a: str, b: str) -> float:
         for j in range(1, m + 1):
             cost = 0 if a[i - 1] == b[j - 1] else 1
             curr[j] = min(
-                prev[j] + 1,       # Loeschung
-                curr[j - 1] + 1,    # Einfuegung
+                prev[j] + 1,       # Löschung
+                curr[j - 1] + 1,    # Einfügung
                 prev[j - 1] + cost,  # Substitution
             )
         prev, curr = curr, prev
@@ -219,16 +219,16 @@ def _levenshtein_dp(a: str, b: str) -> float:
 
 def tfidf_cosine_similarity(names: list[str]) -> np.ndarray:
     """
-    TF-IDF Cosine-Aehnlichkeitsmatrix fuer eine Liste von Namen.
+    TF-IDF Cosine-Ähnlichkeitsmatrix für eine Liste von Namen.
 
     Verwendet Character-N-Gramme (2-4), um auch bei Tippfehlern
-    und Wortumstellungen aehnliche Namen zu erkennen.
+    und Wortumstellungen ähnliche Namen zu erkennen.
 
     Args:
         names: Liste normalisierter Organisationsnamen
 
     Returns:
-        NxN Aehnlichkeitsmatrix (numpy array, dtype float64)
+        NxN Ähnlichkeitsmatrix (numpy array, dtype float64)
 
     Raises:
         ImportError: Wenn scikit-learn nicht installiert ist
@@ -254,7 +254,7 @@ def tfidf_cosine_similarity(names: list[str]) -> np.ndarray:
             "scikit-learn nicht installiert — TF-IDF deaktiviert, "
             "verwende nur Levenshtein-Distanz"
         )
-        # Fallback: Identitaetsmatrix (kein TF-IDF-Beitrag)
+        # Fallback: Identitätsmatrix (kein TF-IDF-Beitrag)
         return np.eye(len(names), dtype=np.float64)
 
 
@@ -275,7 +275,7 @@ def _compute_combined_score(
 
 
 def _determine_match_method(lev_score: float, tfidf_score: float) -> str:
-    """Bestimmung der dominanten Match-Methode fuer Audit-Zwecke."""
+    """Bestimmung der dominanten Match-Methode für Audit-Zwecke."""
     if lev_score >= 0.95 and tfidf_score >= 0.95:
         return "exact"
     if lev_score > tfidf_score:
@@ -288,19 +288,19 @@ def find_matches(
     threshold: float = 0.8,
 ) -> list[dict[str, Any]]:
     """
-    Akteure zu Match-Gruppen zusammenfuehren.
+    Akteure zu Match-Gruppen zusammenführen.
 
     Pipeline:
     1. Normalisierung aller Namen
-    2. Blocking nach erstem Zeichen + Laendercode
+    2. Blocking nach erstem Zeichen + Ländercode
     3. Paarweiser Vergleich innerhalb jedes Blocks
     4. Union-Find zur Gruppenbildung
-    5. Kanonischen Namen bestimmen (laengster Originalname)
+    5. Kanonischen Namen bestimmen (längster Originalname)
 
     Args:
         actors: Liste von Dicts mit keys: name, country, source
-                Optional: source_id (fuer DB-Mapping)
-        threshold: Minimaler Combined Score fuer Match (default: 0.8)
+                Optional: source_id (für DB-Mapping)
+        threshold: Minimaler Combined Score für Match (default: 0.8)
 
     Returns:
         Liste von Match-Gruppen:
@@ -362,7 +362,7 @@ def find_matches(
         if len(indices) < 2:
             continue
 
-        # TF-IDF fuer den gesamten Block berechnen
+        # TF-IDF für den gesamten Block berechnen
         block_names = [normalized_names[i] for i in indices]
         tfidf_matrix = tfidf_cosine_similarity(block_names)
 
@@ -372,7 +372,7 @@ def find_matches(
                 name_a = normalized_names[gi]
                 name_b = normalized_names[gj]
 
-                # Leere Namen ueberspringen
+                # Leere Namen überspringen
                 if not name_a or not name_b:
                     continue
 
@@ -403,11 +403,11 @@ def find_matches(
     # Ergebnis aufbauen
     result: list[dict[str, Any]] = []
     for _root, members in groups.items():
-        # Kanonischer Name: laengster Originalname (meiste Information)
+        # Kanonischer Name: längster Originalname (meiste Information)
         canonical_idx = max(members, key=lambda i: len(actors[i].get("name", "")))
         canonical_name = actors[canonical_idx].get("name", "")
 
-        # Laendercode: Modus der Gruppe
+        # Ländercode: Modus der Gruppe
         country_counts: dict[str, int] = defaultdict(int)
         for idx in members:
             c = actors[idx].get("country", "")
@@ -421,7 +421,7 @@ def find_matches(
 
         member_list: list[dict[str, Any]] = []
         for idx in members:
-            # Confidence: 1.0 fuer Einzelgaenger, sonst bester Paar-Score
+            # Confidence: 1.0 für Einzelgänger, sonst bester Paar-Score
             if len(members) == 1:
                 confidence = 1.0
                 method = "singleton"
@@ -446,7 +446,7 @@ def find_matches(
                 "match_method": method,
                 "normalized_name": normalized_names[idx],
             }
-            # source_id mituebernehmen falls vorhanden
+            # source_id mitübernehmen falls vorhanden
             if "source_id" in actors[idx]:
                 member_info["source_id"] = actors[idx]["source_id"]
 

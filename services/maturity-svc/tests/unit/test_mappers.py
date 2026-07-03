@@ -1,4 +1,4 @@
-"""Unit-Tests fuer maturity-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für maturity-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von MaturityResult auf das dict-basierte
 Response-Format, inkl. CAGR-Normalisierung, S-Curve-Daten, Phase und Konfidenz.
@@ -88,43 +88,43 @@ class TestDictResponseMapperBasicFields:
         assert d["phase"] == "Emerging"
 
     def test_maturity_percent(self):
-        """maturity_percent wird korrekt uebertragen."""
+        """maturity_percent wird korrekt übertragen."""
         result = _make_result(maturity_pct=67.3)
         d = maturity_result_to_dict(result)
         assert d["maturity_percent"] == pytest.approx(67.3, abs=0.01)
 
     def test_r_squared(self):
-        """r_squared wird korrekt uebertragen."""
+        """r_squared wird korrekt übertragen."""
         result = _make_result(r_sq=0.9876)
         d = maturity_result_to_dict(result)
         assert d["r_squared"] == pytest.approx(0.9876, abs=0.0001)
 
     def test_years_to_next_phase(self):
-        """years_to_next_phase wird korrekt uebertragen."""
+        """years_to_next_phase wird korrekt übertragen."""
         result = _make_result(years_to_next_phase=5)
         d = maturity_result_to_dict(result)
         assert d["years_to_next_phase"] == 5
 
     def test_fitted_on(self):
-        """fitted_on wird korrekt uebertragen."""
+        """fitted_on wird korrekt übertragen."""
         result = _make_result(fitted_on="gompertz")
         d = maturity_result_to_dict(result)
         assert d["fitted_on"] == "gompertz"
 
     def test_is_declining(self):
-        """is_declining wird korrekt uebertragen."""
+        """is_declining wird korrekt übertragen."""
         result = _make_result(is_declining=True)
         d = maturity_result_to_dict(result)
         assert d["is_declining"] is True
 
     def test_data_complete_year(self):
-        """data_complete_year wird korrekt uebertragen."""
+        """data_complete_year wird korrekt übertragen."""
         result = _make_result(data_complete_year=2024)
         d = maturity_result_to_dict(result)
         assert d["data_complete_year"] == 2024
 
     def test_aicc_values(self):
-        """AICc-Werte werden korrekt uebertragen."""
+        """AICc-Werte werden korrekt übertragen."""
         result = _make_result(
             aicc_selected=45.2, aicc_alternative=52.8, delta_aicc=7.6,
         )
@@ -160,7 +160,7 @@ class TestDictResponseMapperCagr:
         assert d["cagr"] == pytest.approx(-0.085, abs=0.001)
 
     def test_large_cagr(self):
-        """Grosse CAGR-Werte werden korrekt normiert."""
+        """Große CAGR-Werte werden korrekt normiert."""
         result = _make_result(growth_rate=150.0)
         d = maturity_result_to_dict(result)
         assert d["cagr"] == pytest.approx(1.5, abs=0.001)
@@ -174,7 +174,7 @@ class TestDictResponseMapperSCurve:
     """Testet S-Curve-Daten-Mapping."""
 
     def test_s_curve_length(self):
-        """S-Curve-Daten haben korrekte Anzahl Eintraege (= all_years)."""
+        """S-Curve-Daten haben korrekte Anzahl Einträge (= all_years)."""
         result = _make_result()
         d = maturity_result_to_dict(result)
         assert len(d["s_curve_data"]) == 5
@@ -187,14 +187,14 @@ class TestDictResponseMapperSCurve:
         assert set(entry.keys()) == {"year", "cumulative", "fitted", "annual_count"}
 
     def test_s_curve_year_mapping(self):
-        """year wird korrekt aus all_years uebernommen."""
+        """year wird korrekt aus all_years übernommen."""
         result = _make_result()
         d = maturity_result_to_dict(result)
         years = [e["year"] for e in d["s_curve_data"]]
         assert years == [2020, 2021, 2022, 2023, 2024]
 
     def test_s_curve_cumulative(self):
-        """cumulative wird korrekt als float uebertragen."""
+        """cumulative wird korrekt als float übertragen."""
         result = _make_result()
         d = maturity_result_to_dict(result)
         assert d["s_curve_data"][0]["cumulative"] == 100.0
@@ -216,7 +216,7 @@ class TestDictResponseMapperSCurve:
         assert d["s_curve_data"][0]["fitted"] == 0.0
 
     def test_s_curve_annual_count(self):
-        """annual_count wird korrekt aus combined uebernommen."""
+        """annual_count wird korrekt aus combined übernommen."""
         result = _make_result()
         d = maturity_result_to_dict(result)
         assert d["s_curve_data"][0]["annual_count"] == 100.0
@@ -306,7 +306,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=55)
         d = maturity_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 55

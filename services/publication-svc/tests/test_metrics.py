@@ -1,4 +1,4 @@
-"""Tests fuer UC-C Domain-Metriken: compute_pubs_per_million, compute_pubs_per_project."""
+"""Tests für UC-C Domain-Metriken: compute_pubs_per_million, compute_pubs_per_project."""
 
 import pytest
 
@@ -11,10 +11,10 @@ from src.domain.metrics import compute_pubs_per_million, compute_pubs_per_projec
 
 
 class TestPubsPerMillion:
-    """Tests fuer Publikationen-pro-Million-EUR-Berechnung."""
+    """Tests für Publikationen-pro-Million-EUR-Berechnung."""
 
     def test_normal_case(self) -> None:
-        """2M EUR Foerderung, 50 Publikationen -> 25.0 pro Million."""
+        """2M EUR Förderung, 50 Publikationen -> 25.0 pro Million."""
         assert compute_pubs_per_million(2_000_000, 50) == 25.0
 
     def test_one_million(self) -> None:
@@ -26,11 +26,11 @@ class TestPubsPerMillion:
         assert compute_pubs_per_million(500_000, 5) == 10.0
 
     def test_zero_funding(self) -> None:
-        """Keine Foerderung -> 0.0 (Division durch Null vermeiden)."""
+        """Keine Förderung -> 0.0 (Division durch Null vermeiden)."""
         assert compute_pubs_per_million(0, 50) == 0.0
 
     def test_negative_funding(self) -> None:
-        """Negative Foerderung -> 0.0 (Schutz vor unsinnigen Werten)."""
+        """Negative Förderung -> 0.0 (Schutz vor unsinnigen Werten)."""
         assert compute_pubs_per_million(-100_000, 5) == 0.0
 
     def test_zero_publications(self) -> None:
@@ -43,7 +43,7 @@ class TestPubsPerMillion:
         assert compute_pubs_per_million(3_000_000, 7) == 2.33
 
     def test_large_values(self) -> None:
-        """Grosse Foerderung mit vielen Publikationen."""
+        """Große Förderung mit vielen Publikationen."""
         assert compute_pubs_per_million(50_000_000, 500) == 10.0
 
 
@@ -53,7 +53,7 @@ class TestPubsPerMillion:
 
 
 class TestPubsPerProject:
-    """Tests fuer Durchschnittliche-Publikationen-pro-Projekt-Berechnung."""
+    """Tests für Durchschnittliche-Publikationen-pro-Projekt-Berechnung."""
 
     def test_normal_case(self) -> None:
         """100 Pubs, 20 Projekte -> 5.0."""

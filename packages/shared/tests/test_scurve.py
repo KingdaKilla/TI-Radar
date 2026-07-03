@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.scurve — Logistische, Gompertz- und Richards-Fitting."""
+"""Tests für shared.domain.scurve — Logistische, Gompertz- und Richards-Fitting."""
 
 from __future__ import annotations
 
@@ -82,7 +82,7 @@ class TestEstimateInitialParams:
         years = np.array([2000, 2005, 2010, 2015, 2020], dtype=np.float64)
         cumul = np.array([10, 50, 200, 500, 800], dtype=np.float64)
         L0, k0, x0 = estimate_initial_params(years, cumul)
-        assert L0 > cumul[-1]  # Saettigung > letzter Wert
+        assert L0 > cumul[-1]  # Sättigung > letzter Wert
         assert k0 > 0  # Positive Wachstumsrate
         assert years[0] <= x0 <= years[-1] + 10  # Wendepunkt im Zeitraum
 
@@ -163,7 +163,7 @@ class TestFitGompertz:
 
 
 class TestComputeAICc:
-    """Tests fuer das korrigierte Akaike-Informationskriterium (AICc)."""
+    """Tests für das korrigierte Akaike-Informationskriterium (AICc)."""
 
     def test_aicc_perfect_fit(self):
         """RSS=0 (perfekter Fit) → AICc = -inf."""
@@ -182,7 +182,7 @@ class TestComputeAICc:
     def test_aicc_small_sample_returns_undefined(self):
         """Bei n <= k+1 ist AICc nicht berechenbar (Division durch Null).
 
-        Fuer num_params=3 gilt k=4, also braucht man n > 5.
+        Für num_params=3 gilt k=4, also braucht man n > 5.
         Bei n=5 ist n-k-1=0 → Korrekturfaktor undefiniert.
         """
         observed = [1.0, 2.0, 3.0, 4.0, 5.0]
@@ -194,7 +194,7 @@ class TestComputeAICc:
         """Korrekturfaktor 2k(k+1)/(n-k-1) soll bei n<10 substantiell sein.
 
         Vergleiche AICc mit Standard-AIC: Bei kleinem n muss die Differenz
-        (= Korrekturterm) gross sein relativ zum AIC-Basiswert.
+        (= Korrekturterm) groß sein relativ zum AIC-Basiswert.
         """
         n = 8
         observed = list(range(1, n + 1))
@@ -224,7 +224,7 @@ class TestComputeAICc:
         """
         n = 20
         observed = [float(i ** 2) for i in range(1, n + 1)]
-        # Gleiche (nicht perfekte) Vorhersage fuer beide "Modelle"
+        # Gleiche (nicht perfekte) Vorhersage für beide "Modelle"
         predicted = [v + 1.0 for v in observed]
 
         aicc_3_params = compute_aicc(observed, predicted, num_params=3)
@@ -248,7 +248,7 @@ class TestComputeAICc:
         noise = rng.normal(0, 5.0, size=len(x))
         y_noisy = y_true + noise
         cumulative = [max(1, int(v)) for v in y_noisy]
-        # Kumulative Werte muessen monoton steigend sein
+        # Kumulative Werte müssen monoton steigend sein
         for i in range(1, len(cumulative)):
             cumulative[i] = max(cumulative[i], cumulative[i - 1])
 
@@ -257,7 +257,7 @@ class TestComputeAICc:
         assert "aicc" in result
         assert "delta_aicc" in result
         assert "aicc_alternative" in result
-        # Bei logistischen Daten sollte Logistic gewaehlt werden
+        # Bei logistischen Daten sollte Logistic gewählt werden
         # (oder Gompertz mit sehr kleinem Delta-AICc)
         assert np.isfinite(result["aicc"])
 
@@ -279,7 +279,7 @@ class TestComputeAICc:
 
 
 class TestFitSCurveAICc:
-    """Tests fuer AICc-Felder in fit_s_curve() Ergebnissen."""
+    """Tests für AICc-Felder in fit_s_curve() Ergebnissen."""
 
     def test_result_contains_aicc(self):
         years = list(range(2000, 2021))
@@ -308,7 +308,7 @@ class TestFitSCurveAICc:
 
 
 class TestFitGompertzAICc:
-    """Tests fuer AICc-Felder in fit_gompertz() Ergebnissen."""
+    """Tests für AICc-Felder in fit_gompertz() Ergebnissen."""
 
     def test_result_contains_aicc(self):
         years = list(range(2000, 2020))
@@ -342,17 +342,17 @@ class TestRichardsFunction:
         assert all(y[i] <= y[i + 1] for i in range(len(y) - 1))
 
     def test_approaches_saturation(self):
-        """Weit nach x0 naehert sich der Wert L an."""
+        """Weit nach x0 nähert sich der Wert L an."""
         x = np.array([2200.0])
         result = richards_function(x, L=1000.0, k=0.5, x0=2015.0, m=1.5)
         assert result[0] == pytest.approx(1000.0, abs=0.1)
 
     def test_m_affects_curve_shape(self):
-        """Parameter m veraendert die Kurvenform (Asymmetrie).
+        """Parameter m verändert die Kurvenform (Asymmetrie).
 
-        Bei groesserem m ist 1/m kleiner → Basis^(1/m) naeher an 1
-        → Ergebnis naeher an L (spaetere, aber dann schnellere Saettigung).
-        Bei kleinerem m ist 1/m groesser → staerkere Daempfung.
+        Bei größerem m ist 1/m kleiner → Basis^(1/m) näher an 1
+        → Ergebnis näher an L (spätere, aber dann schnellere Sättigung).
+        Bei kleinerem m ist 1/m größer → stärkere Dämpfung.
         """
         x = np.array([2020.0])
         L, k, x0 = 1000.0, 0.3, 2015.0
@@ -360,9 +360,9 @@ class TestRichardsFunction:
         val_m_small = richards_function(x, L, k, x0, m=0.3)
         val_m_large = richards_function(x, L, k, x0, m=3.0)
 
-        # Bei groesserem m ist 1/m kleiner → hoehere Werte rechts vom Wendepunkt
+        # Bei größerem m ist 1/m kleiner → höhere Werte rechts vom Wendepunkt
         assert float(val_m_large[0]) > float(val_m_small[0])
-        # Beide Werte muessen zwischen 0 und L liegen
+        # Beide Werte müssen zwischen 0 und L liegen
         assert 0 < float(val_m_small[0]) < L
         assert 0 < float(val_m_large[0]) < L
 
@@ -409,7 +409,7 @@ class TestFitRichards:
         assert fit_richards(years, cumul, min_points=10) is None
 
     def test_all_zeros(self):
-        """Nur Nullen → kein Fit moeglich."""
+        """Nur Nullen → kein Fit möglich."""
         assert fit_richards([2020, 2021, 2022, 2023, 2024], [0, 0, 0, 0, 0]) is None
 
     def test_result_contains_aicc(self):
@@ -466,7 +466,7 @@ class TestFitBestModel:
         assert fit_best_model([2020, 2021, 2022], [0, 0, 0]) is None
 
     def test_single_model_fallback(self):
-        """Wenn nur ein Modell fittet, wird es mit delta_aicc=0 zurueckgegeben."""
+        """Wenn nur ein Modell fittet, wird es mit delta_aicc=0 zurückgegeben."""
         # Sehr wenige Datenpunkte — evtl. fittet nur ein Modell
         years = list(range(2000, 2006))
         cumul = [1, 5, 20, 80, 200, 350]
@@ -476,7 +476,7 @@ class TestFitBestModel:
             assert "aicc_alternative" in result
 
     def test_model_name_field_present(self):
-        """fit_best_model muss immer model_name (lowercase) zurueckgeben."""
+        """fit_best_model muss immer model_name (lowercase) zurückgeben."""
         years = list(range(2000, 2015))
         cumul = [i ** 2 for i in range(1, 16)]
         result = fit_best_model(years, cumul)
@@ -491,14 +491,14 @@ class TestFitBestModel:
 
 
 class TestFitBestModelRichards:
-    """Tests fuer Richards-Modell-Einbindung in fit_best_model()."""
+    """Tests für Richards-Modell-Einbindung in fit_best_model()."""
 
     def test_includes_richards_large_sample(self):
         """Bei n >= 20 wird Richards als Kandidat einbezogen.
 
         Wir generieren asymmetrische Daten (m=2.0), bei denen Richards
-        den besten Fit liefern sollte. Falls nicht, pruefen wir zumindest,
-        dass model_name vorhanden ist und ein gueltiges Modell gewaehlt wird.
+        den besten Fit liefern sollte. Falls nicht, prüfen wir zumindest,
+        dass model_name vorhanden ist und ein gültiges Modell gewählt wird.
         """
         n = 30  # > RICHARDS_MIN_SAMPLE_SIZE
         assert n >= RICHARDS_MIN_SAMPLE_SIZE
@@ -519,7 +519,7 @@ class TestFitBestModelRichards:
         assert result["r_squared"] > 0.9
 
     def test_excludes_richards_small_sample(self):
-        """Bei n < 20 darf Richards NICHT als Modell gewaehlt werden."""
+        """Bei n < 20 darf Richards NICHT als Modell gewählt werden."""
         n = 15  # < RICHARDS_MIN_SAMPLE_SIZE
         assert n < RICHARDS_MIN_SAMPLE_SIZE
 
@@ -530,7 +530,7 @@ class TestFitBestModelRichards:
 
         result = fit_best_model(years, cumul)
         if result is not None:
-            # Richards darf bei n < 20 nicht gewaehlt werden
+            # Richards darf bei n < 20 nicht gewählt werden
             assert result["model"] in ("Logistic", "Gompertz")
             assert result["model_name"] in ("logistic", "gompertz")
 

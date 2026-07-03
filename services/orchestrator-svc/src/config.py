@@ -1,7 +1,7 @@
 """Zentrale Konfiguration via Pydantic Settings.
 
 Alle UC-Service-Adressen, Timeouts und infrastrukturelle Parameter
-werden ueber Umgebungsvariablen oder .env-Datei geladen.
+werden über Umgebungsvariablen oder .env-Datei geladen.
 """
 
 from __future__ import annotations
@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     """Anwendungskonfiguration — geladen aus Umgebungsvariablen / .env.
 
     Jeder UC-Service hat eine separate Adresse und einen individuellen
-    Timeout (in Sekunden). Die Werte koennen per Umgebungsvariable
-    ueberschrieben werden (z.B. UC_LANDSCAPE_ADDRESS=landscape-svc:50051).
+    Timeout (in Sekunden). Die Werte können per Umgebungsvariable
+    überschrieben werden (z.B. UC_LANDSCAPE_ADDRESS=landscape-svc:50051).
     """
 
     # --- Server ---
@@ -40,10 +40,10 @@ class Settings(BaseSettings):
     # --- CORS ---
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
-    # --- Datenbank (fuer Suggestions-Endpoint via asyncpg) ---
+    # --- Datenbank (für Suggestions-Endpoint via asyncpg) ---
     database_url: str = Field(
         default="postgresql://tip:tip@postgres:5432/tip",
-        description="PostgreSQL Connection-String fuer asyncpg",
+        description="PostgreSQL Connection-String für asyncpg",
     )
 
     # --- gRPC: UC-Service-Adressen (host:port) ---
@@ -79,7 +79,7 @@ class Settings(BaseSettings):
 
     # --- gRPC: Per-UC Timeouts (Sekunden) ---
     uc_landscape_timeout: float = 60.0     # bei parallelen Requests DB-Pool-Contention
-    uc_maturity_timeout: float = 60.0      # COUNT(DISTINCT family_id) auf grossen Datasets langsam
+    uc_maturity_timeout: float = 60.0      # COUNT(DISTINCT family_id) auf großen Datasets langsam
     uc_competitive_timeout: float = 60.0   # Entity Resolution + Netzwerk-Berechnung
     uc_funding_timeout: float = 30.0
     uc_cpc_flow_timeout: float = 60.0       # CPC-Jaccard auf patent_cpc ist rechenintensiv
@@ -95,7 +95,7 @@ class Settings(BaseSettings):
     # --- gRPC: Globale Einstellungen ---
     grpc_max_message_size: int = Field(
         default=50 * 1024 * 1024,  # 50 MB
-        description="Maximale gRPC-Nachrichtengroesse in Bytes",
+        description="Maximale gRPC-Nachrichtengröße in Bytes",
     )
 
     # --- Prometheus ---
@@ -108,7 +108,7 @@ class Settings(BaseSettings):
     # -----------------------------------------------------------------
 
     def get_uc_configs(self) -> dict[str, UCServiceConfig]:
-        """Gibt alle 13 UC-Service-Konfigurationen als Dict zurueck.
+        """Gibt alle 13 UC-Service-Konfigurationen als Dict zurück.
 
         Keys entsprechen den Panel-Namen im RadarResponse.
         """

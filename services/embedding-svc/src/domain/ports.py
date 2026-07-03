@@ -1,15 +1,15 @@
-"""Port-Interfaces fuer Embedding-Service (Hexagonal Architecture)."""
+"""Port-Interfaces für Embedding-Service (Hexagonal Architecture)."""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
 
 class EmbeddingProviderPort(ABC):
-    """Abstraktes Interface fuer Embedding-Provider (sentence-transformers, etc.)."""
+    """Abstraktes Interface für Embedding-Provider (sentence-transformers, etc.)."""
 
     @abstractmethod
     async def embed_batch(self, texts: list[str]) -> list[list[float]]:
-        """Erzeugt Embeddings fuer eine Liste von Texten."""
+        """Erzeugt Embeddings für eine Liste von Texten."""
 
     @abstractmethod
     async def close(self) -> None:
@@ -17,7 +17,7 @@ class EmbeddingProviderPort(ABC):
 
 
 class EmbeddingRepositoryPort(ABC):
-    """Abstraktes Interface fuer Embedding-Persistenz."""
+    """Abstraktes Interface für Embedding-Persistenz."""
 
     @abstractmethod
     async def fetch_unembedded(
@@ -29,15 +29,15 @@ class EmbeddingRepositoryPort(ABC):
     async def store_embeddings(
         self, source: str, embeddings: list[tuple[int, list[float]]],
     ) -> int:
-        """Schreibt Embeddings in die DB. Gibt Anzahl geschriebener Rows zurueck."""
+        """Schreibt Embeddings in die DB. Gibt Anzahl geschriebener Rows zurück."""
 
     @abstractmethod
     async def count_status(self, source: str) -> tuple[int, int]:
-        """Gibt (total, embedded) Counts zurueck."""
+        """Gibt (total, embedded) Counts zurück."""
 
 
 class ChunkingPort(ABC):
-    """Abstraktes Interface fuer Text-Chunking."""
+    """Abstraktes Interface für Text-Chunking."""
 
     @abstractmethod
     def chunk_text(self, text: str) -> list[str]:
@@ -45,20 +45,20 @@ class ChunkingPort(ABC):
 
 
 class ChunkRepositoryPort(ABC):
-    """Abstraktes Interface fuer Chunk-Persistenz."""
+    """Abstraktes Interface für Chunk-Persistenz."""
 
     @abstractmethod
     async def fetch_unchunked_docs(
         self, source: str, batch_size: int, year_from: int | None = None,
     ) -> list[tuple[str, str]]:
-        """Liest Dokumente ohne Chunks (source_id, text). Gibt Tupel zurueck."""
+        """Liest Dokumente ohne Chunks (source_id, text). Gibt Tupel zurück."""
 
     @abstractmethod
     async def store_chunks_with_embeddings(
         self, source: str, records: list[tuple[str, int, str, list[float]]],
     ) -> int:
-        """Speichert (source_id, chunk_index, chunk_text, embedding). Gibt Anzahl zurueck."""
+        """Speichert (source_id, chunk_index, chunk_text, embedding). Gibt Anzahl zurück."""
 
     @abstractmethod
     async def count_chunk_status(self, source: str) -> tuple[int, int]:
-        """Gibt (total_docs_with_text, docs_already_chunked) Counts zurueck."""
+        """Gibt (total_docs_with_text, docs_already_chunked) Counts zurück."""

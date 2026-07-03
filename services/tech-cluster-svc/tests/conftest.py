@@ -1,6 +1,6 @@
-"""Conftest fuer tech-cluster-svc Tests.
+"""Conftest für tech-cluster-svc Tests.
 
-Fuegt ``packages/shared`` und den Service-Root zum sys.path hinzu, damit
+Fügt ``packages/shared`` und den Service-Root zum sys.path hinzu, damit
 sowohl ``shared.domain.*`` als auch ``src.*`` direkt importierbar sind.
 """
 

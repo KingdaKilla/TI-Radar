@@ -69,7 +69,7 @@ export default function PatentGrantDetail({ data }: PatentGrantDetailProps) {
         </p>
       </div>
 
-      {/* ── Anmeldungen / Erteilungen / Quote (vergroessert) ── */}
+      {/* ── Anmeldungen / Erteilungen / Quote (vergrößert) ── */}
       {chartData.length > 0 && (
         <DetailChartSection ariaLabel="Anmeldungen, Erteilungen und Quote über Zeit">
           <ResponsiveContainer width="100%" height="100%">
@@ -183,7 +183,7 @@ export default function PatentGrantDetail({ data }: PatentGrantDetailProps) {
         </DetailChartSection>
       )}
 
-      {/* ── Vollstaendige Jahrestrend-Tabelle ── */}
+      {/* ── Vollständige Jahrestrend-Tabelle ── */}
       <DetailDataSection title="Erteilungstrend nach Jahr">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

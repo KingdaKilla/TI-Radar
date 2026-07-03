@@ -1,10 +1,10 @@
-"""LLM-basierte Faithfulness-Pruefung.
+"""LLM-basierte Faithfulness-Prüfung.
 
 Implementiert:
 - Context-Sufficiency-Check (CRAG, Yan et al. 2024)
 - Faithfulness-Self-Check (Self-RAG, Asai et al. 2023)
 
-Die Pruefung nutzt einen (idealerweise leichtgewichtigen) LLM-Provider
+Die Prüfung nutzt einen (idealerweise leichtgewichtigen) LLM-Provider
 um Kontext-Suffizienz und Antwort-Treue zu bewerten.
 """
 
@@ -50,13 +50,13 @@ VALID_SUFFICIENCY = ("INSUFFICIENT", "SUFFICIENT", "PARTIAL")
 
 
 class LLMFaithfulnessChecker(FaithfulnessPort):
-    """Faithfulness-Pruefung via LLM-Aufrufe.
+    """Faithfulness-Prüfung via LLM-Aufrufe.
 
-    Nutzt einen LLMProviderPort fuer zwei Pruefungen:
+    Nutzt einen LLMProviderPort für zwei Prüfungen:
     1. Sufficiency-Check: Kann der Kontext die Frage beantworten?
-    2. Faithfulness-Check: Ist die Antwort im Kontext begruendet?
+    2. Faithfulness-Check: Ist die Antwort im Kontext begründet?
 
-    Fail-open Strategie: Bei Fehlern wird PARTIAL bzw. 0.0 zurueckgegeben,
+    Fail-open Strategie: Bei Fehlern wird PARTIAL bzw. 0.0 zurückgegeben,
     damit der Hauptprozess nicht blockiert wird.
     """
 
@@ -64,7 +64,7 @@ class LLMFaithfulnessChecker(FaithfulnessPort):
         self._llm = llm
 
     async def check_sufficiency(self, context: str, question: str) -> str:
-        """Prueft ob der Kontext die Frage beantworten kann.
+        """Prüft ob der Kontext die Frage beantworten kann.
 
         Args:
             context: Zusammengefasster Kontext aus Retrieval-Dokumenten.
@@ -93,9 +93,9 @@ class LLMFaithfulnessChecker(FaithfulnessPort):
     async def check_faithfulness(
         self, context: str, answer: str
     ) -> tuple[float, list[str]]:
-        """Prueft ob die Antwort im Kontext begruendet ist.
+        """Prüft ob die Antwort im Kontext begründet ist.
 
-        Extrahiert Claims aus der Antwort und prueft jeden einzelnen
+        Extrahiert Claims aus der Antwort und prüft jeden einzelnen
         gegen den bereitgestellten Kontext.
 
         Args:
@@ -103,7 +103,7 @@ class LLMFaithfulnessChecker(FaithfulnessPort):
             answer: Die LLM-generierte Antwort.
 
         Returns:
-            Tuple aus (faithfulness_score 0.0-1.0, liste_ungestuetzter_aussagen).
+            Tuple aus (faithfulness_score 0.0-1.0, liste_ungestützter_aussagen).
             Bei Fehlern: (0.0, []).
         """
         try:

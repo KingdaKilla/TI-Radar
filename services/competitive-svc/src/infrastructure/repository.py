@@ -1,12 +1,12 @@
-"""CompetitiveRepository — PostgreSQL-Datenbankzugriff fuer UC3.
+"""CompetitiveRepository — PostgreSQL-Datenbankzugriff für UC3.
 
 Liefert Patent-Anmelder, CORDIS-Organisationen und Netzwerk-Kanten
-fuer die Wettbewerbs-Analyse.
+für die Wettbewerbs-Analyse.
 
 Queries nutzen PostgreSQL-spezifische Syntax:
-- tsvector @@ plainto_tsquery fuer Volltextsuche
-- $1, $2 fuer Parameter-Binding
-- text[] mit && fuer Array-Operationen (european_only-Filter)
+- tsvector @@ plainto_tsquery für Volltextsuche
+- $1, $2 für Parameter-Binding
+- text[] mit && für Array-Operationen (european_only-Filter)
 
 Entity Resolution (optional):
 - entity_schema.unified_actors + entity_schema.actor_source_mappings
@@ -34,7 +34,7 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 class CompetitiveRepository:
-    """Async PostgreSQL-Zugriff fuer UC3 Competitive Intelligence."""
+    """Async PostgreSQL-Zugriff für UC3 Competitive Intelligence."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -52,7 +52,7 @@ class CompetitiveRepository:
         european_only: bool = False,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
-        """Top Patent-Anmelder fuer eine Technologie.
+        """Top Patent-Anmelder für eine Technologie.
 
         Nutzt die unnest()-Funktion auf applicant_names (text[]-Array).
         """
@@ -108,7 +108,7 @@ class CompetitiveRepository:
         end_year: int | None = None,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
-        """Top CORDIS-Organisationen mit Land-Info fuer eine Technologie."""
+        """Top CORDIS-Organisationen mit Land-Info für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -268,10 +268,10 @@ class CompetitiveRepository:
     # -----------------------------------------------------------------------
 
     async def _entity_tables_exist(self) -> bool:
-        """Pruefen ob die entity_schema-Tabellen vorhanden und befuellt sind.
+        """Prüfen ob die entity_schema-Tabellen vorhanden und befüllt sind.
 
         Returns:
-            True wenn entity_schema.unified_actors existiert und Eintraege hat.
+            True wenn entity_schema.unified_actors existiert und Einträge hat.
         """
         try:
             async with self._pool.acquire() as conn:
@@ -286,7 +286,7 @@ class CompetitiveRepository:
                 if not row or not row["table_exists"]:
                     return False
 
-                # Pruefen ob die Tabelle auch Daten hat
+                # Prüfen ob die Tabelle auch Daten hat
                 count_row = await conn.fetchrow(
                     "SELECT COUNT(*) AS cnt FROM entity_schema.unified_actors"
                 )
@@ -294,7 +294,7 @@ class CompetitiveRepository:
 
         except Exception as exc:
             logger.debug(
-                "entity_tabellen_pruefung_fehlgeschlagen",
+                "entity_tabellen_prüfung_fehlgeschlagen",
                 error=str(exc),
             )
             return False
@@ -308,14 +308,14 @@ class CompetitiveRepository:
         european_only: bool = False,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
-        """Top Akteure ueber Entity Resolution (unified_actors).
+        """Top Akteure über Entity Resolution (unified_actors).
 
         Mappt Original-Namen aus Patent-Anmeldern und CORDIS-Organisationen
         auf kanonische, deduplizierte Akteur-Namen via
         entity_schema.actor_source_mappings -> entity_schema.unified_actors.
 
         Aggregiert Patent- und Projekt-Counts pro kanonischem Akteur.
-        Faellt graceful auf leere Liste zurueck wenn entity-Tabellen
+        Fällt graceful auf leere Liste zurück wenn entity-Tabellen
         nicht existieren oder leer sind.
 
         Schema:
@@ -329,21 +329,21 @@ class CompetitiveRepository:
             )
 
         Args:
-            technology: Technologie-Suchbegriff fuer Volltextsuche.
+            technology: Technologie-Suchbegriff für Volltextsuche.
             start_year: Optionaler Start-Jahresfilter.
             end_year: Optionaler End-Jahresfilter.
-            european_only: Nur EU/EEA-Laender beruecksichtigen.
-            limit: Maximale Anzahl zurueckgegebener Akteure.
+            european_only: Nur EU/EEA-Länder berücksichtigen.
+            limit: Maximale Anzahl zurückgegebener Akteure.
 
         Returns:
             Liste von Dicts mit canonical_name, country_code, actor_type,
             patent_count, project_count, total_count, confidence.
             Leere Liste bei Fehler oder fehlenden entity-Tabellen.
         """
-        # Graceful Degradation: entity-Tabellen pruefen
+        # Graceful Degradation: entity-Tabellen prüfen
         if not await self._entity_tables_exist():
             logger.info(
-                "entity_resolution_nicht_verfuegbar",
+                "entity_resolution_nicht_verfügbar",
                 grund="Tabellen nicht vorhanden oder leer",
             )
             return []
@@ -373,12 +373,12 @@ class CompetitiveRepository:
         european_only: bool = False,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
-        """Interne Query fuer unified actors — Patent + CORDIS Counts.
+        """Interne Query für unified actors — Patent + CORDIS Counts.
 
         Verwendet zwei CTEs:
         1. patent_counts: Patent-Anmelder-Namen -> unified_actors via Mapping
         2. cordis_counts: CORDIS-Org-Namen -> unified_actors via Mapping
-        Dann: Aggregation nach canonical_name ueber unified_actors.
+        Dann: Aggregation nach canonical_name über unified_actors.
         """
         # --- Parameter-Index-Verwaltung ---
         params: list[Any] = [technology]
@@ -406,12 +406,12 @@ class CompetitiveRepository:
 
         patent_where = " AND ".join(patent_conditions)
 
-        # --- CORDIS-WHERE-Bedingungen (nutzt gleichen $1 fuer Technologie) ---
+        # --- CORDIS-WHERE-Bedingungen (nutzt gleichen $1 für Technologie) ---
         cordis_conditions = [
             "cp.search_vector @@ plainto_tsquery('english', $1)"
         ]
 
-        # Start/End-Year fuer CORDIS: eigene Param-Indizes
+        # Start/End-Year für CORDIS: eigene Param-Indizes
         if start_year is not None:
             cordis_conditions.append(f"cp.start_date >= make_date(${idx}, 1, 1)")
             params.append(start_year)
@@ -424,7 +424,7 @@ class CompetitiveRepository:
 
         cordis_where = " AND ".join(cordis_conditions)
 
-        # --- European-only Filter fuer unified_actors ---
+        # --- European-only Filter für unified_actors ---
         unified_conditions: list[str] = []
         if european_only:
             unified_conditions.append(f"ua.country = ANY(${idx}::text[])")

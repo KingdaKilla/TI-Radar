@@ -3,7 +3,7 @@
  *
  * Konsistenz-Audit MAJ-7/MAJ-8:
  *  - Wenn das Backend ``data_complete_year`` liefert UND eine Zeitreihe
- *    Jahre danach enthaelt, MUSS der Hinweis "Daten ggf. unvollstaendig"
+ *    Jahre danach enthält, MUSS der Hinweis "Daten ggf. unvollständig"
  *    angezeigt werden — andernfalls nicht.
  * ────────────────────────────────────────────── */
 

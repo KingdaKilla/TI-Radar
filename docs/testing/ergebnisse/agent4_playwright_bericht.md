@@ -35,7 +35,7 @@
 
 ## 2. Entdeckte Abweichung von der Architektur-Annahme
 
-Die Architektur-Dokumentation (`docs/ARCHITEKTUR.md`) und die Proto-Dateien (`proto/uc_c_publications.proto`) sprechen von **UC1–UC12 + UC-C**. Die Live-App bezeichnet den letzten UC hingegen als **UC13** („Publikations-Impact"). Die UI-Gruppierung ist ausserdem anders als in der Doku:
+Die Architektur-Dokumentation (`docs/ARCHITEKTUR.md`) und die Proto-Dateien (`proto/uc_c_publications.proto`) sprechen von **UC1–UC12 + UC-C**. Die Live-App bezeichnet den letzten UC hingegen als **UC13** („Publikations-Impact"). Die UI-Gruppierung ist außerdem anders als in der Doku:
 
 | Cluster (UI) | UCs im Cluster (UI) | Tabs |
 |---|---|---|
@@ -64,7 +64,7 @@ Die Architektur-Dokumentation (`docs/ARCHITEKTUR.md`) und die Proto-Dateien (`pr
 | **UC8** | Dynamik & Persistenz | ✅ | ✅ | `05_quantum_UC8_temporal.png` | Entrants/Persistent/Exiters-Breakdown. |
 | **UC9** | Tech-Cluster | ✅ | ✅ | `11_quantum_UC9_techcluster.png` | 5-dim Radar-Profil (Aktivität/Diversität/Dichte/Kohärenz/Wachstum). |
 | **UC10** | EuroSciVoc | ✅ | ⚠ | `12_quantum_UC10_euroscivoc.png` | Nur **eine** Kategorie („natural sciences > Physik") sichtbar. Für eine inter­disziplinäre Tech wie Quantencomputing dünn. |
-| **UC11** | Akteurs-Typen | ⚠ | ⚠ | `06_quantum_UC11_actortype.png` | Panel-Fläche grossteils leer („Akteurs-Aufgliederung" ohne Breakdown sichtbar). Vermutlich Rendering-Regression oder fehlende Daten. |
+| **UC11** | Akteurs-Typen | ⚠ | ⚠ | `06_quantum_UC11_actortype.png` | Panel-Fläche großteils leer („Akteurs-Aufgliederung" ohne Breakdown sichtbar). Vermutlich Rendering-Regression oder fehlende Daten. |
 | **UC12** | Patenterteilung | ✅ | ✅ | `13_quantum_UC12_grant.png` | Time-to-Grant-Histogramm + Erteilungsquote. |
 | **UC13** | Publikationen | ✅ | ✅ | `09_quantum_UC13_publications.png` | Donut-Chart OA-Anteil + „54 Publikationen". |
 
@@ -192,7 +192,7 @@ Darunter: **5-dim Radar-Diagramm** (pentagonal), zwei überlappende Polygone.
 | 4 | UC11 & UC4 Empty-States | Konsistente Empty-State-Komponenten je Panel | Frontend |
 | 5 | `data-testid`-Attribute | In allen `panels/*.tsx` einfügen — stabilisiert Cypress-Tests (Agent 1) | Frontend |
 | 6 | Cypress-Protokoll aktualisieren | Selektoren von Panel-Titel auf **Tab-Titel** umstellen (UC1 → „Aktivitätstrends", UC2 → „S-Kurve & Reife" etc.) | Agent 1 beim Lauf |
-| 7 | UC-Nummerierung | UC13 in Proto + Docs umbenennen (heute: `uc_c_publications.proto` — heisst im Frontend `UC13`) | Backend-Konvention |
+| 7 | UC-Nummerierung | UC13 in Proto + Docs umbenennen (heute: `uc_c_publications.proto` — heißt im Frontend `UC13`) | Backend-Konvention |
 
 ---
 

@@ -1,4 +1,4 @@
-"""Unit-Tests fuer VectorSearchRepository.
+"""Unit-Tests für VectorSearchRepository.
 
 Testet die Dense-Search auf document_chunks, Schwellwert-Filterung,
 Quellnamen-Singularisierung und Fehlerbehandlung.
@@ -25,8 +25,8 @@ def _make_pool(
     """Erstellt einen Mock-asyncpg-Pool.
 
     asyncpg.Pool.acquire() ist ein synchroner Aufruf, der einen
-    async context manager zurueckgibt — daher MagicMock fuer pool,
-    AsyncMock fuer die Connection.
+    async context manager zurückgibt — daher MagicMock für pool,
+    AsyncMock für die Connection.
     """
     pool = MagicMock()
     conn = AsyncMock()
@@ -67,7 +67,7 @@ def _make_row(
 # ---------------------------------------------------------------------------
 
 class TestUnknownSource:
-    """Testet dass unbekannte Quellen uebersprungen werden."""
+    """Testet dass unbekannte Quellen übersprungen werden."""
 
     async def test_unknown_source_skipped(self):
         pool = _make_pool(fetch_rows=[])

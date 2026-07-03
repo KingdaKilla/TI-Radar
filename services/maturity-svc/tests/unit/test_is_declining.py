@@ -1,12 +1,12 @@
-"""Unit-Tests fuer die neue is_declining-Logik (Bug A-002 / B-9, Bundle H).
+"""Unit-Tests für die neue is_declining-Logik (Bug A-002 / B-9, Bundle H).
 
 Vorher: ``is_declining`` war nur True, wenn ``maturity_pct >= 90`` UND
-``detect_decline(combined)`` gleichzeitig zutrafen. Das fuehrte zu
-falsch-negativen Labels fuer mRNA (cagr=-18.4 %, maturity=39 %) und
+``detect_decline(combined)`` gleichzeitig zutrafen. Das führte zu
+falsch-negativen Labels für mRNA (cagr=-18.4 %, maturity=39 %) und
 CRISPR (cagr=-22 %, maturity=41 %).
 
-Neu: ODER-Verknuepfung aus (a) negativem empirischen CAGR und (b) dem
-klassischen Plateau-Kriterium. Dazu wird Phase-Konsistenz geprueft:
+Neu: ODER-Verknüpfung aus (a) negativem empirischen CAGR und (b) dem
+klassischen Plateau-Kriterium. Dazu wird Phase-Konsistenz geprüft:
 ``is_declining=True`` muss in ``phase=Decline`` resultieren.
 """
 
@@ -83,13 +83,13 @@ def _run(coro: Any) -> Any:
 
 
 class TestDetermineIsDeclining:
-    """Reine Logik-Tests — unabhaengig vom Servicer-Pfad."""
+    """Reine Logik-Tests — unabhängig vom Servicer-Pfad."""
 
     def test_is_declining_true_when_cagr_negative(self):
-        """Regel (a): negativer CAGR allein genuegt."""
+        """Regel (a): negativer CAGR allein genügt."""
         # mRNA-artiger Fall: maturity nur 39 %, aber cagr klar negativ.
         combined = [10, 12, 15, 18, 22, 20, 17, 14, 11, 9]
-        # -18 %: genuegt, auch ohne 90 %-Plateau.
+        # -18 %: genügt, auch ohne 90 %-Plateau.
         assert determine_is_declining(
             empirical_cagr_percent=-18.0,
             maturity_pct=39.0,
@@ -116,7 +116,7 @@ class TestDetermineIsDeclining:
 
     def test_is_declining_respects_maturity_plateau(self):
         """Regel (b): positive CAGR + 90 %-Plateau + detect_decline -> True."""
-        # Maturity >= 90, aber jaehrliche Raten fallen in den letzten 3 Jahren.
+        # Maturity >= 90, aber jährliche Raten fallen in den letzten 3 Jahren.
         combined = [5, 10, 20, 40, 60, 80, 100, 120, 100, 80, 60]
         # empirical_cagr > 0 (Startwert klein, Endwert moderat), aber
         # maturity_pct 95 + detect_decline => True.
@@ -127,7 +127,7 @@ class TestDetermineIsDeclining:
         ) is True
 
     def test_is_declining_false_at_plateau_without_decline_signal(self):
-        """Regel (b) inaktiv ohne konsekutive Rueckgaenge."""
+        """Regel (b) inaktiv ohne konsekutive Rückgänge."""
         # Maturity >= 90, aber die letzten Jahre sind nicht monoton fallend.
         combined = [5, 10, 20, 40, 60, 80, 100, 120, 125, 128, 130]
         assert determine_is_declining(
@@ -138,7 +138,7 @@ class TestDetermineIsDeclining:
 
 
 # ---------------------------------------------------------------------------
-# Tests: End-to-End ueber Servicer
+# Tests: End-to-End über Servicer
 # ---------------------------------------------------------------------------
 
 
@@ -147,7 +147,7 @@ class TestIsDecliningResponseIntegration:
 
     def test_negative_cagr_flips_phase_to_decline(self):
         """Neg. CAGR bei mittlerer Maturity -> is_declining=True, phase=Decline."""
-        # Steiler Anstieg bis 2018, danach klarer Rueckgang.
+        # Steiler Anstieg bis 2018, danach klarer Rückgang.
         year_counts = {
             2010: 5, 2011: 10, 2012: 20, 2013: 40, 2014: 60,
             2015: 80, 2016: 100, 2017: 120, 2018: 130,
@@ -156,7 +156,7 @@ class TestIsDecliningResponseIntegration:
         servicer = _make_servicer(year_counts)
         response = _run(servicer.AnalyzeMaturity(_FakeRequest(), context=None))
 
-        # Der empirische CAGR ueber 2010..2024 ist negativ (5 -> 4 ist Grenzfall,
+        # Der empirische CAGR über 2010..2024 ist negativ (5 -> 4 ist Grenzfall,
         # hier aber 5 -> 4 -> cagr leicht negativ wegen Endpunktwahl).
         assert response["cagr"] < 0
         assert response["is_declining"] is True

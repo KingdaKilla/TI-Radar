@@ -21,19 +21,19 @@ def check_jwt_expiry(
     now: float | None = None,
     has_refresh_token: bool = False,
 ) -> ApiAlert | None:
-    """JWT-Token auf Ablauf pruefen (lokaler base64-Decode, kein Netzwerk).
+    """JWT-Token auf Ablauf prüfen (lokaler base64-Decode, kein Netzwerk).
 
     Args:
         token: JWT-Access-Token
         source_name: Anzeigename der API (z.B. "OpenAIRE")
-        now: Override fuer aktuelle Zeit (fuer Tests)
+        now: Override für aktuelle Zeit (für Tests)
         has_refresh_token: Wenn True, wird bei abgelaufenem Token kein
             Fehler gemeldet, da Auto-Refresh greift.
 
     Returns:
         ApiAlert mit level="error" wenn abgelaufen (ohne Refresh-Token),
         level="warning" wenn < 3 Tage verbleiben,
-        None wenn gueltig, Auto-Refresh verfuegbar, oder kein JWT.
+        None wenn gültig, Auto-Refresh verfügbar, oder kein JWT.
     """
     if not token or "." not in token:
         return None
@@ -54,7 +54,7 @@ def check_jwt_expiry(
 
         if remaining <= 0:
             if has_refresh_token:
-                # Auto-Refresh verfuegbar — kein Alert noetig
+                # Auto-Refresh verfügbar — kein Alert nötig
                 return None
             hours_ago = abs(remaining) / 3600
             return ApiAlert(
@@ -65,7 +65,7 @@ def check_jwt_expiry(
 
         if remaining < _EXPIRY_WARNING_SECONDS:
             if has_refresh_token:
-                # Auto-Refresh verfuegbar — kein Alert noetig
+                # Auto-Refresh verfügbar — kein Alert nötig
                 return None
             hours_left = remaining / 3600
             if hours_left >= 24:
@@ -75,10 +75,10 @@ def check_jwt_expiry(
             return ApiAlert(
                 source=source_name,
                 level="warning",
-                message=f"{source_name}-Token laeuft in {time_str} ab",
+                message=f"{source_name}-Token läuft in {time_str} ab",
             )
     except Exception:
-        logger.debug("JWT decode failed fuer %s", source_name)
+        logger.debug("JWT decode failed für %s", source_name)
 
     return None
 
@@ -91,7 +91,7 @@ _FAILURE_PATTERNS: list[tuple[str, str]] = [
 
 
 def detect_runtime_failures(warnings: list[str]) -> list[ApiAlert]:
-    """UC-Warnungen nach API-Fehlern durchsuchen und als ApiAlerts zurueckgeben."""
+    """UC-Warnungen nach API-Fehlern durchsuchen und als ApiAlerts zurückgeben."""
     alerts: list[ApiAlert] = []
     seen_sources: set[str] = set()
     for warning in warnings:
@@ -100,7 +100,7 @@ def detect_runtime_failures(warnings: list[str]) -> list[ApiAlert]:
                 alerts.append(ApiAlert(
                     source=source,
                     level="error",
-                    message=f"{source}: Daten nicht verfuegbar",
+                    message=f"{source}: Daten nicht verfügbar",
                 ))
                 seen_sources.add(source)
     return alerts

@@ -15,7 +15,7 @@ def compute_cluster_coherence(
     cpc_co_occurrence: dict[tuple[str, str], int],
     cluster_cpcs: list[str],
 ) -> float:
-    """Cluster-Kohaerenz: Ratio tatsaechlicher zu moeglichen Kanten."""
+    """Cluster-Kohärenz: Ratio tatsächlicher zu möglichen Kanten."""
     if len(cluster_cpcs) < 2:
         return 1.0
 
@@ -40,7 +40,7 @@ def compute_silhouette_simple(
 ) -> float:
     """Vereinfachter Silhouette-Score.
 
-    Approximation fuer Faelle wo sklearn nicht verfuegbar ist.
+    Approximation für Fälle wo sklearn nicht verfügbar ist.
     """
     if len(assignments) < 2:
         return 0.0
@@ -58,7 +58,7 @@ def compute_silhouette_simple(
             continue
         a_i = sum(distances[i][j] for j in same_cluster) / len(same_cluster)
 
-        # Naechster Nachbar-Cluster
+        # Nächster Nachbar-Cluster
         other_clusters = set(assignments) - {cluster_i}
         if not other_clusters:
             silhouettes.append(0.0)

@@ -1,1 +1,1 @@
-"""Tests fuer den UC-C Publication Analytics Service."""
+"""Tests für den UC-C Publication Analytics Service."""

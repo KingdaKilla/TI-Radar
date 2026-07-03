@@ -1,8 +1,8 @@
-"""GET /api/v1/suggestions — Autocomplete-Vorschlaege fuer das Suchfeld.
+"""GET /api/v1/suggestions — Autocomplete-Vorschläge für das Suchfeld.
 
-Liefert Technologie-Vorschlaege basierend auf Patent- und Projekt-Titeln
+Liefert Technologie-Vorschläge basierend auf Patent- und Projekt-Titeln
 aus der PostgreSQL-Datenbank (via asyncpg). Bei leerem Suchbegriff
-werden kuratierte Default-Vorschlaege zurueckgegeben.
+werden kuratierte Default-Vorschläge zurückgegeben.
 
 Migriert aus v1.0 (SQLite + FTS5) auf PostgreSQL + pg_trgm/tsvector.
 """
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/v1", tags=["Suggestions"])
 
 # ---------------------------------------------------------------------------
 # Kuratierte Technologie-Liste (alphabetisch sortiert)
-# Dient gleichzeitig als Default-Vorschlag und als Whitelist fuer die
+# Dient gleichzeitig als Default-Vorschlag und als Whitelist für die
 # Frontend-Validierung (Pool-Endpoint /api/v1/suggestions/pool).
 # ---------------------------------------------------------------------------
 _DEFAULT_SUGGESTIONS: list[str] = [
@@ -132,8 +132,8 @@ _DEFAULT_SUGGESTIONS: list[str] = [
 ]
 
 
-# Stopwords fuer Ngram-Filterung (Patent-/Projekttitel enthalten viele
-# generische Woerter die keine Technologiebegriffe sind)
+# Stopwords für Ngram-Filterung (Patent-/Projekttitel enthalten viele
+# generische Wörter die keine Technologiebegriffe sind)
 _STOPWORDS = frozenset({
     # Englisch
     "a", "an", "the", "of", "for", "and", "or", "in", "on", "to", "with",
@@ -145,9 +145,9 @@ _STOPWORDS = frozenset({
     "related", "new", "novel", "improved", "thereof", "therein", "wherein",
     "means", "including", "particularly", "especially", "via",
     # Deutsch
-    "und", "fuer", "der", "die", "das", "ein", "eine", "von", "mit",
-    "zur", "zum", "auf", "aus", "bei", "nach", "ueber",
-    # Franzoesisch
+    "und", "für", "der", "die", "das", "ein", "eine", "von", "mit",
+    "zur", "zum", "auf", "aus", "bei", "nach", "über",
+    # Französisch
     "le", "la", "les", "de", "du", "des", "un", "une", "et", "en",
     "au", "aux", "pour", "par", "sur", "dans", "avec",
     # Einzelbuchstaben
@@ -167,10 +167,10 @@ def _extract_terms(
     prefix: str,
     ngram_sizes: tuple[int, ...] = (2, 3),
 ) -> list[str]:
-    """Haeufigste Ngrams aus Titeln extrahieren, die den Suchbegriff enthalten.
+    """Häufigste Ngrams aus Titeln extrahieren, die den Suchbegriff enthalten.
 
-    Behaelt die Original-Gross-/Kleinschreibung bei (haeufigste Variante gewinnt).
-    Filtert Stopword-lastige Ngrams und dedupliziert aehnliche Begriffe.
+    Behält die Original-Groß-/Kleinschreibung bei (häufigste Variante gewinnt).
+    Filtert Stopword-lastige Ngrams und dedupliziert ähnliche Begriffe.
     """
     prefix_lower = prefix.lower()
     norm_to_forms: dict[str, Counter[str]] = {}
@@ -204,10 +204,10 @@ def _extract_terms(
 
 
 def _normalize_case(term: str) -> str:
-    """Intelligente Gross-/Kleinschreibung fuer Technologiebegriffe.
+    """Intelligente Groß-/Kleinschreibung für Technologiebegriffe.
 
     - ALL CAPS oder all lowercase -> Title Case
-    - Kurze ALL-CAPS-Woerter (<=4 Zeichen) bleiben gross (Akronyme: LED, AI, CPC)
+    - Kurze ALL-CAPS-Wörter (<=4 Zeichen) bleiben groß (Akronyme: LED, AI, CPC)
     - Gemischte Schreibweise (Quantum Computing) bleibt erhalten
     """
     if not term.isupper() and not term.islower():
@@ -234,8 +234,8 @@ async def suggestion_pool() -> list[str]:
     """Liefert die komplette kuratierte Technologie-Whitelist.
 
     Frontend nutzt diesen Pool, um Nutzer-Eingaben vor Submit zu validieren
-    (nur Technologien aus dem Pool zulaessig, verhindert unsinnige Eingaben
-    die Backend-Fehler provozieren wuerden).
+    (nur Technologien aus dem Pool zulässig, verhindert unsinnige Eingaben
+    die Backend-Fehler provozieren würden).
     """
     return _DEFAULT_SUGGESTIONS
 
@@ -246,9 +246,9 @@ async def suggest_technologies(
     q: str | None = Query(default=None, max_length=100),
     limit: int = Query(default=8, ge=1, le=20),
 ) -> list[str]:
-    """Technologie-Vorschlaege fuer die Suchfeld-Autocomplete.
+    """Technologie-Vorschläge für die Suchfeld-Autocomplete.
 
-    Bei leerem q werden kuratierte Default-Vorschlaege zurueckgegeben.
+    Bei leerem q werden kuratierte Default-Vorschläge zurückgegeben.
     Bei Eingabe >= 2 Zeichen werden Patent- und Projekt-Titel per
     PostgreSQL-Prefix-Suche abgefragt und Ngrams extrahiert.
     """
@@ -261,7 +261,7 @@ async def suggest_technologies(
 
     if db_pool is None:
         logger.warning("suggestions_keine_db_verbindung")
-        # Fallback: Default-Vorschlaege filtern
+        # Fallback: Default-Vorschläge filtern
         return [
             s for s in _DEFAULT_SUGGESTIONS
             if q.lower() in s.lower()
@@ -295,7 +295,7 @@ async def suggest_technologies(
 
     except Exception as exc:
         logger.warning("suggestions_db_fehler", error=str(exc))
-        # Fallback: Default-Vorschlaege filtern
+        # Fallback: Default-Vorschläge filtern
         return [
             s for s in _DEFAULT_SUGGESTIONS
             if q.lower() in s.lower()

@@ -1,7 +1,7 @@
 """UC2-spezifische Metriken und Hilfsfunktionen.
 
 Re-exportiert Kernfunktionen aus shared.domain.metrics und shared.domain.scurve.
-UC2-spezifisch: fit_best_model (Stub-Fallback fuer shared.domain.scurve).
+UC2-spezifisch: fit_best_model (Stub-Fallback für shared.domain.scurve).
 """
 
 from __future__ import annotations
@@ -20,10 +20,10 @@ def fit_best_model(
     years: list[int],
     cumulative: list[int],
 ) -> dict[str, Any] | None:
-    """Fallback S-Curve-Fit (verwendet shared.domain.scurve wenn verfuegbar).
+    """Fallback S-Curve-Fit (verwendet shared.domain.scurve wenn verfügbar).
 
-    Diese lokale Version gibt None zurueck — der eigentliche Fit
+    Diese lokale Version gibt None zurück — der eigentliche Fit
     kommt aus shared.domain.scurve.fit_best_model.
     """
-    # Dieser Fallback wird nur erreicht wenn weder shared noch scipy verfuegbar
+    # Dieser Fallback wird nur erreicht wenn weder shared noch scipy verfügbar
     return None

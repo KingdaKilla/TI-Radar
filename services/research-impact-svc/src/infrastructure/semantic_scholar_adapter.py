@@ -1,12 +1,12 @@
 """Semantic Scholar Academic Graph API Adapter.
 
-Migriert von v1.0 mit minimalen Aenderungen:
+Migriert von v1.0 mit minimalen Änderungen:
 - Gleiche API-Endpunkte und Parameter
-- x-api-key Header fuer authentifizierten Zugriff
-- httpx.AsyncClient fuer async HTTP-Requests
+- x-api-key Header für authentifizierten Zugriff
+- httpx.AsyncClient für async HTTP-Requests
 
 Der Adapter sucht Paper via der Relevance-Search-API und
-gibt strukturierte Ergebnisse mit Zitationen zurueck.
+gibt strukturierte Ergebnisse mit Zitationen zurück.
 
 Erweiterung: PostgreSQL-Cache via research_schema.papers / authors /
 query_cache mit 30-Tage-TTL (ON CONFLICT DO UPDATE-Upsert).
@@ -30,20 +30,20 @@ _CACHE_TTL_DAYS = 30
 
 
 class SemanticScholarAdapter:
-    """Async-Adapter fuer die Semantic Scholar Academic Graph API.
+    """Async-Adapter für die Semantic Scholar Academic Graph API.
 
     Sucht Paper zu einem Technologie-Suchbegriff und gibt
-    strukturierte Ergebnisse mit Zitationsdaten zurueck.
+    strukturierte Ergebnisse mit Zitationsdaten zurück.
 
-    Unterstuetzt optionales DB-Caching ueber ``research_schema``:
-    1. Cache-Hit (frisch)  -> sofortige Rueckgabe aus DB
+    Unterstützt optionales DB-Caching über ``research_schema``:
+    1. Cache-Hit (frisch)  -> sofortige Rückgabe aus DB
     2. Cache-Miss          -> API-Call, Ergebnis in DB speichern
     3. API-Fehler          -> veralteten Cache als Fallback nutzen
     """
 
     BASE_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 
-    # Felder, die von der API zurueckgegeben werden sollen
+    # Felder, die von der API zurückgegeben werden sollen
     PAPER_FIELDS = (
         "title,venue,year,citationCount,influentialCitationCount,"
         "authors,externalIds,isOpenAccess,publicationTypes"
@@ -62,7 +62,7 @@ class SemanticScholarAdapter:
         self._pool = pool
 
     # ------------------------------------------------------------------
-    # Oeffentliche API
+    # Öffentliche API
     # ------------------------------------------------------------------
 
     async def search_papers(
@@ -73,7 +73,7 @@ class SemanticScholarAdapter:
         year_end: int | None = None,
         limit: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Paper-Suche ueber die Semantic Scholar Relevance Search API.
+        """Paper-Suche über die Semantic Scholar Relevance Search API.
 
         Args:
             query: Suchbegriff (Technologie)
@@ -89,7 +89,7 @@ class SemanticScholarAdapter:
         eff_year_start = year_start or 0
         eff_year_end = year_end or 9999
 
-        # --- 1. Cache pruefen ---
+        # --- 1. Cache prüfen ---
         if self._pool is not None:
             try:
                 cached = await self._load_from_cache(
@@ -162,7 +162,7 @@ class SemanticScholarAdapter:
         year_end: int | None,
         effective_limit: int,
     ) -> list[dict[str, Any]] | None:
-        """Fuehrt den eigentlichen HTTP-Call gegen Semantic Scholar durch.
+        """Führt den eigentlichen HTTP-Call gegen Semantic Scholar durch.
 
         Returns:
             Paper-Liste bei Erfolg, ``None`` bei komplettem Fehlschlag.
@@ -260,7 +260,7 @@ class SemanticScholarAdapter:
         *,
         allow_stale: bool = False,
     ) -> list[dict[str, Any]] | None:
-        """Laedt gecachte Paper aus ``research_schema``.
+        """Lädt gecachte Paper aus ``research_schema``.
 
         Returns:
             Paper-Liste wenn Cache-Treffer, sonst ``None``.
@@ -268,7 +268,7 @@ class SemanticScholarAdapter:
         assert self._pool is not None
 
         async with self._pool.acquire() as conn:
-            # Pruefe ob die Abfrage gecacht ist
+            # Prüfe ob die Abfrage gecacht ist
             if allow_stale:
                 qc_sql = """
                     SELECT id, result_count

@@ -1,7 +1,7 @@
-"""Port-Interfaces (ABCs) fuer Repository- und Adapter-Abstraktionen.
+"""Port-Interfaces (ABCs) für Repository- und Adapter-Abstraktionen.
 
-Definiert die Vertraege, die Infrastructure-Adapter implementieren muessen.
-Use Cases haengen nur von diesen Ports ab, nicht von konkreten Implementierungen.
+Definiert die Verträge, die Infrastructure-Adapter implementieren müssen.
+Use Cases hängen nur von diesen Ports ab, nicht von konkreten Implementierungen.
 """
 from __future__ import annotations
 

@@ -1,1 +1,1 @@
-"""Infrastruktur-Schicht: Datenbankzugriff fuer UC5 CPC Flow."""
+"""Infrastruktur-Schicht: Datenbankzugriff für UC5 CPC Flow."""

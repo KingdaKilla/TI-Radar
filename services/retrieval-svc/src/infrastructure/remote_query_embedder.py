@@ -11,7 +11,7 @@ logger = structlog.get_logger()
 
 
 class RemoteQueryEmbedder(QueryEmbeddingPort):
-    """Query-Embedding ueber TEI HTTP API auf dediziertem RunPod Pod.
+    """Query-Embedding über TEI HTTP API auf dediziertem RunPod Pod.
 
     TEI API: POST /embed  {"inputs": ["query"]}  -> [[float, ...]]
     """

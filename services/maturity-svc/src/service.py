@@ -1,6 +1,6 @@
 """UC2 MaturityServicer — gRPC-Implementierung der Reifegrad-Analyse.
 
-Empfaengt AnalysisRequest, fuehrt S-Curve-Fit auf kumulative
+Empfängt AnalysisRequest, führt S-Curve-Fit auf kumulative
 Patent-Familien-Zeitreihen durch und klassifiziert die Technologie-Phase.
 
 Migration von MVP v1.0:
@@ -62,14 +62,14 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc2_maturity_pb2_grpc is not None:
         return uc2_maturity_pb2_grpc.MaturityServiceServicer  # type: ignore[return-value]
     return object
 
 
 class MaturityServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC2 Technology Maturity Assessment.
+    """gRPC-Servicer für UC2 Technology Maturity Assessment.
 
     Analysiert den Reifegrad einer Technologie:
     1. Patent-Familien-Zeitreihe (PostgreSQL, tsvector-Suche)
@@ -91,12 +91,12 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
     ) -> Any:
         """UC2: Technologie-Reifegrad analysieren.
 
-        Empfaengt einen AnalysisRequest mit technology, time_range.
-        Fuehrt S-Curve-Fit auf kumulative Patent-Familien-Zeitreihe durch.
+        Empfängt einen AnalysisRequest mit technology, time_range.
+        Führt S-Curve-Fit auf kumulative Patent-Familien-Zeitreihe durch.
 
         Args:
             request: tip.common.AnalysisRequest Protobuf-Message
-            context: gRPC ServicerContext (fuer Fehlerbehandlung)
+            context: gRPC ServicerContext (für Fehlerbehandlung)
 
         Returns:
             tip.uc2.MaturityResponse Protobuf-Message
@@ -138,7 +138,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
 
         patent_years: dict[int, int] = {}
         try:
-            # Primaer: unique families (OECD 2009 — Dopplungen vermeiden)
+            # Primär: unique families (OECD 2009 — Dopplungen vermeiden)
             rows = await self._repo.count_families_by_year(
                 technology, start_year=start_year, end_year=end_year,
             )
@@ -168,11 +168,11 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         else:
             total_patents = 0
 
-        # --- Daten-Vollstaendigkeits-Cutoff ---
+        # --- Daten-Vollständigkeits-Cutoff ---
         # MAJ-7/MAJ-8: ``last_complete_year()`` aus shared-Helper liefert das
         # letzte voll abgeschlossene Kalenderjahr (heute 2026-04-14 → 2025).
-        # S-Curve-Fit und Phasen-Klassifikation duerfen NIE Teiljahre
-        # einbeziehen, sonst wird R² fuer 2026 kuenstlich hoch und CAGR zu
+        # S-Curve-Fit und Phasen-Klassifikation dürfen NIE Teiljahre
+        # einbeziehen, sonst wird R² für 2026 künstlich hoch und CAGR zu
         # niedrig.  Vorher hardcoded 2024 → ab 2026 stale.
         data_complete_year = last_complete_year()
 
@@ -197,10 +197,10 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         # Vorzeichen (maturity -18.4 % vs landscape +3.1 %).
         # Gleiches Vorgehen wie ``landscape-svc/_safe_cagr``:
         #   1. Filter auf Jahre <= data_complete_year (kein Teiljahr).
-        #   2. Erster/letzter Jahrgang mit Zaehlwert >= 0 aus dem gefilterten
+        #   2. Erster/letzter Jahrgang mit Zählwert >= 0 aus dem gefilterten
         #      Bereich (Endpunkt-basiert, konsistent mit OECD-Praxis).
         #   3. Gleicher ``shared.domain.metrics.cagr``-Aufruf.
-        # Dies liefert den "empirischen" CAGR, der spaeter als Alias fuer
+        # Dies liefert den "empirischen" CAGR, der später als Alias für
         # das deprecated ``cagr``-Feld (Proto-5) und als neues ``empirical_cagr``
         # (Proto-18) ausgeliefert wird.
         growth_rate = _compute_empirical_cagr(
@@ -209,11 +209,11 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
             data_complete_year=data_complete_year,
         )
 
-        # --- S-Curve-Fit (nur auf vollstaendige Jahre) ---
+        # --- S-Curve-Fit (nur auf vollständige Jahre) ---
         min_patents = self._settings.min_patents_for_fit
         s_curve_result: dict[str, Any] | None = None
 
-        # Fit nur auf Jahre mit vollstaendigen Daten
+        # Fit nur auf Jahre mit vollständigen Daten
         fit_end_idx = len(all_years)
         for i, y in enumerate(all_years):
             if y > data_complete_year:
@@ -227,7 +227,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         elif cumulative and cumulative[-1] > 0:
             warnings.append({
                 "message": (
-                    f"Zu wenige Patente ({cumulative[-1]}) fuer S-Curve-Fit "
+                    f"Zu wenige Patente ({cumulative[-1]}) für S-Curve-Fit "
                     f"(Minimum: {min_patents}) — Fallback auf Heuristik"
                 ),
                 "severity": "MEDIUM",
@@ -255,7 +255,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         fit_reliability_flag = False
         # Overfitting-Warnung: R² > 0.98 bei n < 30 Datenpunkten ist ein
         # klassisches Overfitting-Signal (3-Parameter Sigmoid mit wenig Daten).
-        # Ergaenzt fit_reliability_flag um den umgekehrten Fall "Fit zu gut".
+        # Ergänzt fit_reliability_flag um den umgekehrten Fall "Fit zu gut".
         overfit_warning = False
 
         if s_curve_result is not None:
@@ -291,13 +291,13 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
             aicc_alternative = raw_alt if isinstance(raw_alt, (int, float)) and math.isfinite(raw_alt) else 0.0
             delta_aicc = s_curve_result.get("delta_aicc", 0.0)
 
-            # Gewichtete Konfidenz (s_curve_confidence gibt bei R² < 0.5 hart 0 zurueck)
+            # Gewichtete Konfidenz (s_curve_confidence gibt bei R² < 0.5 hart 0 zurück)
             conf = s_curve_confidence(r_sq, len(all_years), cumulative[-1] if cumulative else 0)
             confidence_level = conf
 
-            # Bug MAJ-9: Bei unzuverlaessigem Fit (R² < Threshold) keine Phase-Sicherheit.
+            # Bug MAJ-9: Bei unzuverlässigem Fit (R² < Threshold) keine Phase-Sicherheit.
             # Strukturelle Kopplung: confidence ist bereits 0 (s_curve_confidence-Gate),
-            # zusaetzlich wird das Phase-Label auf "Unknown" gesetzt und der Reliability-
+            # zusätzlich wird das Phase-Label auf "Unknown" gesetzt und der Reliability-
             # Flag bleibt False, damit das Frontend den Badge ausgrauen kann.
             if r_sq < R2_RELIABILITY_THRESHOLD:
                 phase_en = "Unknown"
@@ -308,23 +308,23 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
                 years_to_next_phase = 0
                 warnings.append({
                     "message": (
-                        f"S-Curve-Fit unzuverlaessig (R²={r_sq:.3f} < "
-                        f"{R2_RELIABILITY_THRESHOLD}) — Phase-Label nicht aussagekraeftig"
+                        f"S-Curve-Fit unzuverlässig (R²={r_sq:.3f} < "
+                        f"{R2_RELIABILITY_THRESHOLD}) — Phase-Label nicht aussagekräftig"
                     ),
                     "severity": "MEDIUM",
                     "code": "FIT_UNRELIABLE_LOW_R2",
                 })
             else:
                 fit_reliability_flag = True
-                # Overfitting-Pruefung: nur sinnvoll bei zuverlaessigem Fit.
-                # Basis ist die Anzahl der Jahre, die tatsaechlich in den Fit
-                # eingingen (fit_years — schliesst Teiljahre via data_complete_year aus).
+                # Overfitting-Prüfung: nur sinnvoll bei zuverlässigem Fit.
+                # Basis ist die Anzahl der Jahre, die tatsächlich in den Fit
+                # eingingen (fit_years — schließt Teiljahre via data_complete_year aus).
                 overfit_warning = is_potentially_overfit(r_sq, len(fit_years))
                 if overfit_warning:
                     warnings.append({
                         "message": (
                             f"Hoher R²-Wert ({r_sq:.3f}) bei nur {len(fit_years)} "
-                            "Datenpunkten — Fit moeglicherweise ueberangepasst"
+                            "Datenpunkten — Fit möglicherweise überangepasst"
                         ),
                         "severity": "MEDIUM",
                         "code": "FIT_POTENTIALLY_OVERFIT",
@@ -334,31 +334,31 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
                     combined, maturity_percent=maturity_pct, r_squared=r_sq,
                 )
 
-                # Konfidenzintervall (einfache Schaetzung via R²)
-                spread = (1.0 - r_sq) * 20.0  # Breite abhaengig von Fit-Guete
+                # Konfidenzintervall (einfache Schätzung via R²)
+                spread = (1.0 - r_sq) * 20.0  # Breite abhängig von Fit-Güte
                 confidence_lower = max(0.0, maturity_pct - spread)
                 confidence_upper = min(100.0, maturity_pct + spread)
 
-                # Jahre bis zur naechsten Phase (grobe Schaetzung)
+                # Jahre bis zur nächsten Phase (grobe Schätzung)
                 years_to_next_phase = _estimate_years_to_next_phase(
                     maturity_pct, growth_rate_k, sat_level, cumulative[-1] if cumulative else 0,
                 )
         else:
-            # Fallback: Kein Sigmoid-Fit moeglich. Heuristik darf KEINE Konfidenz
+            # Fallback: Kein Sigmoid-Fit möglich. Heuristik darf KEINE Konfidenz
             # transportieren (Bug MAJ-9), da kein R² zur Verankerung vorliegt.
-            # Konfidenz zwingend 0 ueber s_curve_confidence(0, ...) — strukturell.
+            # Konfidenz zwingend 0 über s_curve_confidence(0, ...) — strukturell.
             phase_en = "Unknown"
             conf = s_curve_confidence(0.0, len(all_years), cumulative[-1] if cumulative else 0)
             confidence_level = conf  # immer 0.0 (R²-Kopplung in s_curve_confidence)
             fit_reliability_flag = False
             if cumulative and cumulative[-1] > 0 and cumulative[-1] >= min_patents:
                 warnings.append({
-                    "message": "S-Curve-Fit fehlgeschlagen — kein zuverlaessiges Phase-Label",
+                    "message": "S-Curve-Fit fehlgeschlagen — kein zuverlässiges Phase-Label",
                     "severity": "MEDIUM",
                     "code": "FIT_FAILED_FALLBACK",
                 })
 
-        # --- Decline-Erkennung (ergaenzt S-Kurve) ---
+        # --- Decline-Erkennung (ergänzt S-Kurve) ---
         # Bug A-002 / B-9: Vor dem Fix wurde is_declining nur gesetzt, wenn
         # maturity_pct >= 90 UND detect_decline(combined) gleichzeitig zutrafen.
         # Bei mRNA (cagr -18.4 %, maturity 39 %) und CRISPR (cagr -22 %, maturity
@@ -366,7 +366,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         # Neue Regel (siehe ``determine_is_declining``):
         #   (a) empirical_cagr < 0                              -> Decline
         #   (b) maturity_pct >= 90 UND detect_decline(combined) -> Plateau-Decline
-        # Zusaetzlich: Phase-Konsistenz — is_declining <=> phase == DECLINING.
+        # Zusätzlich: Phase-Konsistenz — is_declining <=> phase == DECLINING.
         is_declining = determine_is_declining(
             empirical_cagr_percent=growth_rate,
             maturity_pct=maturity_pct,
@@ -388,7 +388,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         # --- Fitted growth rate (Gompertz/Logistic/Richards) ---
         # Dies ist die momentane Wachstumsrate aus dem gefitteten Modell am
         # letzten Datenpunkt, NICHT der historische Durchschnitt. Vorher
-        # wurde dieser Wert teilweise als "cagr" verkauft, was zu C-004 fuehrte.
+        # wurde dieser Wert teilweise als "cagr" verkauft, was zu C-004 führte.
         fitted_growth_rate = _compute_fitted_growth_rate(
             s_curve_result=s_curve_result,
             fit_years=fit_years,
@@ -477,10 +477,10 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
     ) -> Any:
         """MaturityResponse aus berechneten Daten zusammenbauen.
 
-        Wenn gRPC-Stubs nicht verfuegbar sind, wird ein dict zurueckgegeben
-        (fuer Tests und Entwicklung ohne generierten Code).
+        Wenn gRPC-Stubs nicht verfügbar sind, wird ein dict zurückgegeben
+        (für Tests und Entwicklung ohne generierten Code).
         """
-        # MAJ-7/MAJ-8: Default-Vollstaendigkeitsjahr aus dem shared-Helper.
+        # MAJ-7/MAJ-8: Default-Vollständigkeitsjahr aus dem shared-Helper.
         if data_complete_year is None:
             data_complete_year = last_complete_year()
         if uc2_maturity_pb2 is None or common_pb2 is None:
@@ -591,10 +591,10 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         )
 
         # ``overfit_warning`` ist Proto-Feld 17 — erst ab regeneriertem Stub
-        # verfuegbar. Defensive Konstruktion: Feld nur setzen, wenn der
-        # Message-Type es unterstuetzt (vermeidet Crash bei veralteten Stubs).
-        # C-004: ``cagr`` bleibt aus Abwaertskompatibilitaet als Alias
-        # fuer den empirischen CAGR stehen. Neue Clients lesen stattdessen
+        # verfügbar. Defensive Konstruktion: Feld nur setzen, wenn der
+        # Message-Type es unterstützt (vermeidet Crash bei veralteten Stubs).
+        # C-004: ``cagr`` bleibt aus Abwärtskompatibilität als Alias
+        # für den empirischen CAGR stehen. Neue Clients lesen stattdessen
         # ``empirical_cagr`` (Feld 18) oder ``fitted_growth_rate`` (Feld 19).
         empirical_cagr_fraction = growth_rate / 100.0
         response_kwargs: dict[str, Any] = dict(
@@ -664,7 +664,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         if data_complete_year is None:
             data_complete_year = last_complete_year()
         fitted_map = {fv["year"]: fv["fitted"] for fv in s_curve_fitted}
-        # C-004: ``cagr`` bleibt als Alias fuer den empirischen CAGR erhalten.
+        # C-004: ``cagr`` bleibt als Alias für den empirischen CAGR erhalten.
         empirical_cagr_fraction = growth_rate / 100.0
         return {
             "s_curve_data": [
@@ -711,7 +711,7 @@ class MaturityServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             all_years=[],
@@ -747,20 +747,20 @@ def _compute_empirical_cagr(
     combined: list[int],
     data_complete_year: int,
 ) -> float:
-    """Naiver (Endpunkt-)CAGR ueber die jaehrlichen Raten.
+    """Naiver (Endpunkt-)CAGR über die jährlichen Raten.
 
     Gleiche Methode wie ``landscape-svc._safe_cagr`` (Bug C-004 Fix):
     - Filter auf Jahre ``<= data_complete_year`` (keine Teiljahre).
-    - Erster/letzter Jahrgang mit Zaehlwert > 0 aus dem gefilterten Fenster.
-    - ``shared.domain.metrics.cagr`` liefert Prozent (z.B. 12.5 fuer 12.5 %).
+    - Erster/letzter Jahrgang mit Zählwert > 0 aus dem gefilterten Fenster.
+    - ``shared.domain.metrics.cagr`` liefert Prozent (z.B. 12.5 für 12.5 %).
 
-    Gibt 0.0 zurueck, wenn keine zwei positiven Jahrgaenge gefunden werden
+    Gibt 0.0 zurück, wenn keine zwei positiven Jahrgänge gefunden werden
     oder der Zeitraum null ist.
     """
     if not all_years or not combined:
         return 0.0
 
-    # Indices nur fuer vollstaendige Jahre behalten und davon die mit Count > 0.
+    # Indices nur für vollständige Jahre behalten und davon die mit Count > 0.
     valid_indices = [
         i
         for i, y in enumerate(all_years)
@@ -787,15 +787,15 @@ def _compute_fitted_growth_rate(
     s_curve_result: dict[str, Any] | None,
     fit_years: list[int],
 ) -> float:
-    """Momentane Wachstumsrate aus dem gewaehlten Modell (Bug C-004).
+    """Momentane Wachstumsrate aus dem gewählten Modell (Bug C-004).
 
-    Gibt die relative Steigung der Fit-Kurve am letzten Fit-Jahr zurueck
+    Gibt die relative Steigung der Fit-Kurve am letzten Fit-Jahr zurück
     (``(y[n] / y[n-1]) - 1``). Fraction (0.123 = 12.3 %), kein Prozent.
 
-    Warum ueber die fitted_values und nicht die Parameter selbst:
+    Warum über die fitted_values und nicht die Parameter selbst:
     Gompertz- und Logistic-Parameter sind unterschiedlich skaliert, was zu
-    C-004 gefuehrt hat. Die empirische Steigung der gefitteten Kurve ist
-    modell-unabhaengig vergleichbar.
+    C-004 geführt hat. Die empirische Steigung der gefitteten Kurve ist
+    modell-unabhängig vergleichbar.
     """
     if s_curve_result is None or not fit_years or len(fit_years) < 2:
         return 0.0
@@ -820,10 +820,10 @@ def determine_is_declining(
     maturity_pct: float,
     combined: list[int],
 ) -> bool:
-    """Decline-Regel fuer Bundle H (Bug A-002 / B-9).
+    """Decline-Regel für Bundle H (Bug A-002 / B-9).
 
-    Zwei unabhaengige Kriterien — ODER-Verknuepfung:
-      (a) ``empirical_cagr_percent < 0`` — klarer historischer Rueckgang,
+    Zwei unabhängige Kriterien — ODER-Verknüpfung:
+      (a) ``empirical_cagr_percent < 0`` — klarer historischer Rückgang,
           auch ohne 90 %-Plateau (mRNA cagr=-18.4 %, CRISPR cagr=-22 %).
       (b) ``maturity_pct >= 90`` UND ``detect_decline(combined)`` — klassischer
           Post-Peak-Decline auf dem Plateau.
@@ -844,19 +844,19 @@ def _estimate_years_to_next_phase(
     carrying_capacity: float,
     current_cumulative: int,
 ) -> int:
-    """Grobe Schaetzung: Jahre bis zur naechsten Phasengrenze.
+    """Grobe Schätzung: Jahre bis zur nächsten Phasengrenze.
 
     Phasengrenzen (Gao et al. 2013):
     - Emerging -> Growing: 10%
     - Growing -> Mature: 50%
     - Mature -> Saturation: 90%
 
-    Gibt 0 zurueck wenn bereits in Saturation oder Berechnung nicht moeglich.
+    Gibt 0 zurück wenn bereits in Saturation oder Berechnung nicht möglich.
     """
     if growth_rate_k <= 0 or carrying_capacity <= 0:
         return 0
 
-    # Naechste Grenze bestimmen
+    # Nächste Grenze bestimmen
     if maturity_pct < 10.0:
         target_pct = 10.0
     elif maturity_pct < 50.0:
@@ -866,15 +866,15 @@ def _estimate_years_to_next_phase(
     else:
         return 0  # Bereits in Saturation
 
-    # Einfache lineare Schaetzung basierend auf aktuellem Wachstum
+    # Einfache lineare Schätzung basierend auf aktuellem Wachstum
     target_value = carrying_capacity * target_pct / 100.0
     remaining = target_value - current_cumulative
 
     if remaining <= 0:
         return 0
 
-    # Durchschnittliche jaehrliche Zunahme aus k und aktuellem Stand
-    # Naeherung: bei k=0.3 und Mitte der S-Kurve waechst es ca. L*k/4 pro Jahr
+    # Durchschnittliche jährliche Zunahme aus k und aktuellem Stand
+    # Näherung: bei k=0.3 und Mitte der S-Kurve wächst es ca. L*k/4 pro Jahr
     annual_growth = carrying_capacity * growth_rate_k / 4.0
     if annual_growth <= 0:
         return 0

@@ -1,7 +1,7 @@
-"""EmbeddingRepository — PostgreSQL-Datenbankzugriff fuer Embedding-Service.
+"""EmbeddingRepository — PostgreSQL-Datenbankzugriff für Embedding-Service.
 
 Liest Dokumente ohne Embedding aus drei Quellen (patents, projects, papers)
-und schreibt die erzeugten Vektoren zurueck in die jeweilige Tabelle.
+und schreibt die erzeugten Vektoren zurück in die jeweilige Tabelle.
 """
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ def _get_config(source: str) -> dict[str, str]:
 
 
 class EmbeddingRepository(EmbeddingRepositoryPort):
-    """Async PostgreSQL-Zugriff fuer Embedding-Operationen."""
+    """Async PostgreSQL-Zugriff für Embedding-Operationen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -73,7 +73,7 @@ class EmbeddingRepository(EmbeddingRepositoryPort):
         Args:
             source: "patents", "projects" oder "papers"
             batch_size: Maximale Anzahl Dokumente pro Batch
-            year_from: Optional — nur fuer patents: Filter publication_year >= year_from
+            year_from: Optional — nur für patents: Filter publication_year >= year_from
         """
         cfg = _get_config(source)
 
@@ -156,7 +156,7 @@ class EmbeddingRepository(EmbeddingRepositoryPort):
     # -----------------------------------------------------------------------
 
     async def count_status(self, source: str) -> tuple[int, int]:
-        """Gibt (total, embedded) Counts zurueck.
+        """Gibt (total, embedded) Counts zurück.
 
         Args:
             source: "patents", "projects" oder "papers"
@@ -179,11 +179,11 @@ class EmbeddingRepository(EmbeddingRepositoryPort):
 
 
 # ===========================================================================
-# ChunkRepository — Chunk-basierte Persistenz fuer document_chunks
+# ChunkRepository — Chunk-basierte Persistenz für document_chunks
 # ===========================================================================
 
 class ChunkRepository(ChunkRepositoryPort):
-    """Async PostgreSQL-Zugriff fuer Chunk-Operationen auf cross_schema.document_chunks."""
+    """Async PostgreSQL-Zugriff für Chunk-Operationen auf cross_schema.document_chunks."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -197,18 +197,18 @@ class ChunkRepository(ChunkRepositoryPort):
     ) -> list[tuple[str, str]]:
         """Liest Dokumente ohne Chunks (source_id, text).
 
-        Gibt Dokumente zurueck, deren ID noch nicht in document_chunks vorkommt.
+        Gibt Dokumente zurück, deren ID noch nicht in document_chunks vorkommt.
 
         Args:
             source: "patents", "projects" oder "papers"
             batch_size: Maximale Anzahl Dokumente pro Batch
-            year_from: Optional — nur fuer patents: Filter publication_year >= year_from
+            year_from: Optional — nur für patents: Filter publication_year >= year_from
         """
         cfg = _get_config(source)
 
         conditions = [cfg["text_not_null"]]
         params: list[Any] = [source]
-        idx = 2  # $1 = source (fuer Subquery)
+        idx = 2  # $1 = source (für Subquery)
 
         if year_from is not None and cfg["year_col"]:
             conditions.append(f"{cfg['year_col']} >= ${idx}")
@@ -291,7 +291,7 @@ class ChunkRepository(ChunkRepositoryPort):
     # -----------------------------------------------------------------------
 
     async def count_chunk_status(self, source: str) -> tuple[int, int]:
-        """Gibt (total_docs_with_text, docs_already_chunked) Counts zurueck.
+        """Gibt (total_docs_with_text, docs_already_chunked) Counts zurück.
 
         Args:
             source: "patents", "projects" oder "papers"

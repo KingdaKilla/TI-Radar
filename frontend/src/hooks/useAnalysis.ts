@@ -6,10 +6,10 @@
  * technology + useCaseKey to avoid double requests.
  *
  * F-034 (T-05): Memoisierung des effektiv verwendeten
- * panelData-Keys ueber (technology, useCaseKey). Der fetchAnalysis-
+ * panelData-Keys über (technology, useCaseKey). Der fetchAnalysis-
  * Callback stellt sicher, dass er bei StrictMode-Double-Effect und
  * bei jedem Re-Render desselben Detail-Views NICHT zweimal feuert.
- * AbortController triggert nur bei echtem Schluessel-Wechsel.
+ * AbortController triggert nur bei echtem Schlüssel-Wechsel.
  * ────────────────────────────────────────────── */
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -70,7 +70,7 @@ export function useAnalysis(
     lastKeyRef.current = effectiveKey;
     panelDataRef.current = panelData ?? null;
   } else if (effectiveKey && !panelDataRef.current && panelData) {
-    // Beim ersten Mount mit gueltigem panelData einmal Referenz setzen.
+    // Beim ersten Mount mit gültigem panelData einmal Referenz setzen.
     panelDataRef.current = panelData;
   }
 
@@ -183,10 +183,10 @@ export function useAnalysis(
   }, [technology, useCaseKey]);
 
   // Trigger analysis when inputs change.
-  // F-034: Abhaengigkeit ist der stabile effectiveKey, NICHT die
+  // F-034: Abhängigkeit ist der stabile effectiveKey, NICHT die
   // panelData-Referenz. Damit feuert der Effect bei StrictMode-Double-
   // Mount zwar zweimal, aber beide Aufrufe finden im Cache den gleichen
-  // key und der zweite kehrt sofort zurueck — nur noch 1 HTTP-Request.
+  // key und der zweite kehrt sofort zurück — nur noch 1 HTTP-Request.
   useEffect(() => {
     fetchAnalysis();
 

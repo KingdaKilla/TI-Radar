@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import Any
 
-# Menschenlesbare Labels fuer Organisationstypen
+# Menschenlesbare Labels für Organisationstypen
 ACTIVITY_TYPE_LABELS: dict[str, str] = {
     "HES": "Higher Education",
     "PRC": "KMU / Unternehmen",
@@ -28,7 +28,7 @@ def compute_type_breakdown(
 ) -> list[dict[str, Any]]:
     """Organisationstypen aggregieren mit Anteilen.
 
-    Erwartet Eintraege: {activity_type, actor_count, project_count, funding}.
+    Erwartet Einträge: {activity_type, actor_count, project_count, funding}.
     """
     total_actors = sum(int(r.get("actor_count", 0)) for r in raw_counts)
     total_activity = sum(
@@ -75,16 +75,16 @@ def compute_classification_coverage(
 
     Formel: ``classified / (classified + unclassified)``.
 
-    Grenzfaelle:
+    Grenzfälle:
     - ``classified == 0 and unclassified == 0`` -> ``1.0``
-      (keine Daten -> konservativ als "vollstaendig klassifiziert"
-      behandeln, sonst waere ``coverage == 0`` trotz leerem Nenner
-      irrefuehrend — siehe Bug: coverage == 0 bei unclassified == 0).
+      (keine Daten -> konservativ als "vollständig klassifiziert"
+      behandeln, sonst wäre ``coverage == 0`` trotz leerem Nenner
+      irreführend — siehe Bug: coverage == 0 bei unclassified == 0).
     - ``unclassified == 0 and classified > 0`` -> ``1.0`` (alle bekannt).
     - Negative Werte werden auf ``0`` geklammert, um NaN/unsinnige
       Ergebnisse zu vermeiden.
 
-    Der Rueckgabewert liegt stets in ``[0.0, 1.0]`` und wird auf
+    Der Rückgabewert liegt stets in ``[0.0, 1.0]`` und wird auf
     4 Nachkommastellen gerundet (konsistent mit ``compute_sme_share``).
     """
     classified = max(int(classified), 0)

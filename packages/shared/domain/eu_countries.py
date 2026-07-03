@@ -1,9 +1,9 @@
-"""EU/EEA-Laenderset fuer datenseitige Europa-Filterung.
+"""EU/EEA-Länderset für datenseitige Europa-Filterung.
 
 Konsistent mit frontend/src/utils/countries.js EU_COUNTRIES.
 """
 
-# EU-27 + EEA (NO, IS, LI) + Assoziierte (CH) + GB/UK + EL (CORDIS-Alias fuer GR)
+# EU-27 + EEA (NO, IS, LI) + Assoziierte (CH) + GB/UK + EL (CORDIS-Alias für GR)
 EU_EEA_COUNTRIES: frozenset[str] = frozenset({
     # EU-27
     "AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GR",
@@ -19,5 +19,5 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 def is_european(code: str) -> bool:
-    """Prueft ob ein Laendercode zum EU/EEA-Raum gehoert."""
+    """Prüft ob ein Ländercode zum EU/EEA-Raum gehört."""
     return code.upper().strip() in EU_EEA_COUNTRIES

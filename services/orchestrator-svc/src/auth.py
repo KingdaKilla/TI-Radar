@@ -1,11 +1,11 @@
-"""API-Key-basierte Authentifizierung fuer den Orchestrator.
+"""API-Key-basierte Authentifizierung für den Orchestrator.
 
-Einfache API-Key-Validierung via X-API-Key Header. Fuer MVP ausreichend —
-JWT/OAuth2 waere Overkill fuer ein internes System ohne Benutzerkonten.
+Einfache API-Key-Validierung via X-API-Key Header. Für MVP ausreichend —
+JWT/OAuth2 wäre Overkill für ein internes System ohne Benutzerkonten.
 
 Verhalten:
 - TI_RADAR_API_KEY nicht gesetzt → offener Zugang (MVP-Modus)
-- TI_RADAR_API_KEY gesetzt → Key wird gegen Header geprueft
+- TI_RADAR_API_KEY gesetzt → Key wird gegen Header geprüft
 
 Verwendung in Routern (nicht global, damit Health-Checks offen bleiben):
 
@@ -27,7 +27,7 @@ from fastapi.security import APIKeyHeader
 
 logger = structlog.get_logger(__name__)
 
-# Header-Name fuer den API-Key (De-facto-Standard fuer interne APIs)
+# Header-Name für den API-Key (De-facto-Standard für interne APIs)
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
@@ -37,14 +37,14 @@ async def verify_api_key(
     """Validiert den API-Key aus dem X-API-Key Header.
 
     Wenn die Umgebungsvariable TI_RADAR_API_KEY nicht gesetzt ist,
-    wird die Authentifizierung uebersprungen (offener Zugang im MVP-Modus).
-    Das ermoeglicht einfaches Testen ohne Konfiguration.
+    wird die Authentifizierung übersprungen (offener Zugang im MVP-Modus).
+    Das ermöglicht einfaches Testen ohne Konfiguration.
 
     Args:
         api_key: Wert aus dem X-API-Key Header (None wenn nicht gesendet).
 
     Raises:
-        HTTPException 401: API-Key fehlt oder ist ungueltig.
+        HTTPException 401: API-Key fehlt oder ist ungültig.
     """
     expected = os.getenv("TI_RADAR_API_KEY", "")
 
@@ -60,8 +60,8 @@ async def verify_api_key(
         )
 
     if not hmac.compare_digest(api_key, expected):
-        logger.warning("auth_fehlgeschlagen", grund="Ungueltiger API-Key")
+        logger.warning("auth_fehlgeschlagen", grund="Ungültiger API-Key")
         raise HTTPException(
             status_code=401,
-            detail="Ungueltiger API-Key",
+            detail="Ungültiger API-Key",
         )

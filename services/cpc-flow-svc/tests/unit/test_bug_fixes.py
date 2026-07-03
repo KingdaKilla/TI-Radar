@@ -1,9 +1,9 @@
-"""Unit-Tests fuer Bundle-D Bug-Fixes.
+"""Unit-Tests für Bundle-D Bug-Fixes.
 
 Testet:
 - Bug 1: year_data_entries darf nicht leer sein, wenn CPC-Daten vorhanden sind.
-- Bug 2: top_pairs mit similarity > 0 muessen co_occurrence_count > 0 haben
-         (Jaccard ohne Co-Occurrence ist mathematisch unmoeglich).
+- Bug 2: top_pairs mit similarity > 0 müssen co_occurrence_count > 0 haben
+         (Jaccard ohne Co-Occurrence ist mathematisch unmöglich).
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ class TestCoOccurrenceCountNonZero:
     """Wenn similarity > 0, muss co_occurrence_count > 0 sein."""
 
     def test_top_pairs_have_co_occurrence_count_field(self) -> None:
-        """Jedes Top-Pair enthaelt ein co_occurrence_count-Feld."""
+        """Jedes Top-Pair enthält ein co_occurrence_count-Feld."""
         labels = ["H04W", "G06N"]
         matrix = [[1.0, 0.25], [0.25, 1.0]]
         pair_co_counts = {("G06N", "H04W"): 50}
@@ -56,7 +56,7 @@ class TestCoOccurrenceCountNonZero:
         assert pairs[0]["co_occurrence_count"] == 42
 
     def test_top_pairs_with_similarity_gt_zero_have_co_count_gt_zero(self) -> None:
-        """Kernpruefung (Bug 2): similarity > 0 impliziert co_occurrence_count > 0."""
+        """Kernprüfung (Bug 2): similarity > 0 impliziert co_occurrence_count > 0."""
         labels = ["X01A", "Y02B", "Z03C"]
         matrix = [
             [1.0, 0.3, 0.1],
@@ -78,11 +78,11 @@ class TestCoOccurrenceCountNonZero:
             if pair["similarity"] > 0:
                 assert pair["co_occurrence_count"] > 0, (
                     f"Jaccard {pair['similarity']} bei co_occurrence_count=0 "
-                    f"ist mathematisch unmoeglich: {pair}"
+                    f"ist mathematisch unmöglich: {pair}"
                 )
 
     def test_co_count_fallback_reconstructed_from_jaccard(self) -> None:
-        """Fehlt pair_co_counts, wird co_count aus Jaccard zurueckgerechnet."""
+        """Fehlt pair_co_counts, wird co_count aus Jaccard zurückgerechnet."""
         labels = ["A01B", "C02D"]
         # Jaccard = 0.25 mit Counts (100, 100) -> co = 0.25*200/1.25 = 40
         matrix = [[1.0, 0.25], [0.25, 1.0]]
@@ -132,7 +132,7 @@ class TestYearDataPopulated:
     """year_data_entries darf nicht leer sein wenn CPC-Codes pro Jahr vorhanden sind."""
 
     def test_year_data_populated_when_cpc_data_exists(self) -> None:
-        """Kernpruefung (Bug 1): year_data muss bei vorhandenen CPC-Daten befuellt sein."""
+        """Kernprüfung (Bug 1): year_data muss bei vorhandenen CPC-Daten befüllt sein."""
         cpc_year_counts = [
             {"year": 2020, "code": "H04W", "patent_count": 100},
             {"year": 2020, "code": "G06N", "patent_count": 80},
@@ -150,12 +150,12 @@ class TestYearDataPopulated:
             pair_year_counts=pair_year_counts,
         )
 
-        assert len(entries) == 2, "Es muessen 2 Jahres-Eintraege vorhanden sein"
+        assert len(entries) == 2, "Es müssen 2 Jahres-Einträge vorhanden sein"
         assert entries[0]["year"] == 2020
         assert entries[1]["year"] == 2021
 
     def test_year_entry_schema(self) -> None:
-        """Jeder Year-Eintrag enthaelt die Pflicht-Felder."""
+        """Jeder Year-Eintrag enthält die Pflicht-Felder."""
         entries = _build_year_data_entries(
             top_codes=["H04W"],
             cpc_year_counts=[{"year": 2020, "code": "H04W", "patent_count": 50}],
@@ -169,7 +169,7 @@ class TestYearDataPopulated:
             assert field in entry, f"Feld {field} fehlt in year-entry"
 
     def test_active_codes_counts_distinct_cpc(self) -> None:
-        """active_codes zaehlt die Anzahl unterschiedlicher CPC-Codes pro Jahr."""
+        """active_codes zählt die Anzahl unterschiedlicher CPC-Codes pro Jahr."""
         cpc_year_counts = [
             {"year": 2022, "code": "A01B", "patent_count": 10},
             {"year": 2022, "code": "B02C", "patent_count": 20},

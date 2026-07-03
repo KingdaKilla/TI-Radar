@@ -1,6 +1,6 @@
 """UC8-spezifische Metriken und Hilfsfunktionen.
 
-Lokaler Fallback fuer shared.domain.temporal_metrics,
+Lokaler Fallback für shared.domain.temporal_metrics,
 falls das shared-Package nicht im PYTHONPATH liegt.
 """
 
@@ -60,9 +60,9 @@ def compute_technology_breadth(
 ) -> list[dict[str, Any]]:
     """Technologie-Breite pro Jahr (Shannon-Index, Herfindahl).
 
-    Zwei Granularitaeten:
+    Zwei Granularitäten:
     - unique_cpc_codes: CPC-Subklassen (Level 4, z.B. H01L)
-    - shannon_index: Shannon-Diversitaetsindex
+    - shannon_index: Shannon-Diversitätsindex
     - herfindahl_index: Herfindahl-Konzentration
     """
     result: list[dict[str, Any]] = []
@@ -155,7 +155,7 @@ def compute_actor_timeline(
 def compute_programme_evolution(
     instrument_data: list[dict[str, str | int | float]],
 ) -> list[dict[str, Any]]:
-    """Programm-Verteilung pro Jahr (fuer Stacked Area Chart)."""
+    """Programm-Verteilung pro Jahr (für Stacked Area Chart)."""
     by_year: dict[int, dict[str, dict[str, float]]] = {}
     for row in instrument_data:
         year = int(row.get("year", 0))

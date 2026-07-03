@@ -1,19 +1,19 @@
-"""Unit-Tests fuer Bug M-002 / C2.1 — DISTINCT-Projekt-Counts in temporal-svc.
+"""Unit-Tests für Bug M-002 / C2.1 — DISTINCT-Projekt-Counts in temporal-svc.
 
 Bug: ``temporal.metadata.data_sources[CORDIS].record_count`` war zuvor
 ``len(cordis_actors_raw)`` — also die Zeilenanzahl einer
 ``GROUP BY (year, organization_name)``-Aggregation. Ein Projekt mit 5
-Organisationen ueber 2 Jahre erzeugte dort *bis zu 10 Zeilen*. Bei
+Organisationen über 2 Jahre erzeugte dort *bis zu 10 Zeilen*. Bei
 Blockchain ergab das 3148 statt der korrekten 322 (+877 %), vs. der
 ``landscape.summary.total_projects``-Referenz.
 
 Fix:
 * Repository: Neue Methode ``count_distinct_cordis_projects`` liefert
   ``COUNT(DISTINCT p.id)`` direkt aus der Datenbank.
-* Service: ``record_count`` stammt aus dieser dedizierten Zaehlung.
+* Service: ``record_count`` stammt aus dieser dedizierten Zählung.
 
 Diese Tests verifizieren, dass die Row-Duplikation durch Joins
-(1 Projekt x N Organisationen x M Laender) *nicht* in den Projekt-
+(1 Projekt x N Organisationen x M Länder) *nicht* in den Projekt-
 Count einfliesst.
 """
 
@@ -36,14 +36,14 @@ class _FakeConn:
     """Minimaler asyncpg-Conn-Mock.
 
     Wir stellen die von den Queries genutzten Methoden (``fetch``,
-    ``fetchval``) als ``AsyncMock`` bereit. Die konkreten Rueckgabewerte
+    ``fetchval``) als ``AsyncMock`` bereit. Die konkreten Rückgabewerte
     werden pro Test konfiguriert.
     """
 
     def __init__(self) -> None:
         self.fetch = AsyncMock()
         self.fetchval = AsyncMock()
-        # Letzter SQL-Text / Parameter fuer Assertions.
+        # Letzter SQL-Text / Parameter für Assertions.
         self.last_sql: str = ""
         self.last_params: tuple[Any, ...] = ()
 
@@ -88,7 +88,7 @@ def fake_conn() -> _FakeConn:
 def repo(fake_conn: _FakeConn) -> TemporalRepository:
     pool = _FakePool(fake_conn)
     # ``TemporalRepository`` erwartet ``asyncpg.Pool`` — der Duck-Type
-    # reicht fuer die Tests voellig.
+    # reicht für die Tests völlig.
     return TemporalRepository(pool)  # type: ignore[arg-type]
 
 
@@ -106,7 +106,7 @@ class TestCountDistinctCordisProjectsSql:
     ) -> None:
         """Die Query MUSS ``COUNT(DISTINCT p.id)`` verwenden — andernfalls
         liefert sie bei ``european_only=True`` (Organisations-JOIN)
-        Row-aufgeblaehte Werte."""
+        Row-aufgeblähte Werte."""
         fake_conn._fetchval_return = 1
         await repo.count_distinct_cordis_projects(
             "blockchain", start_year=2016, end_year=2026,
@@ -139,7 +139,7 @@ class TestCountDistinctCordisProjectsSql:
         self, repo: TemporalRepository, fake_conn: _FakeConn,
     ) -> None:
         """Ohne ``european_only`` ist der Organisations-JOIN nicht
-        noetig — dann reicht ``projects p`` (keine Row-Multiplikation)."""
+        nötig — dann reicht ``projects p`` (keine Row-Multiplikation)."""
         fake_conn._fetchval_return = 322
         await repo.count_distinct_cordis_projects(
             "blockchain", start_year=2016, end_year=2026,
@@ -157,21 +157,21 @@ class TestCountDistinctCordisProjectsSql:
 
 
 class TestCountDistinctCordisProjectsBehavior:
-    """Prueft die Kernaussage: 1 Projekt x 5 Laender -> count = 1."""
+    """Prüft die Kernaussage: 1 Projekt x 5 Länder -> count = 1."""
 
     @pytest.mark.asyncio
     async def test_ein_projekt_fuenf_laender_ergibt_eins(
         self, repo: TemporalRepository, fake_conn: _FakeConn,
     ) -> None:
         """Simuliert den Bug-Fix: Die DB gibt ``COUNT(DISTINCT p.id) = 1``
-        zurueck fuer 1 Projekt mit 5 Organisations-Rows (5 Laender).
-        Ohne DISTINCT haette der Bug hier 5 geliefert."""
+        zurück für 1 Projekt mit 5 Organisations-Rows (5 Länder).
+        Ohne DISTINCT hätte der Bug hier 5 geliefert."""
         fake_conn._fetchval_return = 1
         total = await repo.count_distinct_cordis_projects(
             "blockchain", european_only=True,
         )
         assert total == 1, (
-            "1 Projekt x 5 Laender muss COUNT(DISTINCT p.id) = 1 ergeben, "
+            "1 Projekt x 5 Länder muss COUNT(DISTINCT p.id) = 1 ergeben, "
             "nicht 5 (Row-Duplikation durch JOIN)."
         )
 
@@ -180,7 +180,7 @@ class TestCountDistinctCordisProjectsBehavior:
         self, repo: TemporalRepository, fake_conn: _FakeConn,
     ) -> None:
         """Leeres Ergebnis aus PostgreSQL (``None``) wird sicher in 0
-        ueberfuehrt — keine ``TypeError``."""
+        überführt — keine ``TypeError``."""
         fake_conn._fetchval_return = None
         total = await repo.count_distinct_cordis_projects("unknown_tech")
         assert total == 0
@@ -204,14 +204,14 @@ class TestCountDistinctCordisProjectsBehavior:
 
 
 # ---------------------------------------------------------------------------
-# cordis_actors_by_year — Regressionsschutz fuer den Hauptbug
+# cordis_actors_by_year — Regressionsschutz für den Hauptbug
 # ---------------------------------------------------------------------------
 
 
 class TestCordisActorsByYearDistinct:
     """Regressionsschutz: Die (year, actor)-Aggregation MUSS
     ``COUNT(DISTINCT p.id)`` nutzen — sonst werden Projekte pro Akteur
-    bei Mehrfach-Rollen ueberzaehlt."""
+    bei Mehrfach-Rollen überzählt."""
 
     @pytest.mark.asyncio
     async def test_query_verwendet_count_distinct(
@@ -251,7 +251,7 @@ class TestServiceUsesDistinctCountForRecordCount:
         servicer._pool = MagicMock()
         servicer._settings = MagicMock()
 
-        # Repository vollstaendig mocken — wir testen hier nur die
+        # Repository vollständig mocken — wir testen hier nur die
         # AnalyzeTemporal-Verdrahtung.
         repo = MagicMock()
         repo.patent_actors_by_year = AsyncMock(return_value=[])
@@ -278,7 +278,7 @@ class TestServiceUsesDistinctCountForRecordCount:
         request.time_range.end_year = 2026
 
         # uc8_temporal_pb2 ist im Unit-Test-Umfeld i.d.R. None -> es
-        # wird der dict-Response-Pfad gewaehlt.
+        # wird der dict-Response-Pfad gewählt.
         response = await servicer.AnalyzeTemporal(request, context=None)
 
         # Der dict-Response-Pfad liefert data_sources unter

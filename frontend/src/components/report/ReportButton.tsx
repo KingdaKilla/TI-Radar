@@ -2,7 +2,7 @@
 
 /* ──────────────────────────────────────────────
  * TI-Radar v3 -- Report-Button (Header)
- * Oeffnet den ReportDialog zur Report-Generierung
+ * Öffnet den ReportDialog zur Report-Generierung
  * ────────────────────────────────────────────── */
 
 import { useState } from "react";

@@ -11,7 +11,7 @@ logger = structlog.get_logger()
 
 
 class RemoteEmbedder(EmbeddingProviderPort):
-    """Embedding-Provider ueber TEI HTTP API auf dediziertem RunPod Pod.
+    """Embedding-Provider über TEI HTTP API auf dediziertem RunPod Pod.
 
     TEI API: POST /embed  {"inputs": [...]}  -> [[float, ...], ...]
     """
@@ -29,7 +29,7 @@ class RemoteEmbedder(EmbeddingProviderPort):
         )
 
     async def embed_batch(self, texts: list[str]) -> list[list[float]]:
-        """Erzeugt Embeddings ueber TEI API mit Sub-Batching."""
+        """Erzeugt Embeddings über TEI API mit Sub-Batching."""
         if not texts:
             return []
 
@@ -66,6 +66,6 @@ class RemoteEmbedder(EmbeddingProviderPort):
         return all_embeddings
 
     async def close(self) -> None:
-        """Schliesst den httpx-Client."""
+        """Schließt den httpx-Client."""
         await self._client.aclose()
         logger.info("remote_embedder_geschlossen")

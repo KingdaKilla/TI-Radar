@@ -1,6 +1,6 @@
-"""Zentrale Konfiguration via Pydantic Settings fuer den Export-Service.
+"""Zentrale Konfiguration via Pydantic Settings für den Export-Service.
 
-Alle infrastrukturellen Parameter werden ueber Umgebungsvariablen
+Alle infrastrukturellen Parameter werden über Umgebungsvariablen
 oder eine .env-Datei geladen. Enthalt Verbindungsdaten zur Datenbank,
 Orchestrator-URL und Export-spezifische Limits.
 """
@@ -14,9 +14,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Anwendungskonfiguration — geladen aus Umgebungsvariablen / .env.
 
-    Der Export-Service benoetigt Zugriff auf:
-    - PostgreSQL (export_schema fuer Cache und Export-Log)
-    - Orchestrator-Service (fuer frische Analyseergebnisse)
+    Der Export-Service benötigt Zugriff auf:
+    - PostgreSQL (export_schema für Cache und Export-Log)
+    - Orchestrator-Service (für frische Analyseergebnisse)
     """
 
     # --- Server ---
@@ -28,13 +28,13 @@ class Settings(BaseSettings):
     # --- Datenbank (PostgreSQL via asyncpg) ---
     database_url: str = Field(
         default="postgresql://tip:tip@postgres:5432/tip",
-        description="PostgreSQL Connection-String fuer asyncpg (export_schema)",
+        description="PostgreSQL Connection-String für asyncpg (export_schema)",
     )
 
     # --- Orchestrator-Service ---
     orchestrator_url: str = Field(
         default="http://orchestrator-svc:8000",
-        description="Base-URL des Orchestrator-Service fuer /api/v1/radar Aufrufe",
+        description="Base-URL des Orchestrator-Service für /api/v1/radar Aufrufe",
     )
 
     # --- Export-spezifische Limits ---

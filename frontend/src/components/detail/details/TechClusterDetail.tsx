@@ -98,7 +98,7 @@ export default function TechClusterDetail({ data }: TechClusterDetailProps) {
         />
       </div>
 
-      {/* Radar-Chart (vergroessert) */}
+      {/* Radar-Chart (vergrößert) */}
       {radarData.length > 0 && (
         <DetailChartSection ariaLabel="Cluster-Radar: 5 Dimensionen (alle Cluster)">
           <ResponsiveContainer width="100%" height="100%">
@@ -137,7 +137,7 @@ export default function TechClusterDetail({ data }: TechClusterDetailProps) {
         </DetailChartSection>
       )}
 
-      {/* Dimensionen-Erklaerungen */}
+      {/* Dimensionen-Erklärungen */}
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-panel)] p-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="text-xs">
           <p className="font-semibold text-[var(--color-text-primary)]">Patente</p>
@@ -161,7 +161,7 @@ export default function TechClusterDetail({ data }: TechClusterDetailProps) {
         </div>
       </div>
 
-      {/* Vollstaendige Cluster-Tabelle */}
+      {/* Vollständige Cluster-Tabelle */}
       <DetailDataSection title="Cluster-Übersicht">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

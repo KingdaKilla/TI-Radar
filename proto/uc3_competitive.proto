@@ -162,8 +162,8 @@ message CompetitiveResponse {
   // Standard response metadata.
   tip.common.ResponseMetadata metadata = 10;
 
-  // Concentration Ratio Top-4: Summe der 4 groessten Marktanteile (0-1).
+  // Concentration Ratio Top-4: Summe der 4 größten Marktanteile (0-1).
   // CR4 > 0.6 = hoch konzentriert, < 0.4 = wettbewerbsintensiv.
-  // Ergaenzt HHI um eine intuitivere Konzentrations-Metrik.
+  // Ergänzt HHI um eine intuitivere Konzentrations-Metrik.
   double cr4_share = 11;
 }

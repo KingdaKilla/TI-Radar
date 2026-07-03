@@ -1,4 +1,4 @@
-"""Master-Definitionen fuer Patent-Zaehlungen (Bug CRIT-4).
+"""Master-Definitionen für Patent-Zählungen (Bug CRIT-4).
 
 Hintergrund: `total_patents` im Header und `total_applications` in UC12 wurden
 im Live-System nicht konsistent getrennt. Dieses Modul definiert drei kanonische
@@ -16,7 +16,7 @@ Scope-Mapping (dokumentarisch):
     GRANTS_ONLY        → ``patent_schema.patents`` WHERE kind IN GRANT_KIND_CODES.
                          Genutzt von UC12 (`total_grants`).
 
-Plausibilitaet: ``ALL_PATENTS >= APPLICATIONS_ONLY + GRANTS_ONLY`` (Rest sind
+Plausibilität: ``ALL_PATENTS >= APPLICATIONS_ONLY + GRANTS_ONLY`` (Rest sind
 unbekannte/nicht-klassifizierte Kind-Codes).
 """
 
@@ -26,7 +26,7 @@ from enum import Enum
 
 
 class PatentScope(Enum):
-    """Kanonischer Scope fuer Patent-Zaehlungen."""
+    """Kanonischer Scope für Patent-Zählungen."""
 
     ALL_PATENTS = "all_patents"
     APPLICATIONS_ONLY = "applications_only"
@@ -36,12 +36,12 @@ class PatentScope(Enum):
 APPLICATION_KIND_CODES: frozenset[str] = frozenset({
     "A", "A1", "A2", "A3", "A4", "A8", "A9",
 })
-"""EPO/USPTO Kind-Codes fuer Applications (Offenlegungsschrift)."""
+"""EPO/USPTO Kind-Codes für Applications (Offenlegungsschrift)."""
 
 GRANT_KIND_CODES: frozenset[str] = frozenset({
     "B", "B1", "B2", "B3", "B4", "B8", "B9",
 })
-"""EPO/USPTO Kind-Codes fuer Grants (erteiltes Patent)."""
+"""EPO/USPTO Kind-Codes für Grants (erteiltes Patent)."""
 
 
 _LABELS: dict[PatentScope, str] = {
@@ -52,7 +52,7 @@ _LABELS: dict[PatentScope, str] = {
 
 
 def canonical_patent_label(scope: PatentScope) -> str:
-    """Kurzes deutsches Label fuer UI/Logs.
+    """Kurzes deutsches Label für UI/Logs.
 
     Args:
         scope: Element des ``PatentScope``-Enums.

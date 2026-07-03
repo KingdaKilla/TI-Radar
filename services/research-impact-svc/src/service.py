@@ -1,6 +1,6 @@
 """UC7 ResearchImpactServicer — gRPC-Implementierung der Research-Impact-Analyse.
 
-Empfaengt AnalysisRequest, ruft Semantic Scholar API auf,
+Empfängt AnalysisRequest, ruft Semantic Scholar API auf,
 berechnet h-Index, Zitationstrends, Top-Papers und Venues.
 
 Migration von MVP v1.0:
@@ -65,14 +65,14 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc7_research_impact_pb2_grpc is not None:
         return uc7_research_impact_pb2_grpc.ResearchImpactServiceServicer  # type: ignore[return-value]
     return object
 
 
 class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC7 Research Impact.
+    """gRPC-Servicer für UC7 Research Impact.
 
     Ruft Semantic Scholar API auf und berechnet:
     1. h-Index (Hirsch 2005)
@@ -148,7 +148,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
                 technology, year_start=start_year, year_end=end_year,
             )
             if papers:
-                # CRIT-1: Scope-Label aus shared.domain anhaengen, damit das
+                # CRIT-1: Scope-Label aus shared.domain anhängen, damit das
                 # Frontend (Panel + Detail) "Top-Autor-Publikationen" statt
                 # generisch "Publikationen" rendern kann.
                 from src.infrastructure.repository import UC7_PUBLICATION_LABEL
@@ -224,7 +224,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
 
         # Bug C5.2: Jahr-Padding -- citation_trend deckt je Tech unterschiedliche
         # Jahre ab. Durch ``start_year``/``end_year`` werden fehlende Jahre mit
-        # 0-Werten aufgefuellt, damit das Frontend konsistent rendern kann.
+        # 0-Werten aufgefüllt, damit das Frontend konsistent rendern kann.
         try:
             citation_trend = _compute_citation_trend(
                 papers, start_year=start_year, end_year=end_year,
@@ -243,7 +243,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
             warnings.append({
                 "message": (
                     f"h-Index basiert auf Top-{total_publications} relevantesten Papers "
-                    "— Approximation, kein vollstaendiger Korpus (Banks 2006)"
+                    "— Approximation, kein vollständiger Korpus (Banks 2006)"
                 ),
                 "severity": "LOW",
                 "code": "SAMPLE_SIZE_LIMIT",
@@ -341,7 +341,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
             for p in top_papers
         ]
 
-        # Bug M-010: h_index pro Venue in Proto-Mapper uebernehmen
+        # Bug M-010: h_index pro Venue in Proto-Mapper übernehmen
         # (Proto-Feld existiert: uc7_research_impact.proto:94).
         pb_venues = [
             uc7_research_impact_pb2.TopVenue(
@@ -400,9 +400,9 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
 
         # TODO v3.4.8 Author Index (Bug M-012):
         # Proto-Feld ``top_authors`` (uc7_research_impact.proto:181) existiert,
-        # ist aber noch nicht befuellt. Sobald ein Author-Index vorliegt
+        # ist aber noch nicht befüllt. Sobald ein Author-Index vorliegt
         # (Aggregation von ``papers[*].authors`` mit per-Autor h_index und
-        # total_citations), hier als ``top_authors=pb_authors`` hinzufuegen.
+        # total_citations), hier als ``top_authors=pb_authors`` hinzufügen.
         return uc7_research_impact_pb2.ResearchImpactResponse(
             h_index=h_index,
             avg_citations=avg_citations,
@@ -443,7 +443,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
 
         Bug MAJ-7/MAJ-8: ``data_complete_year`` aus dem shared-Helper
         macht den Cutoff explizit, damit das Frontend bei Citation-Trend-
-        Daten bis 2026 den Hinweis "Daten ggf. unvollstaendig" rendert.
+        Daten bis 2026 den Hinweis "Daten ggf. unvollständig" rendert.
         """
         return {
             "h_index": h_index,
@@ -469,7 +469,7 @@ class ResearchImpactServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             h_index=0, avg_citations=0.0, median_citations=0.0,

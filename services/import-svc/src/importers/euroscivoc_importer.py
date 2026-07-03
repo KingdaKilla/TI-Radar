@@ -7,9 +7,9 @@ Liest EuroSciVoc-Taxonomie-Daten aus den CORDIS-Bulk-Downloads
 
 Erwartete Verzeichnisstruktur:
     /data/bulk/CORDIS/
-        cordis-HORIZONprojects-json.zip   (enthaelt euroSciVoc.json)
-        cordis-h2020projects-json.zip     (enthaelt euroSciVoc.json)
-        cordis-fp7projects-json.zip       (enthaelt euroSciVoc.json)
+        cordis-HORIZONprojects-json.zip   (enthält euroSciVoc.json)
+        cordis-h2020projects-json.zip     (enthält euroSciVoc.json)
+        cordis-fp7projects-json.zip       (enthält euroSciVoc.json)
 
 JSON-Format pro Eintrag:
     {
@@ -68,7 +68,7 @@ class ImportResult:
 def _build_taxonomy_from_entries(
     entries: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    """Taxonomie-Baum aus EuroSciVoc-JSON-Eintraegen aufbauen.
+    """Taxonomie-Baum aus EuroSciVoc-JSON-Einträgen aufbauen.
 
     Jeder Eintrag hat euroSciVocCode und euroSciVocPath.
     Aus dem Pfad werden alle Ebenen der Hierarchie abgeleitet.
@@ -154,10 +154,10 @@ async def _insert_taxonomy_batch(
     pool: asyncpg.Pool,
     records: list[dict[str, Any]],
 ) -> tuple[int, int]:
-    """Taxonomie-Eintraege batchweise einfuegen.
+    """Taxonomie-Einträge batchweise einfügen.
 
-    ON CONFLICT (code) DO UPDATE fuer Upsert-Verhalten.
-    DEFERRABLE INITIALLY DEFERRED fuer self-referencing FK.
+    ON CONFLICT (code) DO UPDATE für Upsert-Verhalten.
+    DEFERRABLE INITIALLY DEFERRED für self-referencing FK.
     """
     if not records:
         return 0, 0
@@ -200,9 +200,9 @@ async def _insert_junction_batch(
     pool: asyncpg.Pool,
     batch: list[tuple[int, str]],
 ) -> tuple[int, int]:
-    """Projekt-EuroSciVoc-Zuordnungen batchweise einfuegen.
+    """Projekt-EuroSciVoc-Zuordnungen batchweise einfügen.
 
-    Nutzt Staging-Tabelle fuer effizienten JOIN.
+    Nutzt Staging-Tabelle für effizienten JOIN.
     """
     if not batch:
         return 0, 0
@@ -251,8 +251,8 @@ async def import_euroscivoc_bulk(
     """EuroSciVoc-Bulk-Import aus CORDIS-JSON-ZIPs.
 
     Schritt 1: euroSciVoc.json aus allen Projekt-ZIPs lesen.
-    Schritt 2: Taxonomie-Baum aufbauen und in DB einfuegen.
-    Schritt 3: Projekt-Zuordnungen (Junction) einfuegen.
+    Schritt 2: Taxonomie-Baum aufbauen und in DB einfügen.
+    Schritt 3: Projekt-Zuordnungen (Junction) einfügen.
     """
     result = ImportResult(source="EUROSCIVOC")
     start_time = time.monotonic()
@@ -280,7 +280,7 @@ async def import_euroscivoc_bulk(
     )
 
     # -------------------------------------------------------------------
-    # Schritt 1: Alle Eintraege aus den ZIPs lesen
+    # Schritt 1: Alle Einträge aus den ZIPs lesen
     # -------------------------------------------------------------------
     all_entries: list[dict[str, Any]] = []
 
@@ -294,19 +294,19 @@ async def import_euroscivoc_bulk(
         all_entries.extend(entries)
         result.files_processed += 1
 
-    logger.info("euroscivoc_gesamt_eintraege", total=len(all_entries))
+    logger.info("euroscivoc_gesamt_einträge", total=len(all_entries))
 
     if not all_entries:
-        result.errors.append("Keine EuroSciVoc-Eintraege in den ZIPs gefunden")
+        result.errors.append("Keine EuroSciVoc-Einträge in den ZIPs gefunden")
         return result
 
     # -------------------------------------------------------------------
-    # Schritt 2: Taxonomie aufbauen und einfuegen
+    # Schritt 2: Taxonomie aufbauen und einfügen
     # -------------------------------------------------------------------
     taxonomy = _build_taxonomy_from_entries(all_entries)
     logger.info("euroscivoc_taxonomie_aufgebaut", codes=len(taxonomy))
 
-    # Nach Level sortiert einfuegen (Eltern zuerst)
+    # Nach Level sortiert einfügen (Eltern zuerst)
     sorted_taxonomy = sorted(taxonomy.values(), key=lambda r: r["level"])
 
     taxonomy_imported = 0
@@ -323,12 +323,12 @@ async def import_euroscivoc_bulk(
     result.details["taxonomy_imported"] = taxonomy_imported
 
     # -------------------------------------------------------------------
-    # Schritt 3: Projekt-Zuordnungen einfuegen
+    # Schritt 3: Projekt-Zuordnungen einfügen
     # -------------------------------------------------------------------
     junction_imported = 0
     junction_skipped = 0
 
-    # Eintraege mit projectID sammeln
+    # Einträge mit projectID sammeln
     junction_pairs: list[tuple[int, str]] = []
     for entry in all_entries:
         project_id = entry.get("projectID")

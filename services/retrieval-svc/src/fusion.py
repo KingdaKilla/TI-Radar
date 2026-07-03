@@ -1,7 +1,7 @@
 """Reciprocal Rank Fusion (Cormack et al. 2009).
 
 Kombiniert mehrere Ranking-Listen zu einem einzigen Fused-Ranking.
-RRF-Score fuer Dokument d: SUM(1 / (k + rank(d))) ueber alle Listen,
+RRF-Score für Dokument d: SUM(1 / (k + rank(d))) über alle Listen,
 wobei rank 1-basiert ist (erstes Element hat rank=1).
 """
 from __future__ import annotations
@@ -15,9 +15,9 @@ def reciprocal_rank_fusion(
     """Fusioniert mehrere gerankte Listen via RRF.
 
     Args:
-        ranked_lists: Liste von geordneten Doc-ID-Listen (hoechster Rang zuerst).
-        k: RRF-Daempfungsparameter (Standard: 60, nach Cormack et al. 2009).
-        top_n: Optionale Begrenzung der Ergebnisgroesse.
+        ranked_lists: Liste von geordneten Doc-ID-Listen (höchster Rang zuerst).
+        k: RRF-Dämpfungsparameter (Standard: 60, nach Cormack et al. 2009).
+        top_n: Optionale Begrenzung der Ergebnisgröße.
 
     Returns:
         Sortierte Liste von (doc_id, rrf_score) Tupeln, absteigend nach Score.

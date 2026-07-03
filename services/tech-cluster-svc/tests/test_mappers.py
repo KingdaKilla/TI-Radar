@@ -1,7 +1,7 @@
-"""Unit-Tests fuer tech-cluster-svc dict_response Mapper.
+"""Unit-Tests für tech-cluster-svc dict_response Mapper.
 
 Testet die Konvertierung von TechClusterResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 
 Besonderer Fokus: CAGR-Normalisierung (/ 100) im Mapper.
 """
@@ -105,7 +105,7 @@ class TestDictResponseMapper:
 class TestCagrNormalization:
     """Testet die CAGR-Normalisierung von Prozent auf Fraktion.
 
-    Convention: Backend liefert CAGR als Prozentwert (z.B. 15.0 fuer 15%).
+    Convention: Backend liefert CAGR als Prozentwert (z.B. 15.0 für 15%).
     Der dict_response Mapper teilt durch 100: 15.0 -> 0.15.
     Frontend formatPercent() multipliziert dann wieder x100.
     """
@@ -168,7 +168,7 @@ class TestCagrNormalization:
 # ---------------------------------------------------------------------------
 
 class TestClusterFields:
-    """Testet dass nicht-CAGR Cluster-Felder unveraendert durchgereicht werden."""
+    """Testet dass nicht-CAGR Cluster-Felder unverändert durchgereicht werden."""
 
     def test_cluster_id_preserved(self):
         result = _make_result()
@@ -260,7 +260,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Cluster-Liste, Default-Result."""
+    """Testet Randfälle: leere Cluster-Liste, Default-Result."""
 
     def test_empty_clusters(self):
         result = _make_result(clusters=[])

@@ -1,8 +1,8 @@
-"""EmbeddingServicer — duenner gRPC-Adapter.
+"""EmbeddingServicer — dünner gRPC-Adapter.
 
-Extrahiert Request-Parameter aus Protobuf, delegiert Geschaeftslogik
+Extrahiert Request-Parameter aus Protobuf, delegiert Geschäftslogik
 an den EmbedDocuments Use Case und mappt das EmbedResult
-zurueck auf gRPC-/dict-Responses.
+zurück auf gRPC-/dict-Responses.
 """
 from __future__ import annotations
 
@@ -42,16 +42,16 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if embedding_pb2_grpc is not None:
         return embedding_pb2_grpc.EmbeddingServiceServicer  # type: ignore[return-value]
     return object
 
 
 class EmbeddingServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer den Embedding-Service.
+    """gRPC-Servicer für den Embedding-Service.
 
-    Duenner Adapter: extrahiert Parameter, delegiert an Use Case,
+    Dünner Adapter: extrahiert Parameter, delegiert an Use Case,
     mappt Ergebnis auf gRPC-Response.
     """
 
@@ -142,7 +142,7 @@ class EmbeddingServicer(_get_base_class()):  # type: ignore[misc]
         request: Any,
         context: Any,
     ) -> Any:
-        """Status-Abfrage fuer Embedding-Fortschritt.
+        """Status-Abfrage für Embedding-Fortschritt.
 
         Args:
             request: tip.embedding.EmbeddingStatusRequest Protobuf-Message

@@ -1,4 +1,4 @@
-"""Tests fuer Reciprocal Rank Fusion (Cormack et al. 2009)."""
+"""Tests für Reciprocal Rank Fusion (Cormack et al. 2009)."""
 from __future__ import annotations
 
 from src.fusion import reciprocal_rank_fusion
@@ -6,13 +6,13 @@ from src.fusion import reciprocal_rank_fusion
 
 class TestReciprocalRankFusion:
     def test_single_list_preserves_order(self):
-        """Eine einzelne Liste behaelt die Reihenfolge bei."""
+        """Eine einzelne Liste behält die Reihenfolge bei."""
         result = reciprocal_rank_fusion([["A", "B", "C"]], k=60)
         ids = [doc_id for doc_id, _ in result]
         assert ids == ["A", "B", "C"]
 
     def test_two_identical_lists_boost_scores(self):
-        """Zwei identische Listen erhoehen Scores, behalten Ordnung."""
+        """Zwei identische Listen erhöhen Scores, behalten Ordnung."""
         result = reciprocal_rank_fusion([["A", "B", "C"], ["A", "B", "C"]], k=60)
         ids = [doc_id for doc_id, _ in result]
         assert ids == ["A", "B", "C"]
@@ -30,7 +30,7 @@ class TestReciprocalRankFusion:
         assert len(result) == 4
 
     def test_overlap_boosts_rank(self):
-        """Ueberlappende Dokumente werden hoeher gerankt.
+        """Überlappende Dokumente werden höher gerankt.
 
         List1: A(idx0)->1/61, B(idx1)->1/62, C(idx2)->1/63
         List2: C(idx0)->1/61, B(idx1)->1/62, D(idx2)->1/63
@@ -72,24 +72,24 @@ class TestReciprocalRankFusion:
         assert spread_k1 > spread_k60  # Smaller k = more spread
 
     def test_top_n_truncation(self):
-        """top_n Parameter begrenzt Ergebnisgroesse."""
+        """top_n Parameter begrenzt Ergebnisgröße."""
         result = reciprocal_rank_fusion([["A", "B", "C", "D", "E"]], k=60, top_n=3)
         assert len(result) == 3
         ids = [doc_id for doc_id, _ in result]
         assert ids == ["A", "B", "C"]
 
     def test_top_n_none_returns_all(self):
-        """Ohne top_n werden alle Ergebnisse zurueckgegeben."""
+        """Ohne top_n werden alle Ergebnisse zurückgegeben."""
         result = reciprocal_rank_fusion([["A", "B", "C", "D", "E"]], k=60)
         assert len(result) == 5
 
     def test_top_n_larger_than_results(self):
-        """top_n groesser als Ergebnisse gibt alle zurueck."""
+        """top_n größer als Ergebnisse gibt alle zurück."""
         result = reciprocal_rank_fusion([["A", "B"]], k=60, top_n=10)
         assert len(result) == 2
 
     def test_scores_are_positive(self):
-        """Alle RRF-Scores muessen positiv sein."""
+        """Alle RRF-Scores müssen positiv sein."""
         result = reciprocal_rank_fusion([["A", "B", "C"], ["D", "E"]], k=60)
         for _, score in result:
             assert score > 0.0
@@ -104,7 +104,7 @@ class TestReciprocalRankFusion:
             assert scores[i] >= scores[i + 1]
 
     def test_three_lists_fusion(self):
-        """Fusion ueber drei Listen funktioniert korrekt."""
+        """Fusion über drei Listen funktioniert korrekt."""
         result = reciprocal_rank_fusion(
             [["A", "B", "C"], ["B", "C", "A"], ["C", "A", "B"]], k=60
         )

@@ -1,6 +1,6 @@
-"""Conftest fuer publication-svc Tests.
+"""Conftest für publication-svc Tests.
 
-Fuegt Projekt-Root, Service-Root und ``packages/`` zum sys.path hinzu,
+Fügt Projekt-Root, Service-Root und ``packages/`` zum sys.path hinzu,
 damit sowohl ``shared.*`` als auch ``src.*`` importierbar sind.
 """
 

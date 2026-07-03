@@ -1,6 +1,6 @@
 """UC6-spezifische Metriken und Hilfsfunktionen.
 
-Lokaler Fallback fuer shared.domain.metrics und shared.domain.eu_countries,
+Lokaler Fallback für shared.domain.metrics und shared.domain.eu_countries,
 falls das shared-Package nicht im PYTHONPATH liegt.
 """
 
@@ -15,7 +15,7 @@ except ImportError:
 
 
 # ---------------------------------------------------------------------------
-# EU/EEA-Laender (Fallback fuer shared.domain.eu_countries)
+# EU/EEA-Länder (Fallback für shared.domain.eu_countries)
 # ---------------------------------------------------------------------------
 
 EU_EEA_COUNTRIES: frozenset[str] = frozenset({
@@ -28,12 +28,12 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 def is_european(code: str) -> bool:
-    """Prueft ob ein Laendercode zum EU/EEA-Raum gehoert."""
+    """Prüft ob ein Ländercode zum EU/EEA-Raum gehört."""
     return code.upper().strip() in EU_EEA_COUNTRIES
 
 
 # ---------------------------------------------------------------------------
-# Laender-Zusammenfuehrung
+# Länder-Zusammenführung
 # ---------------------------------------------------------------------------
 
 def merge_country_data(
@@ -42,7 +42,7 @@ def merge_country_data(
     *,
     limit: int | None = None,
 ) -> list[dict[str, str | int]]:
-    """Laender-Daten aus Patenten und CORDIS zusammenfuehren.
+    """Länder-Daten aus Patenten und CORDIS zusammenführen.
 
     Jeder Eintrag: {country, patents, projects, total}, sortiert nach total.
     """
@@ -88,7 +88,7 @@ def compute_activity_score(
     project_count: int,
     publication_count: int = 0,
 ) -> float:
-    """Gewichteter Activity-Score fuer ein Land.
+    """Gewichteter Activity-Score für ein Land.
 
     Gewichtung: Patente 0.4, Projekte 0.4, Publikationen 0.2
     """

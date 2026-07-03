@@ -1,15 +1,15 @@
-"""Tests fuer Chat + RAG-Erweiterung des LLM-Service.
+"""Tests für Chat + RAG-Erweiterung des LLM-Service.
 
-Prueft:
+Prüft:
 - format_context_block: Kontext-Block-Formatierung
-- AnalyzePanelWithContext: RAG-gestuetzte Panel-Analyse (via Servicer)
+- AnalyzePanelWithContext: RAG-gestützte Panel-Analyse (via Servicer)
 - Chat: Interaktiver Chat mit Retrieval-Kontext und Historie (via Servicer)
 
 Die Tests erstellen den Servicer via __new__ und setzen manuell die
 internen Use-Case-Instanzen mit gemockten LLM-Providern auf.
 
-Hinweis: Responses koennen Protobuf-Objekte oder Dicts sein, je nachdem
-ob gRPC-Stubs verfuegbar sind. Die Hilfsfunktion _get() abstrahiert den
+Hinweis: Responses können Protobuf-Objekte oder Dicts sein, je nachdem
+ob gRPC-Stubs verfügbar sind. Die Hilfsfunktion _get() abstrahiert den
 Zugriff.
 """
 
@@ -109,7 +109,7 @@ def _make_servicer_no_provider():
 
 
 class TestFormatContextBlock:
-    """Kontext-Block-Formatierung fuer RAG-Prompts."""
+    """Kontext-Block-Formatierung für RAG-Prompts."""
 
     def test_formats_documents(self) -> None:
         from src.prompts import format_context_block
@@ -151,7 +151,7 @@ class TestFormatContextBlock:
 
 
 class TestAnalyzePanelWithContext:
-    """RAG-gestuetzte Panel-Analyse mit Kontext-Dokumenten."""
+    """RAG-gestützte Panel-Analyse mit Kontext-Dokumenten."""
 
     @pytest.fixture
     def servicer(self) -> MagicMock:
@@ -242,7 +242,7 @@ class TestAnalyzePanelWithContext:
         ctx = MagicMock()
         result = await servicer.AnalyzePanelWithContext(request, ctx)
 
-        # Sollte nicht werfen — leere Analyse zurueckgeben
+        # Sollte nicht werfen — leere Analyse zurückgeben
         assert _get(result, "analysis_text") == ""
         assert _get(result, "confidence") == 0.0
 
@@ -367,7 +367,7 @@ class TestChat:
         ctx = MagicMock()
         result = await servicer.Chat(request, ctx)
 
-        # Sollte Fallback-Nachricht zurueckgeben, nicht crashen
+        # Sollte Fallback-Nachricht zurückgeben, nicht crashen
         assert "Kein LLM-Provider konfiguriert" in _get(result, "answer")
         assert _get(result, "model_used") == "none"
 
@@ -442,7 +442,7 @@ class TestChat:
         ctx = MagicMock()
         result = await servicer.Chat(request, ctx)
 
-        # Panel-Daten muessen im Prompt an das LLM erscheinen
+        # Panel-Daten müssen im Prompt an das LLM erscheinen
         call_args = servicer._anthropic_client.messages.create.call_args
         messages = call_args.kwargs["messages"]
         last_user_msg = messages[-1]["content"]
@@ -476,7 +476,7 @@ class TestChat:
 
 
 class TestFormatPanelContext:
-    """Panel-Kontext-Formatierung fuer Analyse-bewussten Chat."""
+    """Panel-Kontext-Formatierung für Analyse-bewussten Chat."""
 
     def test_formats_panel_data(self) -> None:
         from src.prompts import format_panel_context

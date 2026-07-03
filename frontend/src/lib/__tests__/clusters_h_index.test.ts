@@ -1,13 +1,13 @@
 /* ──────────────────────────────────────────────
- * TI-Radar v3 -- Tests fuer h-Index-Impact-Badge (INFO-12)
+ * TI-Radar v3 -- Tests für h-Index-Impact-Badge (INFO-12)
  *
  * Konsistenz-Audit INFO-12: Der Header-Badge "Sehr hoher Forschungsimpact"
  * wurde aus hartcodierten h-Index-Schwellen abgeleitet (100/50/20), aber
- * weder Wert noch Schwellen waren fuer den Nutzer sichtbar.
+ * weder Wert noch Schwellen waren für den Nutzer sichtbar.
  *
  * Erwartung nach Fix:
- *  - Badge enthaelt den konkreten h-Index-Wert: "Sehr hoher Impact (h=120)".
- *  - In `summary.badgeTooltips` liegt ein Erklaerungstext mit den Schwellen.
+ *  - Badge enthält den konkreten h-Index-Wert: "Sehr hoher Impact (h=120)".
+ *  - In `summary.badgeTooltips` liegt ein Erklärungstext mit den Schwellen.
  * ────────────────────────────────────────────── */
 
 import { describe, expect, it } from "vitest";
@@ -22,7 +22,7 @@ function makeResponse(topH: number | undefined): RadarResponse {
         top_institutions: [
           { name: "Top Inst", h_index: topH, country: "DE", paper_count: 0 },
         ],
-        // Folgende Felder sind fuer diesen Test irrelevant, muessen aber
+        // Folgende Felder sind für diesen Test irrelevant, müssen aber
         // typkompatibel sein.
         avg_h_index: topH,
         median_h_index: topH,

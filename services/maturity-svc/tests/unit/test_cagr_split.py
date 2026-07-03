@@ -1,7 +1,7 @@
-"""Unit-Tests fuer den CAGR-Split (Bug C-004, Bundle H).
+"""Unit-Tests für den CAGR-Split (Bug C-004, Bundle H).
 
 Vor dem Fix lieferte ``maturity.cagr`` einen Gompertz-Fit-basierten Wert,
-waehrend ``landscape.patent_cagr`` einen naiven (end/start)^(1/n)-1 lieferte.
+während ``landscape.patent_cagr`` einen naiven (end/start)^(1/n)-1 lieferte.
 Beispiele aus dem Live-Lauf:
 - AI:  maturity 29.6 %  vs landscape 71.3 %
 - mRNA: maturity -18.4 % vs landscape +3.1 %  (Vorzeichen-Flip!)
@@ -9,7 +9,7 @@ Beispiele aus dem Live-Lauf:
 Neu:
 - ``empirical_cagr`` (Proto-18): Gleiche Methode wie landscape-svc.
 - ``fitted_growth_rate`` (Proto-19): Momentane Fit-Rate (vorher ``cagr``).
-- ``cagr`` (Proto-5, DEPRECATED): Alias fuer ``empirical_cagr``.
+- ``cagr`` (Proto-5, DEPRECATED): Alias für ``empirical_cagr``.
 """
 
 from __future__ import annotations
@@ -91,7 +91,7 @@ def _run(coro: Any) -> Any:
 
 
 class TestResponseHasBothCagrFields:
-    """``empirical_cagr`` und ``fitted_growth_rate`` muessen parallel existieren."""
+    """``empirical_cagr`` und ``fitted_growth_rate`` müssen parallel existieren."""
 
     def test_response_has_empirical_cagr(self):
         servicer = _make_servicer({
@@ -125,10 +125,10 @@ class TestEmpiricalCagrMatchesLandscapeMethod:
     """``_compute_empirical_cagr`` muss identisch zu ``landscape._safe_cagr`` sein."""
 
     def test_simple_doubling(self):
-        """Verdopplung ueber 10 Jahre -> CAGR = 2^(1/10) - 1 ~ 7.18 %."""
+        """Verdopplung über 10 Jahre -> CAGR = 2^(1/10) - 1 ~ 7.18 %."""
         all_years = list(range(2010, 2021))  # 2010..2020
         combined = [10, 12, 14, 13, 16, 18, 17, 19, 18, 20, 20]
-        # data_complete_year gross genug, damit alles einbezogen wird.
+        # data_complete_year groß genug, damit alles einbezogen wird.
         result_percent = _compute_empirical_cagr(
             all_years=all_years,
             combined=combined,
@@ -140,8 +140,8 @@ class TestEmpiricalCagrMatchesLandscapeMethod:
     def test_respects_data_complete_year(self):
         """Teiljahre nach data_complete_year werden nicht verwendet."""
         all_years = [2020, 2021, 2022, 2023, 2024]
-        combined = [100, 120, 140, 160, 1]  # 2024 unvollstaendig -> 1
-        # Ohne Filter wuerde 100 -> 1 einen stark negativen CAGR ergeben.
+        combined = [100, 120, 140, 160, 1]  # 2024 unvollständig -> 1
+        # Ohne Filter würde 100 -> 1 einen stark negativen CAGR ergeben.
         result_with_filter = _compute_empirical_cagr(
             all_years=all_years,
             combined=combined,
@@ -230,7 +230,7 @@ class TestFittedGrowthRate:
 
     def test_service_sets_fitted_growth_rate_when_fit_succeeds(self):
         """Bei einem brauchbaren Sigmoid-Fit wird ``fitted_growth_rate`` gesetzt."""
-        # Sigmoid-Form mit genuegend Datenpunkten.
+        # Sigmoid-Form mit genügend Datenpunkten.
         year_counts = {
             2010: 5, 2011: 8, 2012: 14, 2013: 23, 2014: 38,
             2015: 60, 2016: 85, 2017: 100, 2018: 95, 2019: 70,
@@ -239,15 +239,15 @@ class TestFittedGrowthRate:
         servicer = _make_servicer(year_counts)
         response = _run(servicer.AnalyzeMaturity(_FakeRequest(), context=None))
 
-        # Fit muss zuverlaessig sein, sonst ist der Test nicht aussagekraeftig.
+        # Fit muss zuverlässig sein, sonst ist der Test nicht aussagekräftig.
         assert response["fit_reliability_flag"] is True
         # fitted_growth_rate ist eine Fraction — endlicher Wert, nicht exakt null.
         assert isinstance(response["fitted_growth_rate"], float)
 
     def test_fitted_and_empirical_are_independent(self):
-        """Beide Felder koennen unterschiedliche Werte annehmen."""
-        # Datenlage: empirisch positive CAGR ueber die gesamte Zeitreihe,
-        # aber Sigmoid-Fit verhaelt sich am Ende anders (Spaetphase).
+        """Beide Felder können unterschiedliche Werte annehmen."""
+        # Datenlage: empirisch positive CAGR über die gesamte Zeitreihe,
+        # aber Sigmoid-Fit verhält sich am Ende anders (Spätphase).
         year_counts = {
             2010: 5, 2011: 8, 2012: 14, 2013: 23, 2014: 38,
             2015: 60, 2016: 85, 2017: 100, 2018: 95, 2019: 70,
@@ -256,6 +256,6 @@ class TestFittedGrowthRate:
         servicer = _make_servicer(year_counts)
         response = _run(servicer.AnalyzeMaturity(_FakeRequest(), context=None))
         # Nicht zwangsweise gleich — Feldunterscheidung ist hier der Kern.
-        # Wir pruefen nur, dass beide Keys existieren und floats sind.
+        # Wir prüfen nur, dass beide Keys existieren und floats sind.
         assert isinstance(response["empirical_cagr"], float)
         assert isinstance(response["fitted_growth_rate"], float)

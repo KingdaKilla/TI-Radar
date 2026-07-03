@@ -4,12 +4,12 @@ Liest EPO-Bulk-Downloads im DOCDB-XML-Format. Die EPO-Daten liegen als
 verschachtelte ZIP-Archive vor:
 
     /data/bulk/EPO/
-        docdb_xml_bck_202534_001_A.zip          (aeusseres ZIP, ~1.4 GB)
+        docdb_xml_bck_202534_001_A.zip          (äußeres ZIP, ~1.4 GB)
             Root/DOC/DOCDB-202534-001-CA-0521.zip   (inneres ZIP)
                 DOCDB-202534-001-CA-0521.xml         (DOCDB-XML, ~90 MB)
 
-Jedes aeussere ZIP wird geoeffnet, die inneren ZIPs in Root/DOC/ werden
-in den Speicher geladen und deren XML-Eintraege per lxml iterparse
+Jedes äußere ZIP wird geöffnet, die inneren ZIPs in Root/DOC/ werden
+in den Speicher geladen und deren XML-Einträge per lxml iterparse
 speichereffizient geparst.
 
 Ziel-Tabellen:
@@ -87,7 +87,7 @@ def _parse_date(date_str: str) -> date | None:
 def _parse_patent_document(doc: etree._Element) -> dict | None:
     """Einzelnes Patent-Dokument aus DOCDB-XML extrahieren.
 
-    Unterstuetzt sowohl Namespace-qualifizierte (exch:) als auch
+    Unterstützt sowohl Namespace-qualifizierte (exch:) als auch
     unqualifizierte Elementnamen.
     """
     try:
@@ -128,7 +128,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
         if not cpc_elems:
             cpc_elems = doc.findall(".//patent-classification")
         for cpc in cpc_elems:
-            # classification-scheme pruefen
+            # classification-scheme prüfen
             scheme_elem = cpc.find(f"{{{EXCH_NS}}}classification-scheme")
             if scheme_elem is None:
                 scheme_elem = cpc.find("classification-scheme")
@@ -138,7 +138,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
             if scheme.upper() not in ("CPC", "CPCI", "CPCA", ""):
                 continue
 
-            # Primaer: <classification-symbol> (DOCDB-XML Standardformat)
+            # Primär: <classification-symbol> (DOCDB-XML Standardformat)
             sym_elem = cpc.find(f"{{{EXCH_NS}}}classification-symbol")
             if sym_elem is None:
                 sym_elem = cpc.find("classification-symbol")
@@ -149,7 +149,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
                     cpc_codes.append(raw)
                     continue
 
-            # Fallback: Einzelne Felder (aeltere XML-Formate)
+            # Fallback: Einzelne Felder (ältere XML-Formate)
             section = _text(cpc.find(f"{{{EXCH_NS}}}section") or cpc.find("section"))
             cls = _text(cpc.find(f"{{{EXCH_NS}}}class") or cpc.find("class"))
             subclass = _text(cpc.find(f"{{{EXCH_NS}}}subclass") or cpc.find("subclass"))
@@ -159,7 +159,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
             if code and code != "/":
                 cpc_codes.append(code)
 
-        # Filing-Date (Anmeldedatum) extrahieren fuer UC12 Time-to-Grant
+        # Filing-Date (Anmeldedatum) extrahieren für UC12 Time-to-Grant
         filing_date = None
         app_ref = doc.find(f".//{{{EXCH_NS}}}application-reference")
         if app_ref is None:
@@ -178,7 +178,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
         if applicants_elem is None:
             applicants_elem = doc.find(".//applicants")
         if applicants_elem is not None:
-            # Erst docdb-Format sammeln (hat Laenderinfo in <residence>/<country>)
+            # Erst docdb-Format sammeln (hat Länderinfo in <residence>/<country>)
             docdb_entries: list[tuple[str, str]] = []
             docdba_names: list[str] = []
 
@@ -206,11 +206,11 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
                 elif data_format == "docdba":
                     docdba_names.append(name)
 
-            # Bevorzugt docdba-Namen (bereinigt), mit Laendern aus docdb
+            # Bevorzugt docdba-Namen (bereinigt), mit Ländern aus docdb
             if docdba_names:
                 for i, name in enumerate(docdba_names):
                     applicant_names.append(name)
-                    # Laendercode aus docdb zuordnen (gleicher Index)
+                    # Ländercode aus docdb zuordnen (gleicher Index)
                     if i < len(docdb_entries):
                         applicant_countries.append(docdb_entries[i][1])
                     else:
@@ -221,7 +221,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
                     applicant_countries.append(ctry)
 
         # TODO 9.17: Patent-Zitations-Extraktion (UC-F)
-        # EPO DOCDB XML enthaelt <references-cited> mit <citation> Kindern:
+        # EPO DOCDB XML enthält <references-cited> mit <citation> Kindern:
         #   <exch:references-cited>
         #     <exch:citation ct="patcit">
         #       <exch:patcit dnum-type="epodoc">
@@ -243,7 +243,7 @@ def _parse_patent_document(doc: etree._Element) -> dict | None:
         #   cited_phase    = <cited-phase> Text (search, examination, opposition)
         #   citing_year    = publication_date.year
         #
-        # Implementierung: references-cited parsen, Liste von dicts zurueckgeben,
+        # Implementierung: references-cited parsen, Liste von dicts zurückgeben,
         # Batch-Insert analog zu _insert_patent_batch in separater Funktion.
 
         return {
@@ -270,7 +270,7 @@ def _iterparse_xml_stream(
 ) -> Generator[dict, None, None]:
     """Patent-Dokumente aus einem XML-Stream per iterparse yielden.
 
-    Verwendet den Namespace-qualifizierten Tag fuer DOCDB-XML.
+    Verwendet den Namespace-qualifizierten Tag für DOCDB-XML.
     """
     # Tags mit und ohne Namespace
     tags = (
@@ -308,7 +308,7 @@ def _iterparse_xml_stream(
 
 
 # ---------------------------------------------------------------------------
-# ZIP-Verarbeitung (verschachtelt: aeusseres ZIP -> innere ZIPs -> XML)
+# ZIP-Verarbeitung (verschachtelt: äußeres ZIP -> innere ZIPs -> XML)
 # ---------------------------------------------------------------------------
 
 
@@ -318,7 +318,7 @@ def _iter_patents_from_zip(
     """Patent-Dokumente aus einem verschachtelten ZIP-Archiv streamen.
 
     EPO-Bulk-Downloads haben folgende Struktur:
-        aeusseres.zip/
+        äußeres.zip/
             Root/DOC/DOCDB-*.zip   (innere ZIPs)
                 DOCDB-*.xml        (DOCDB-XML mit Patenten)
             Root/index.xml         (Index, wird ignoriert)
@@ -337,7 +337,7 @@ def _iter_patents_from_zip(
             )
 
             if not inner_zips:
-                # Fallback: Direkte XML-Eintraege (falls kein verschachteltes Format)
+                # Fallback: Direkte XML-Einträge (falls kein verschachteltes Format)
                 xml_entries = sorted(
                     entry
                     for entry in outer_zf.namelist()
@@ -359,7 +359,7 @@ def _iter_patents_from_zip(
                             )
                 else:
                     logger.warning(
-                        "zip_keine_eintraege",
+                        "zip_keine_einträge",
                         zip_datei=zip_path.name,
                     )
                 return
@@ -376,7 +376,7 @@ def _iter_patents_from_zip(
                     inner_data = outer_zf.read(inner_name)
                     inner_zf = zipfile.ZipFile(io.BytesIO(inner_data))
 
-                    # XML-Eintraege im inneren ZIP finden
+                    # XML-Einträge im inneren ZIP finden
                     xml_entries = [
                         e for e in inner_zf.namelist()
                         if e.lower().endswith(".xml")
@@ -411,9 +411,9 @@ def _iter_patents_from_zip(
                     )
 
     except zipfile.BadZipFile as exc:
-        logger.error("zip_beschaedigt", zip_datei=zip_path.name, error=str(exc))
+        logger.error("zip_beschädigt", zip_datei=zip_path.name, error=str(exc))
     except Exception as exc:
-        logger.error("zip_oeffnen_fehler", zip_datei=zip_path.name, error=str(exc))
+        logger.error("zip_öffnen_fehler", zip_datei=zip_path.name, error=str(exc))
 
 
 # ---------------------------------------------------------------------------
@@ -422,12 +422,12 @@ def _iter_patents_from_zip(
 
 
 async def _is_already_imported(pool: asyncpg.Pool, source: str, filename: str) -> bool:
-    """Pruefen ob eine Datei bereits erfolgreich importiert wurde.
+    """Prüfen ob eine Datei bereits erfolgreich importiert wurde.
 
     Args:
         pool: asyncpg Connection-Pool.
         source: Datenquelle ('epo', 'cordis', 'euroscivoc').
-        filename: Name der zu pruefenden Datei.
+        filename: Name der zu prüfenden Datei.
 
     Returns:
         True wenn die Datei bereits importiert wurde, sonst False.
@@ -456,7 +456,7 @@ async def _log_import(
         pool: asyncpg Connection-Pool.
         source: Datenquelle ('epo', 'cordis', 'euroscivoc').
         filename: Name der importierten Datei.
-        record_count: Anzahl importierter Datensaetze.
+        record_count: Anzahl importierter Datensätze.
         duration_seconds: Import-Dauer in Sekunden.
     """
     await pool.execute(
@@ -481,9 +481,9 @@ async def _insert_patent_batch(
     pool: asyncpg.Pool,
     batch: list[dict],
 ) -> tuple[int, int]:
-    """Batch von Patenten via COPY in patent_schema.patents einfuegen.
+    """Batch von Patenten via COPY in patent_schema.patents einfügen.
 
-    Passt die Daten an das tatsaechliche Schema an:
+    Passt die Daten an das tatsächliche Schema an:
     - applicant_names: text (komma-getrennt, nicht Array)
     - applicant_countries: text[]
     - cpc_codes: text[] (volles CPC-Format)
@@ -502,19 +502,19 @@ async def _insert_patent_batch(
         if pub_date is not None:
             pub_year = pub_date.year
         else:
-            # Ohne Datum kein gueltiger Eintrag (publication_year NOT NULL)
+            # Ohne Datum kein gültiger Eintrag (publication_year NOT NULL)
             continue
 
         # Check-Constraint: publication_year >= 1900 AND <= 2100
         if pub_year < 1900 or pub_year > 2100:
             continue
 
-        # country muss genau 2 Grossbuchstaben sein
+        # country muss genau 2 Großbuchstaben sein
         country = patent["country"][:2].upper()
         if len(country) != 2 or not country.isalpha():
             continue
 
-        # kind: Pruefe Check-Constraint '^[A-Z][0-9]?$'
+        # kind: Prüfe Check-Constraint '^[A-Z][0-9]?$'
         kind = patent["kind"]
         if kind:
             # Nur 1-2 Zeichen: Ein Buchstabe + optionale Ziffer
@@ -627,7 +627,7 @@ async def import_epo_bulk(
     Args:
         pool: asyncpg Connection-Pool.
         data_dir: Basis-Verzeichnis (EPO-Dateien in data_dir/EPO/).
-        batch_size: Anzahl Datensaetze pro COPY-Batch.
+        batch_size: Anzahl Datensätze pro COPY-Batch.
 
     Returns:
         ImportResult mit Statistiken.
@@ -676,10 +676,10 @@ async def import_epo_bulk(
 
     # --- Phase 1: ZIP-Archive verarbeiten ---
     for zip_idx, zip_file in enumerate(zip_files):
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "epo", zip_file.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=zip_file.name,
                 quelle="epo",
             )
@@ -713,7 +713,7 @@ async def import_epo_bulk(
                             aktuelle_zip=zip_file.name,
                         )
 
-            # Restlichen Batch fuer diese ZIP flushen
+            # Restlichen Batch für diese ZIP flushen
             if batch:
                 await _flush_batch()
 
@@ -742,12 +742,12 @@ async def import_epo_bulk(
             result.errors.append(f"Fehler bei ZIP {zip_file.name}: {exc}")
             logger.error("epo_zip_fehler", zip_datei=zip_file.name, error=str(exc))
 
-    # --- Phase 2: Einzelne XML-Dateien (Rueckwaertskompatibilitaet) ---
+    # --- Phase 2: Einzelne XML-Dateien (Rückwärtskompatibilität) ---
     for xml_file in xml_files:
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "epo", xml_file.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=xml_file.name,
                 quelle="epo",
             )
@@ -763,7 +763,7 @@ async def import_epo_bulk(
                 if len(batch) >= batch_size:
                     await _flush_batch()
 
-            # Restlichen Batch fuer diese XML flushen
+            # Restlichen Batch für diese XML flushen
             if batch:
                 await _flush_batch()
 

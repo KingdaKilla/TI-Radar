@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.models — Pydantic Domain-Modelle."""
+"""Tests für shared.domain.models — Pydantic Domain-Modelle."""
 
 from __future__ import annotations
 

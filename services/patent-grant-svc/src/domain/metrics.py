@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-# Single-source-of-truth fuer Kind-Code-Mengen (Bug CRIT-4):
+# Single-source-of-truth für Kind-Code-Mengen (Bug CRIT-4):
 # Die lokalen APPLICATION_CODES / GRANT_CODES wurden durch zentrale Shared-
 # Definitionen ersetzt. Alte Namen bleiben als Alias bestehen, damit
 # Legacy-Importe weiter funktionieren.
@@ -26,8 +26,8 @@ from shared.domain.patent_definitions import (
 
 
 # Kind-Code Beschreibungen
-# EPO-Daten enthalten sowohl vollstaendige Codes (A1, B2) als auch
-# Kurzformen (A, B) aus verschiedenen Patentaemtern.
+# EPO-Daten enthalten sowohl vollständige Codes (A1, B2) als auch
+# Kurzformen (A, B) aus verschiedenen Patentämtern.
 KIND_CODE_DESCRIPTIONS: dict[str, str] = {
     "A": "Patent application (generic)",
     "A1": "Application published with search report",

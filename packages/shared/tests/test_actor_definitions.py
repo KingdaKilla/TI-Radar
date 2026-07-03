@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.actor_definitions — Master-Scope fuer Akteure.
+"""Tests für shared.domain.actor_definitions — Master-Scope für Akteure.
 
 Hintergrund: Bug CRIT-3 — UC8, UC9 und UC11 lieferten drei unterschiedliche
 Akteurs-Zahlen (Faktor bis 100). Zentrale Scope-Enum trennt die Semantik

@@ -1,4 +1,4 @@
-"""Konfiguration fuer den Publication-Analytics-Service."""
+"""Konfiguration für den Publication-Analytics-Service."""
 
 from __future__ import annotations
 

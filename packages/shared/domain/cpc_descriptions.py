@@ -1,7 +1,7 @@
 """CPC-Klassifikationsbeschreibungen (WIPO/EPO Cooperative Patent Classification).
 
-Stellt Beschreibungen fuer CPC-Sektionen, -Klassen und -Subklassen bereit.
-Datenquelle: WIPO CPC Scheme (oeffentlich), reduziert auf die ~200 haeufigsten Codes.
+Stellt Beschreibungen für CPC-Sektionen, -Klassen und -Subklassen bereit.
+Datenquelle: WIPO CPC Scheme (öffentlich), reduziert auf die ~200 häufigsten Codes.
 """
 
 from __future__ import annotations
@@ -354,7 +354,7 @@ def describe_cpc(code: str) -> str:
     """CPC-Code beschreiben.
 
     Versucht Subclass (4 Zeichen) → Class (3 Zeichen) → Section (1 Zeichen).
-    Gibt Leerstring zurueck wenn nichts gefunden.
+    Gibt Leerstring zurück wenn nichts gefunden.
 
     Args:
         code: CPC-Code (z.B. "G06N", "H01L33/00", "G06")
@@ -388,5 +388,5 @@ def describe_cpc(code: str) -> str:
     return ""
 
 
-# Alias fuer Rueckwaertskompatibilitaet (UC5 service.py importiert get_cpc_description)
+# Alias für Rückwärtskompatibilität (UC5 service.py importiert get_cpc_description)
 get_cpc_description = describe_cpc

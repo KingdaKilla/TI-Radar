@@ -1,4 +1,4 @@
-"""Unit-Tests fuer funding-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für funding-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von FundingResult auf das dict-basierte
 Response-Format, inkl. CAGR-Normalisierung, Zeitreihe, Programme und
@@ -90,13 +90,13 @@ class TestDictResponseMapperBasicFields:
         assert d["total_funding_eur"] == pytest.approx(5_000_000.12, abs=0.005)
 
     def test_project_count(self):
-        """project_count wird korrekt uebertragen."""
+        """project_count wird korrekt übertragen."""
         result = _make_result(total_projects=25)
         d = funding_result_to_dict(result)
         assert d["project_count"] == 25
 
     def test_avg_duration(self):
-        """avg_duration_months wird korrekt uebertragen."""
+        """avg_duration_months wird korrekt übertragen."""
         result = _make_result(avg_duration=36.5)
         d = funding_result_to_dict(result)
         assert d["avg_duration_months"] == pytest.approx(36.5, abs=0.1)
@@ -134,7 +134,7 @@ class TestDictResponseMapperCagr:
         assert d["cagr"] == pytest.approx(-0.123, abs=0.001)
 
     def test_large_cagr(self):
-        """Grosse CAGR-Werte werden korrekt normiert."""
+        """Große CAGR-Werte werden korrekt normiert."""
         result = _make_result(funding_cagr=200.0)
         d = funding_result_to_dict(result)
         assert d["cagr"] == pytest.approx(2.0, abs=0.001)
@@ -148,7 +148,7 @@ class TestDictResponseMapperTimeSeries:
     """Testet Zeitreihen-Mapping."""
 
     def test_time_series_length(self):
-        """Zeitreihe hat korrekte Anzahl Eintraege."""
+        """Zeitreihe hat korrekte Anzahl Einträge."""
         result = _make_result()
         d = funding_result_to_dict(result)
         assert len(d["time_series"]) == 3
@@ -232,11 +232,11 @@ class TestDictResponseMapperBreakdowns:
 
 
 # ---------------------------------------------------------------------------
-# Tests: Top-Organisationen und Laender
+# Tests: Top-Organisationen und Länder
 # ---------------------------------------------------------------------------
 
 class TestDictResponseMapperOrgsCountries:
-    """Testet Top-Organisationen und Laenderverteilung."""
+    """Testet Top-Organisationen und Länderverteilung."""
 
     def test_top_orgs_passed_through(self):
         """top_organisations werden direkt durchgereicht."""
@@ -306,7 +306,7 @@ class TestBuildResearchAreaBreakdown:
         assert result[0]["years"][1]["year"] == 2022
 
     def test_multiple_areas_sorted(self):
-        """Bereiche werden nach level, dann nach Foerderung (absteigend) sortiert."""
+        """Bereiche werden nach level, dann nach Förderung (absteigend) sortiert."""
         raw = [
             {"area_code": "PE", "area_label": "Physical", "level": 1,
              "parent_code": "", "year": 2020, "funding": 100_000.0, "count": 1},
@@ -355,7 +355,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=65)
         d = funding_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 65

@@ -1,7 +1,7 @@
-"""Unit-Tests fuer temporal-svc dict_response Mapper.
+"""Unit-Tests für temporal-svc dict_response Mapper.
 
 Testet die Konvertierung von TemporalResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 """
 
 from __future__ import annotations
@@ -87,7 +87,7 @@ class TestDictResponseMapper:
 # ---------------------------------------------------------------------------
 
 class TestFieldRenaming:
-    """Testet korrekte Umbenennung der Felder fuer die API-Response.
+    """Testet korrekte Umbenennung der Felder für die API-Response.
 
     Das Mapper-Modul benennt interne Felder zu API-kompatiblen Keys um:
     - entrant_persistence -> entrant_persistence_trend
@@ -178,7 +178,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Default-Result."""
+    """Testet Randfälle: leere Listen, Default-Result."""
 
     def test_empty_lists(self):
         result = _make_result(

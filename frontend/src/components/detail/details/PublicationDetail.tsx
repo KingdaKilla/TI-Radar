@@ -28,7 +28,7 @@ interface PublicationDetailProps {
 }
 
 export default function PublicationDetail({ data }: PublicationDetailProps) {
-  const dataCompleteYear = 2025; // CORDIS-Publikationen 2026 noch unvollstaendig
+  const dataCompleteYear = 2025; // CORDIS-Publikationen 2026 noch unvollständig
 
   /* ── Chart data: publication trend ── */
   const trendData = data.pub_trend.map((entry) => ({
@@ -41,7 +41,7 @@ export default function PublicationDetail({ data }: PublicationDetailProps) {
     label: p.project_acronym,
   }));
 
-  /* Dynamische Hoehe: min 400px, 40px pro Projekt */
+  /* Dynamische Höhe: min 400px, 40px pro Projekt */
   const projectChartHeight = Math.max(400, projectData.length * 40);
 
   return (

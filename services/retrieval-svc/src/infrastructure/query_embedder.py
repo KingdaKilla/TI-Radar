@@ -8,9 +8,9 @@ from src.domain.ports import QueryEmbeddingPort
 
 
 class QueryEmbedder(QueryEmbeddingPort):
-    """Sentence-Transformers Embedding fuer einzelne Queries (lokal).
+    """Sentence-Transformers Embedding für einzelne Queries (lokal).
 
-    v3.6.0: Unterstuetzt jetzt auch Batch-Embedding via `embed_batch()` fuer
+    v3.6.0: Unterstützt jetzt auch Batch-Embedding via `embed_batch()` für
     die Incremental-Pre-Computation-Strategie im retrieval-svc.
     """
 

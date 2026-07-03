@@ -1,4 +1,4 @@
-"""Unit-Tests fuer LandscapeRepository: Patent-Zaehlung mit ALL_PATENTS-Scope.
+"""Unit-Tests für LandscapeRepository: Patent-Zählung mit ALL_PATENTS-Scope.
 
 Hintergrund (Bug CRIT-4): Der Header zeigt ``total_patents`` und muss
 die ``ALL_PATENTS``-Semantik aus ``shared.domain.patent_definitions``
@@ -102,11 +102,11 @@ class TestAllPatentsScope:
         assert total == 10, (
             f"Erwartet 10 (alle Patente inkl. U-Code und leerem Kind), "
             f"bekommen {total}. Der Header-Scope ALL_PATENTS darf nicht "
-            f"auf A*/B* eingeschraenkt werden."
+            f"auf A*/B* eingeschränkt werden."
         )
 
     def test_query_has_no_kind_code_filter(self, repo: LandscapeRepository) -> None:
-        """Statisch: die Query enthaelt kein ``p.kind IN (...)`` oder FILTER."""
+        """Statisch: die Query enthält kein ``p.kind IN (...)`` oder FILTER."""
         src = inspect.getsource(repo.count_patents_by_year)
         assert "p.kind IN" not in src and "p.kind = ANY" not in src, (
             "count_patents_by_year darf keinen Kind-Code-Filter haben "
@@ -120,11 +120,11 @@ class TestAllPatentsScope:
         self, repo: LandscapeRepository,
     ) -> None:
         """Der Docstring sollte den Scope ALL_PATENTS explizit dokumentieren,
-        damit bei zukuenftigen Aenderungen die Semantik nicht versehentlich
-        geaendert wird.
+        damit bei zukünftigen Änderungen die Semantik nicht versehentlich
+        geändert wird.
         """
         doc = (repo.count_patents_by_year.__doc__ or "") + "\n"
-        # Modul-Docstring ebenfalls heranziehen (fuer Sammel-Dokumentation)
+        # Modul-Docstring ebenfalls heranziehen (für Sammel-Dokumentation)
         module = inspect.getmodule(repo.count_patents_by_year)
         mod_src = inspect.getsource(module) if module else ""
         has_hint = (

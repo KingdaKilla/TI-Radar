@@ -1,1 +1,1 @@
-# Validierungstests fuer TI-Radar v2 — Deterministische Paritaetspruefung
+# Validierungstests für TI-Radar v2 — Deterministische Paritätsprüfung

@@ -1,11 +1,11 @@
 // =============================================================================
-// llm.proto — LLM Analysis Service fuer die Technology Intelligence Platform
+// llm.proto — LLM Analysis Service für die Technology Intelligence Platform
 // =============================================================================
-// Stellt textuelle KI-Analysen fuer einzelne UC-Panels bereit.
-// Der Orchestrator sendet Panel-Daten + UC-Key und erhaelt eine
-// Markdown-formatierte Analyse zurueck.
+// Stellt textuelle KI-Analysen für einzelne UC-Panels bereit.
+// Der Orchestrator sendet Panel-Daten + UC-Key und erhält eine
+// Markdown-formatierte Analyse zurück.
 //
-// v4.0: Erweitert um RAG-gestuetzte Analyse (AnalyzePanelWithContext)
+// v4.0: Erweitert um RAG-gestützte Analyse (AnalyzePanelWithContext)
 //       und interaktiven Chat (Chat) mit Retrieval-Kontext.
 // =============================================================================
 
@@ -24,11 +24,11 @@ option go_package = "tip/proto/llm";
 // ---------------------------------------------------------------------------
 service LlmAnalysisService {
   // Analysiert die Daten eines einzelnen UC-Panels und liefert
-  // eine Markdown-formatierte textuelle Interpretation zurueck.
+  // eine Markdown-formatierte textuelle Interpretation zurück.
   rpc AnalyzePanel(AnalyzePanelRequest) returns (AnalyzePanelResponse);
 
-  // RAG-gestuetzte Analyse: Panel-Daten + semantisch abgerufene
-  // Kontext-Dokumente fuer eine fundierte, quellenbasierte Analyse.
+  // RAG-gestützte Analyse: Panel-Daten + semantisch abgerufene
+  // Kontext-Dokumente für eine fundierte, quellenbasierte Analyse.
   rpc AnalyzePanelWithContext(AnalyzePanelWithContextRequest) returns (AnalyzePanelResponse);
 
   // Interaktiver Chat: Benutzer stellt Fragen zur Technologie,
@@ -43,7 +43,7 @@ message AnalyzePanelRequest {
   // Technologie-Suchbegriff, z.B. "solid-state batteries", "CRISPR".
   string technology = 1;
 
-  // UC-Schluessel, z.B. "landscape", "maturity", "competitive".
+  // UC-Schlüssel, z.B. "landscape", "maturity", "competitive".
   string use_case_key = 2;
 
   // Serialisierte Panel-Daten als JSON-String.
@@ -52,11 +52,11 @@ message AnalyzePanelRequest {
   // Sprache der Analyse: "de" (Standard) oder "en".
   string language = 4;
 
-  // Opaque Request-ID fuer verteiltes Tracing / Korrelation.
+  // Opaque Request-ID für verteiltes Tracing / Korrelation.
   string request_id = 5;
 
-  // Optional: LLM-Provider-Override fuer diesen Request.
-  // Moegliche Werte: "anthropic", "openai", "gemini", "ollama".
+  // Optional: LLM-Provider-Override für diesen Request.
+  // Mögliche Werte: "anthropic", "openai", "gemini", "ollama".
   // Leer = Default-Provider verwenden.
   string provider_override = 6;
 }
@@ -86,30 +86,30 @@ message AnalyzePanelResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Request: RAG-gestuetzte Panel-Analyse mit Kontext-Dokumenten.
+// Request: RAG-gestützte Panel-Analyse mit Kontext-Dokumenten.
 // ---------------------------------------------------------------------------
 message AnalyzePanelWithContextRequest {
   // Technologie-Suchbegriff, z.B. "solid-state batteries", "CRISPR".
   string technology = 1;
 
-  // UC-Schluessel, z.B. "landscape", "maturity", "competitive".
+  // UC-Schlüssel, z.B. "landscape", "maturity", "competitive".
   string use_case_key = 2;
 
   // Serialisierte Panel-Daten als JSON-String.
   string panel_data_json = 3;
 
   // Vom Retrieval-Service abgerufene Kontext-Dokumente.
-  // Diese werden dem LLM als zusaetzlicher Kontext mitgegeben.
+  // Diese werden dem LLM als zusätzlicher Kontext mitgegeben.
   repeated tip.retrieval.RetrievedDocument context_documents = 4;
 
   // Sprache der Analyse: "de" (Standard) oder "en".
   string language = 5;
 
-  // Opaque Request-ID fuer verteiltes Tracing / Korrelation.
+  // Opaque Request-ID für verteiltes Tracing / Korrelation.
   string request_id = 6;
 
-  // Optional: LLM-Provider-Override fuer diesen Request.
-  // Moegliche Werte: "anthropic", "openai", "gemini", "ollama".
+  // Optional: LLM-Provider-Override für diesen Request.
+  // Mögliche Werte: "anthropic", "openai", "gemini", "ollama".
   // Leer = Default-Provider verwenden.
   string provider_override = 7;
 }
@@ -129,7 +129,7 @@ message ChatMessage {
 // Request: Interaktive Chat-Anfrage mit Retrieval-Kontext.
 // ---------------------------------------------------------------------------
 message ChatRequest {
-  // Technologie-Suchbegriff fuer den Kontext.
+  // Technologie-Suchbegriff für den Kontext.
   string technology = 1;
 
   // Aktuelle Benutzernachricht.
@@ -138,22 +138,22 @@ message ChatRequest {
   // Vom Retrieval-Service abgerufene Kontext-Dokumente.
   repeated tip.retrieval.RetrievedDocument context_documents = 3;
 
-  // Bisherige Chat-Historie (aelteste zuerst).
+  // Bisherige Chat-Historie (älteste zuerst).
   repeated ChatMessage history = 4;
 
   // Sprache der Antwort: "de" (Standard) oder "en".
   string language = 5;
 
-  // Opaque Request-ID fuer verteiltes Tracing / Korrelation.
+  // Opaque Request-ID für verteiltes Tracing / Korrelation.
   string request_id = 6;
 
   // Serialisierte Panel-Daten (JSON) der aktuell angezeigten Analyse.
-  // Ermoeglicht dem LLM, Fragen zu den Analyse-Ergebnissen zu beantworten.
+  // Ermöglicht dem LLM, Fragen zu den Analyse-Ergebnissen zu beantworten.
   // Leer wenn keine Analyse geladen ist (Graceful Degradation).
   string panel_context_json = 7;
 
-  // Optional: LLM-Provider-Override fuer diesen Request.
-  // Moegliche Werte: "anthropic", "openai", "gemini", "ollama".
+  // Optional: LLM-Provider-Override für diesen Request.
+  // Mögliche Werte: "anthropic", "openai", "gemini", "ollama".
   // Leer = Default-Provider verwenden.
   string provider_override = 8;
 }

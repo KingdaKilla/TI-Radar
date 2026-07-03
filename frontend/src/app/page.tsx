@@ -45,12 +45,12 @@ export default function DashboardPage() {
   /** Panel loading state: global loading or fetching */
   const panelLoading = isLoading || isFetching;
 
-  /** Datenvollstaendigkeit: ab welchem Jahr sind Daten moeglicherweise unvollstaendig.
+  /** Datenvollständigkeit: ab welchem Jahr sind Daten möglicherweise unvollständig.
    *  MAJ-7/MAJ-8: Backend liefert ``data_complete_year`` aus
    *  ``shared.domain.year_completeness.last_complete_year()``. Wenn das Feld
    *  ausnahmsweise fehlt, verwenden wir das Vorjahr (Client-seitiger Helper)
    *  statt eines hartcodierten 2024 — sonst zeigt das UI dauerhaft eine
-   *  veraltete Vollstaendigkeitsgrenze. */
+   *  veraltete Vollständigkeitsgrenze. */
   const dataCompleteYear =
     data?.maturity?.data_complete_year ?? new Date().getFullYear() - 1;
 
@@ -110,7 +110,7 @@ export default function DashboardPage() {
   const displayClusters = clusterData?.clusters ?? landingClusters;
   const isDashboard = !!clusterData && !!data;
 
-  /** Verfuegbare UCs fuer Report-Export (nur die mit Daten) */
+  /** Verfügbare UCs für Report-Export (nur die mit Daten) */
   const availableUcs = useMemo<UseCaseKey[]>(() => {
     if (!data) return [];
     return USE_CASES.filter((uc) => data[uc] != null);

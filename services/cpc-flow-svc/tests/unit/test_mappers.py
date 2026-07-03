@@ -1,4 +1,4 @@
-"""Unit-Tests fuer cpc-flow-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für cpc-flow-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von CpcFlowResult auf das dict-basierte
 Response-Format, inkl. Jaccard-Matrix, Top-Pairs, Chord-Daten und
@@ -82,19 +82,19 @@ class TestDictResponseMapperBasicFields:
         assert expected_keys == set(d.keys())
 
     def test_total_connections(self):
-        """total_connections wird korrekt uebertragen."""
+        """total_connections wird korrekt übertragen."""
         result = _make_result(total_connections=42)
         d = cpc_flow_result_to_dict(result)
         assert d["total_connections"] == 42
 
     def test_total_patents(self):
-        """total_patents wird korrekt uebertragen."""
+        """total_patents wird korrekt übertragen."""
         result = _make_result(total_patents=500)
         d = cpc_flow_result_to_dict(result)
         assert d["total_patents"] == 500
 
     def test_similarity_threshold(self):
-        """similarity_threshold wird korrekt uebertragen."""
+        """similarity_threshold wird korrekt übertragen."""
         result = _make_result(similarity_threshold=0.05)
         d = cpc_flow_result_to_dict(result)
         assert d["similarity_threshold"] == pytest.approx(0.05, abs=0.001)
@@ -251,7 +251,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=92)
         d = cpc_flow_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 92

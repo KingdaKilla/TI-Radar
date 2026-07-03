@@ -1,1 +1,1 @@
-# Integrations-Tests fuer TI-Radar v2
+# Integrations-Tests für TI-Radar v2

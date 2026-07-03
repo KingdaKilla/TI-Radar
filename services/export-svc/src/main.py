@@ -1,9 +1,9 @@
-"""FastAPI Application Factory fuer den Export-Service.
+"""FastAPI Application Factory für den Export-Service.
 
 Erstellt und konfiguriert die FastAPI-Anwendung mit:
 - Lifespan-Management (asyncpg Pool + httpx.AsyncClient)
 - CORS-Middleware
-- Export-Router fuer CSV, JSON und Excel-Exports
+- Export-Router für CSV, JSON und Excel-Exports
 - Health-Endpoint
 - Strukturiertes Logging via structlog
 """
@@ -35,10 +35,10 @@ logger = structlog.get_logger(__name__)
 
 
 def _configure_structlog(settings: Settings) -> None:
-    """Konfiguriert structlog fuer strukturiertes JSON-Logging.
+    """Konfiguriert structlog für strukturiertes JSON-Logging.
 
     Entwicklungsmodus: farbige Console-Ausgabe (human-readable).
-    Produktion: JSON-Lines fuer Log-Aggregatoren (ELK, Loki).
+    Produktion: JSON-Lines für Log-Aggregatoren (ELK, Loki).
     """
     is_dev = settings.debug
 
@@ -71,7 +71,7 @@ def _configure_structlog(settings: Settings) -> None:
 
 
 def _mask_dsn(dsn: str) -> str:
-    """Maskiert das Passwort in einem DSN-String fuer sichere Ausgabe."""
+    """Maskiert das Passwort in einem DSN-String für sichere Ausgabe."""
     return re.sub(r"://([^:]+):([^@]+)@", r"://\1:***@", dsn)
 
 
@@ -87,11 +87,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Startup:
       1. asyncpg Connection-Pool zur PostgreSQL-Datenbank aufbauen
       2. export_schema erstellen falls nicht vorhanden
-      3. httpx.AsyncClient fuer Orchestrator-Aufrufe erstellen
+      3. httpx.AsyncClient für Orchestrator-Aufrufe erstellen
 
     Shutdown:
-      1. HTTP-Client schliessen
-      2. DB-Pool schliessen
+      1. HTTP-Client schließen
+      2. DB-Pool schließen
     """
     settings = Settings()
 
@@ -118,7 +118,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.warning(
             "db_pool_fehler",
             error=str(exc),
-            hint="Export-Caching nicht verfuegbar — Orchestrator-Fallback aktiv",
+            hint="Export-Caching nicht verfügbar — Orchestrator-Fallback aktiv",
         )
 
     # Schema und Tabellen erstellen (nur wenn Pool vorhanden)
@@ -129,10 +129,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             logger.warning(
                 "export_schema_fehler",
                 error=str(exc),
-                hint="Schema/Tabellen nicht erstellt — Caching evtl. eingeschraenkt",
+                hint="Schema/Tabellen nicht erstellt — Caching evtl. eingeschränkt",
             )
 
-    # --- httpx.AsyncClient fuer Orchestrator ---
+    # --- httpx.AsyncClient für Orchestrator ---
     client = httpx.AsyncClient(
         base_url=settings.orchestrator_url,
         timeout=httpx.Timeout(60.0, connect=10.0),
@@ -181,9 +181,9 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="TI-Radar Export Service",
         description=(
-            "Technology Intelligence Radar v2 — Export-Service fuer "
+            "Technology Intelligence Radar v2 — Export-Service für "
             "CSV, JSON, Excel, PDF und Batch-Export von Analyseergebnissen. "
-            "Cached Orchestrator-Responses und fuehrt Export-Log."
+            "Cached Orchestrator-Responses und führt Export-Log."
         ),
         version="2.0.0",
         lifespan=lifespan,
@@ -206,7 +206,7 @@ def create_app() -> FastAPI:
     # --- Health-Endpoint ---
     @app.get("/health", tags=["Health"])
     async def health() -> dict[str, str | bool]:
-        """Einfacher Health-Check fuer Load-Balancer und Kubernetes."""
+        """Einfacher Health-Check für Load-Balancer und Kubernetes."""
         db_ok = app.state.db_pool is not None
         return {
             "status": "healthy" if db_ok else "degraded",

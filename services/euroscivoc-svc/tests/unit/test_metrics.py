@@ -1,4 +1,4 @@
-"""Unit-Tests fuer euroscivoc-svc domain.metrics.
+"""Unit-Tests für euroscivoc-svc domain.metrics.
 
 AP4 · CRIT-2: Shannon-Index mathematisch korrekt auch bei <2 Kategorien.
 
@@ -8,7 +8,7 @@ Der Shannon-Index ist definiert als:
 
 Bei genau einer Kategorie mit p=1 gilt: -1 * log(1) = 0.
 
-Defensive Implementierungen muessen zusaetzlich sicherstellen, dass:
+Defensive Implementierungen müssen zusätzlich sicherstellen, dass:
 - leere Eingaben -> 0.0
 - Eingaben mit einer einzigen Kategorie -> 0.0 (nicht rauschen durch Float-Ungenauigkeit)
 - Eingaben mit k Kategorien gleich verteilt -> log2(k) (bzw. ln(k) je nach Basis)
@@ -33,7 +33,7 @@ from src.domain.metrics import (
 
 
 class TestShannonEdgeCases:
-    """Shannon-Index muss bei <2 Kategorien garantiert 0.0 zurueckliefern."""
+    """Shannon-Index muss bei <2 Kategorien garantiert 0.0 zurückliefern."""
 
     def test_shannon_empty_dict_is_zero(self) -> None:
         assert compute_shannon_index({}) == 0.0
@@ -94,14 +94,14 @@ class TestSimpsonIndex:
 
 
 # ---------------------------------------------------------------------------
-# Interdisziplinaritaet-Klassifikation
+# Interdisziplinarität-Klassifikation
 # ---------------------------------------------------------------------------
 
 
 class TestClassifyInterdisciplinarity:
     def test_single_field_not_interdisciplinary(self) -> None:
-        """Bei 1 Feld darf die Klassifikation nicht interdisziplinaer sein,
-        unabhaengig vom (korrekt 0) Shannon-Wert.
+        """Bei 1 Feld darf die Klassifikation nicht interdisziplinär sein,
+        unabhängig vom (korrekt 0) Shannon-Wert.
         """
         assert classify_interdisciplinarity(shannon=0.0, active_fields=1) is False
 

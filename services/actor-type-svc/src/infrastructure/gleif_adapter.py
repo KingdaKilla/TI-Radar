@@ -1,4 +1,4 @@
-"""GLEIF LEI Lookup Adapter — Organisationsnamen zu Legal Entity Identifiers aufloesen.
+"""GLEIF LEI Lookup Adapter — Organisationsnamen zu Legal Entity Identifiers auflösen.
 
 Nutzt die GLEIF Fuzzy-Completions API (kostenlos, kein API-Key):
     GET https://api.gleif.org/api/v1/fuzzy-completions?field=entity.legalName&q={name}
@@ -43,11 +43,11 @@ class GLEIFResult:
 
 
 class GLEIFAdapter:
-    """Async-Adapter fuer die GLEIF LEI API mit PostgreSQL-Cache.
+    """Async-Adapter für die GLEIF LEI API mit PostgreSQL-Cache.
 
     Ablauf:
-    1. Cache-Pruefung (entity_schema.gleif_cache, 90-Tage-TTL)
-    2. Cache-Hit (frisch) -> sofort zurueckgeben
+    1. Cache-Prüfung (entity_schema.gleif_cache, 90-Tage-TTL)
+    2. Cache-Hit (frisch) -> sofort zurückgeben
     3. Cache-Miss -> GLEIF API aufrufen
     4. Ergebnis im Cache speichern (inkl. Negativ-Ergebnis mit lei=NULL)
     5. API-Fehler -> stale Cache als Fallback, sonst None
@@ -61,17 +61,17 @@ class GLEIFAdapter:
     ) -> None:
         self._pool = pool
         self._timeout = httpx.Timeout(timeout)
-        # Semaphore fuer Rate-Limiting (max concurrent requests)
+        # Semaphore für Rate-Limiting (max concurrent requests)
         self._semaphore = asyncio.Semaphore(min(rate_limit_rpm // 10, 5))
         self._min_interval = 60.0 / rate_limit_rpm
         self._last_request_time = 0.0
 
     # ------------------------------------------------------------------
-    # Oeffentliche API
+    # Öffentliche API
     # ------------------------------------------------------------------
 
     async def resolve(self, organization_name: str) -> GLEIFResult | None:
-        """Organisationsname gegen GLEIF aufloesen.
+        """Organisationsname gegen GLEIF auflösen.
 
         Args:
             organization_name: Name der Organisation (z.B. 'Siemens AG').
@@ -83,7 +83,7 @@ class GLEIFAdapter:
         if not name:
             return None
 
-        # 1. Cache pruefen
+        # 1. Cache prüfen
         cached = await self._read_cache(name)
         if cached is not None:
             return cached
@@ -95,10 +95,10 @@ class GLEIFAdapter:
             return result
         except Exception as exc:
             # HTTP 404 ist bei GLEIF *fachlich erwartbar*: nur LEI-pflichtige
-            # Entitaeten (Finanzwesen) sind registriert. Staatliche
+            # Entitäten (Finanzwesen) sind registriert. Staatliche
             # Forschungsinstitute (CNRS, IMEC, CEA, ETHZ, ...) haben
             # systembedingt keinen LEI. Daher 404 nur als debug loggen —
-            # echte Stoerungen (5xx/403/Timeout/ConnectError) bleiben warning.
+            # echte Störungen (5xx/403/Timeout/ConnectError) bleiben warning.
             if (
                 isinstance(exc, httpx.HTTPStatusError)
                 and exc.response.status_code == 404
@@ -127,7 +127,7 @@ class GLEIFAdapter:
         *,
         concurrency: int = 5,
     ) -> dict[str, GLEIFResult | None]:
-        """Batch-Aufloesung mehrerer Namen mit Rate-Limiting.
+        """Batch-Auflösung mehrerer Namen mit Rate-Limiting.
 
         Args:
             names: Liste von Organisationsnamen.
@@ -162,7 +162,7 @@ class GLEIFAdapter:
     async def _read_cache(
         self, raw_name: str, *, allow_stale: bool = False,
     ) -> GLEIFResult | None:
-        """Cache-Eintrag lesen. Gibt None bei Miss zurueck."""
+        """Cache-Eintrag lesen. Gibt None bei Miss zurück."""
         if self._pool is None:
             return None
 
@@ -298,7 +298,7 @@ class GLEIFAdapter:
     def _parse_response(raw_name: str, data: dict[str, Any]) -> GLEIFResult:
         """GLEIF JSON:API Response parsen.
 
-        Die API gibt ein JSON:API-Format zurueck. Bester Treffer ist data[0].
+        Die API gibt ein JSON:API-Format zurück. Bester Treffer ist data[0].
 
         Returns:
             GLEIFResult mit lei=None wenn kein Treffer.

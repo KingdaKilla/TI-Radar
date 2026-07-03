@@ -1,12 +1,12 @@
-"""EPO Enrichment — CPC-Codes und Applicant-Countries fuer bestehende Patente nachladen.
+"""EPO Enrichment — CPC-Codes und Applicant-Countries für bestehende Patente nachladen.
 
 Liest die gleichen DOCDB-XML-Archive wie der Importer, extrahiert aber nur:
-  - publication_number + publication_year (fuer den JOIN)
+  - publication_number + publication_year (für den JOIN)
   - cpc_codes (TEXT[])
   - applicant_countries (TEXT[])
 
 und aktualisiert die bestehenden Zeilen in patent_schema.patents per
-Batch-UPDATE ueber eine Staging-Tabelle.
+Batch-UPDATE über eine Staging-Tabelle.
 
 Aufruf:
     docker compose exec import-svc python -m import_svc.cli enrich-epo
@@ -65,7 +65,7 @@ class EnrichmentResult:
 
 
 def _parse_enrichment_data(doc: etree._Element) -> dict | None:
-    """Nur CPC-Codes und Laender aus einem Patent-Dokument extrahieren."""
+    """Nur CPC-Codes und Länder aus einem Patent-Dokument extrahieren."""
     try:
         country = doc.get("country", "")
         doc_number = doc.get("doc-number", "")
@@ -131,7 +131,7 @@ def _parse_enrichment_data(doc: etree._Element) -> dict | None:
                     if ctry:
                         applicant_countries.append(ctry)
 
-        # Filing-Date (Anmeldedatum) extrahieren fuer UC12 Time-to-Grant
+        # Filing-Date (Anmeldedatum) extrahieren für UC12 Time-to-Grant
         filing_date = None
         app_ref = doc.find(f".//{{{EXCH_NS}}}application-reference")
         if app_ref is None:
@@ -142,7 +142,7 @@ def _parse_enrichment_data(doc: etree._Element) -> dict | None:
                 date_elem = app_ref.find(".//date")
             filing_date = _parse_date(_text(date_elem))
 
-        # Nur zurueckgeben wenn Daten vorhanden
+        # Nur zurückgeben wenn Daten vorhanden
         if not cpc_codes and not applicant_countries and filing_date is None:
             return None
 
@@ -301,7 +301,7 @@ async def _update_enrichment_batch(
 
 
 async def _ensure_progress_table(pool: asyncpg.Pool) -> None:
-    """Fortschritts-Tabelle fuer ZIP-Tracking anlegen (idempotent)."""
+    """Fortschritts-Tabelle für ZIP-Tracking anlegen (idempotent)."""
     async with pool.acquire() as conn:
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS patent_schema.enrichment_progress (
@@ -343,12 +343,12 @@ async def enrich_epo_patents(
     batch_size: int = 10_000,
     progress_cb: Any = None,
 ) -> EnrichmentResult:
-    """CPC-Codes und Applicant-Countries fuer bestehende Patente nachladen.
+    """CPC-Codes und Applicant-Countries für bestehende Patente nachladen.
 
     Liest die gleichen ZIP-Archive wie der Importer, extrahiert nur die
     fehlenden Felder und aktualisiert die bestehenden Zeilen.
 
-    **Resume-Faehig**: Bereits verarbeitete ZIPs werden uebersprungen
+    **Resume-Fähig**: Bereits verarbeitete ZIPs werden übersprungen
     (Fortschritt in patent_schema.enrichment_progress gespeichert).
     """
     result = EnrichmentResult()
@@ -393,7 +393,7 @@ async def enrich_epo_patents(
         batch = []
 
     for zip_idx, zip_file in enumerate(zip_files):
-        # Bereits verarbeitete ZIPs ueberspringen
+        # Bereits verarbeitete ZIPs überspringen
         if zip_file.name in completed_zips:
             result.files_processed += 1
             result.records_skipped += 1

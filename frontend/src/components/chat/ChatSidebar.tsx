@@ -53,7 +53,7 @@ export function ChatSidebar({ isOpen, onClose, technology, panelContext }: Props
         <button
           onClick={onClose}
           className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-          aria-label="Chat schliessen"
+          aria-label="Chat schließen"
         >
           <X size={18} />
         </button>

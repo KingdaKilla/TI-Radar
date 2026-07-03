@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Trigger-Skript: Chunking + Embedding Pipeline in Schleife ausfuehren.
+"""Trigger-Skript: Chunking + Embedding Pipeline in Schleife ausführen.
 
-Wird per docker exec im embedding-svc Container ausgefuehrt:
+Wird per docker exec im embedding-svc Container ausgeführt:
     docker exec -it ti-radar-embedding python3 trigger_chunk_embed.py --source patents --batch-size 100
 
-Fuehrt ChunkAndEmbed.execute() in Schleife aus, bis alle Dokumente verarbeitet sind.
+Führt ChunkAndEmbed.execute() in Schleife aus, bis alle Dokumente verarbeitet sind.
 """
 from __future__ import annotations
 
@@ -123,7 +123,7 @@ def main() -> None:
     parser.add_argument("--source", default="patents", help="patents|projects|papers")
     parser.add_argument("--batch-size", type=int, default=100)
     parser.add_argument("--year-from", type=int, default=None)
-    parser.add_argument("--max-batches", type=int, default=None, help="Stop nach N Batches (fuer Tests)")
+    parser.add_argument("--max-batches", type=int, default=None, help="Stop nach N Batches (für Tests)")
     args = parser.parse_args()
 
     asyncio.run(run_pipeline(

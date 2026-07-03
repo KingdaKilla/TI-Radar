@@ -66,7 +66,7 @@ export interface MaturityPanel {
   fit_reliability_flag: boolean;
   /**
    * Overfitting-Warnung: True wenn R² > 0.98 bei n < 30 Datenpunkten.
-   * Ergaenzt fit_reliability_flag um den umgekehrten Fall ("Fit zu gut bei
+   * Ergänzt fit_reliability_flag um den umgekehrten Fall ("Fit zu gut bei
    * zu wenig Daten"). Live-Fall Semiconductor Laser v3.4.0: R² = 0.9983
    * bei n = 9 Jahren — klassisches 3-Parameter Sigmoid-Overfit.
    */

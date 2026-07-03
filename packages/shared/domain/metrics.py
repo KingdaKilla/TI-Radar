@@ -1,4 +1,4 @@
-"""Deterministische Metriken fuer Technology Intelligence.
+"""Deterministische Metriken für Technology Intelligence.
 
 Reine Funktionen ohne IO — testbar, auditierbar, reproduzierbar.
 """
@@ -8,16 +8,16 @@ from __future__ import annotations
 import math
 from typing import Any
 
-# Schwellwert, unterhalb dessen ein S-Kurven-Fit als unzuverlaessig gilt
+# Schwellwert, unterhalb dessen ein S-Kurven-Fit als unzuverlässig gilt
 # (Bug MAJ-9). Bei R² < 0.5 wird die Konfidenz zwingend auf 0.0 gesetzt,
 # damit nachgelagerte UI-Komponenten keine Scheinsicherheit (z.B. "R²=0 +
-# Konfidenz 80 % + Phase: Emerging") mehr erzeugen koennen.
+# Konfidenz 80 % + Phase: Emerging") mehr erzeugen können.
 R2_RELIABILITY_THRESHOLD: float = 0.5
 
-# Overfitting-Schwellen fuer 3-Parameter Sigmoid-Fits. R² > 0.98 bei weniger
+# Overfitting-Schwellen für 3-Parameter Sigmoid-Fits. R² > 0.98 bei weniger
 # als 30 Datenpunkten ist ein klassisches Overfitting-Signal: der Fit hat
 # mehr Freiheitsgrade als die Datenbasis erlaubt (Live-Fall Semiconductor
-# Laser v3.4.0: R² = 0.9983 bei n = 9 vollstaendigen Jahren).
+# Laser v3.4.0: R² = 0.9983 bei n = 9 vollständigen Jahren).
 OVERFIT_R2_THRESHOLD: float = 0.98
 OVERFIT_MIN_DATAPOINTS: int = 30
 
@@ -25,9 +25,9 @@ OVERFIT_MIN_DATAPOINTS: int = 30
 def is_potentially_overfit(r_squared: float | None, n_data_points: int) -> bool:
     """True wenn R² > OVERFIT_R2_THRESHOLD und n < OVERFIT_MIN_DATAPOINTS.
 
-    Ergaenzt die R²-Kopplung (Bug MAJ-9): ``fit_reliability_flag`` fängt den
+    Ergänzt die R²-Kopplung (Bug MAJ-9): ``fit_reliability_flag`` fängt den
     Fall "Fit zu schlecht" (R² < 0.5); diese Funktion markiert den umgekehrten
-    Fall "Fit verdaechtig gut bei zu wenig Daten".
+    Fall "Fit verdächtig gut bei zu wenig Daten".
 
     Defensiv: ``None``-R² (kein Fit zustande gekommen) ergibt ``False``, damit
     der Fallback-Pfad keine falsche Warnung setzt.
@@ -54,13 +54,13 @@ def cagr(first_value: float, last_value: float, periods: int) -> float:
     Returns 0.0 if inputs are invalid.
 
     Limitationen:
-    - Endpunktsensitivitaet: Nur Anfangs- und Endwert gehen ein; Schwankungen
+    - Endpunktsensitivität: Nur Anfangs- und Endwert gehen ein; Schwankungen
       dazwischen werden ignoriert. Atypische Start-/Endjahre verzerren das Ergebnis.
-    - Glaettungsannahme: CAGR unterstellt konstantes jaehrliches Wachstum und
-      bildet keine Strukturbrueche ab (z.B. Programmwechsel FP7 -> H2020 -> Horizon).
-    - Null-/Negativwerte: Foerderjahre ohne Daten (funding=0) werden uebersprungen;
-      die Funktion gibt 0.0 zurueck, wenn Start- oder Endwert <= 0.
-    - Kurze Zeitraeume: Bei wenigen Perioden (n < 3) kann der CAGR statistisch
+    - Glättungsannahme: CAGR unterstellt konstantes jährliches Wachstum und
+      bildet keine Strukturbrüche ab (z.B. Programmwechsel FP7 -> H2020 -> Horizon).
+    - Null-/Negativwerte: Förderjahre ohne Daten (funding=0) werden übersprungen;
+      die Funktion gibt 0.0 zurück, wenn Start- oder Endwert <= 0.
+    - Kurze Zeiträume: Bei wenigen Perioden (n < 3) kann der CAGR statistisch
       nicht belastbar sein.
     """
     if periods <= 0 or first_value <= 0 or last_value <= 0:
@@ -70,7 +70,7 @@ def cagr(first_value: float, last_value: float, periods: int) -> float:
 
 def hhi_index(shares: list[float]) -> float:
     """
-    Herfindahl-Hirschman Index fuer Marktkonzentration.
+    Herfindahl-Hirschman Index für Marktkonzentration.
 
     Formula: sum(share_i^2) * 10000
     Input: Liste von Marktanteilen (0.0 bis 1.0)
@@ -87,7 +87,7 @@ def hhi_index(shares: list[float]) -> float:
 
 
 def hhi_concentration_level(hhi: float) -> tuple[str, str]:
-    """HHI-Wert in Konzentrationsstufe uebersetzen (EN, DE)."""
+    """HHI-Wert in Konzentrationsstufe übersetzen (EN, DE)."""
     if hhi < 1500:
         return "Low", "Gering"
     if hhi < 2500:
@@ -98,7 +98,7 @@ def hhi_concentration_level(hhi: float) -> tuple[str, str]:
 def cr4(shares: list[float]) -> float:
     """Concentration Ratio der Top-4 Akteure.
 
-    Summe der 4 groessten Marktanteile. Ergaenzt HHI um eine intuitivere Metrik.
+    Summe der 4 größten Marktanteile. Ergänzt HHI um eine intuitivere Metrik.
     CR4 > 0.6 gilt als hoch konzentriert, < 0.4 als wettbewerbsintensiv.
 
     Args:
@@ -118,22 +118,22 @@ def s_curve_confidence(
     total_patents: int,
 ) -> float:
     """
-    Gewichtete Konfidenz fuer S-Curve-basierte Phasenklassifikation.
+    Gewichtete Konfidenz für S-Curve-basierte Phasenklassifikation.
 
-    Beruecksichtigt:
-    - R² (Guete des Fits): 60% Gewicht
+    Berücksichtigt:
+    - R² (Güte des Fits): 60% Gewicht
     - Datenabdeckung (Jahre): 20% Gewicht (15+ Jahre = voll)
-    - Stichprobengroesse (Patente): 20% Gewicht (200+ Patente = voll)
+    - Stichprobengröße (Patente): 20% Gewicht (200+ Patente = voll)
 
     R²-Kopplung (Bug MAJ-9): Wenn ``r_squared < R2_RELIABILITY_THRESHOLD`` (0.5),
-    gibt die Funktion hart ``0.0`` zurueck. Ein unzuverlaessiger Fit darf nicht
-    mit Datenabdeckung/Stichprobengroesse kompensiert werden, sonst entstehen
+    gibt die Funktion hart ``0.0`` zurück. Ein unzuverlässiger Fit darf nicht
+    mit Datenabdeckung/Stichprobengröße kompensiert werden, sonst entstehen
     Scheinsicherheiten (z.B. R²=0 + 80 % Konfidenz + Phase-Label).
 
     Args:
         r_squared: R²-Wert des Fits (0..1). ``None`` oder Werte < 0 werden wie 0 behandelt.
         n_years: Anzahl Jahre mit Datenpunkten.
-        total_patents: Gesamt-Sample-Groesse (kumulativ am Ende der Reihe).
+        total_patents: Gesamt-Sample-Größe (kumulativ am Ende der Reihe).
 
     Returns:
         Wert in [0.0, 0.95]. Exakt 0.0 wenn R² < R2_RELIABILITY_THRESHOLD;
@@ -155,22 +155,22 @@ def detect_decline(
     saturation_pct: float = 90.0,
     consecutive_years: int = 2,
 ) -> bool:
-    """Erkennt Decline-Phase anhand sinkender jaehrlicher Anmelderaten.
+    """Erkennt Decline-Phase anhand sinkender jährlicher Anmelderaten.
 
     S-Kurve ist monoton steigend (kumulativ) und kann Decline nicht erkennen.
-    Diese Funktion prueft die 1. Ableitung (jaehrliche Zahl) auf konsekutive
-    Rueckgaenge.
+    Diese Funktion prüft die 1. Ableitung (jährliche Zahl) auf konsekutive
+    Rückgänge.
 
     Args:
-        yearly_counts: Jaehrliche Patent-/Projektzahlen (nicht kumulativ)
-        saturation_pct: Ab welchem Saettigungsgrad Decline moeglich ist (default 90%)
+        yearly_counts: Jährliche Patent-/Projektzahlen (nicht kumulativ)
+        saturation_pct: Ab welchem Sättigungsgrad Decline möglich ist (default 90%)
         consecutive_years: Mindestens N konsekutive negative Jahre (default 2)
     Returns:
         True wenn Decline erkannt
     """
     if len(yearly_counts) < consecutive_years + 1:
         return False
-    # Pruefe ob die letzten consecutive_years+1 Werte fallend sind
+    # Prüfe ob die letzten consecutive_years+1 Werte fallend sind
     recent = yearly_counts[-(consecutive_years + 1):]
     consecutive_declines = 0
     for i in range(1, len(recent)):
@@ -212,7 +212,7 @@ def classify_maturity_phase(
 
     n = len(yearly_counts)
 
-    # Durchschnitte fuer erste und zweite Haelfte
+    # Durchschnitte für erste und zweite Hälfte
     mid = n // 2
     first_half = yearly_counts[:mid] if mid > 0 else yearly_counts[:1]
     second_half = yearly_counts[mid:]
@@ -233,7 +233,7 @@ def classify_maturity_phase(
     else:
         overall_growth = 1.0 if avg_second > 0 else 0.0
 
-    # Varianz in zweiter Haelfte (Stabilitaet)
+    # Varianz in zweiter Hälfte (Stabilität)
     if second_half and avg_second > 0:
         variance = sum((x - avg_second) ** 2 for x in second_half) / len(second_half)
         cv = math.sqrt(variance) / avg_second  # Coefficient of Variation
@@ -265,7 +265,7 @@ def classify_maturity_phase(
 
 
 def yoy_growth(current: int, previous: int) -> float | None:
-    """Prozentuale Veraenderung zum Vorjahr. None wenn Vorjahr=0."""
+    """Prozentuale Veränderung zum Vorjahr. None wenn Vorjahr=0."""
     if previous == 0:
         return None
     return round(((current - previous) / previous) * 100, 1)
@@ -343,17 +343,17 @@ def merge_country_data(
     limit: int | None = None,
 ) -> list[dict[str, str | int]]:
     """
-    Laender-Daten aus Patenten und CORDIS zusammenfuehren.
+    Länder-Daten aus Patenten und CORDIS zusammenführen.
 
     Jeder Eintrag: {country, patents, projects, total}, sortiert nach total.
-    Optional: Ergebnis auf `limit` Laender begrenzen.
-    Akzeptiert sowohl dict- als auch Attribut-basierte Eintraege (duck typing).
+    Optional: Ergebnis auf `limit` Länder begrenzen.
+    Akzeptiert sowohl dict- als auch Attribut-basierte Einträge (duck typing).
     """
 
     # Bekannte Aliase auf ISO 3166-1 alpha-2 normalisieren
     country_aliases: dict[str, str] = {
         "UK": "GB",  # CORDIS nutzt UK, EPO nutzt GB
-        "EL": "GR",  # CORDIS nutzt EL fuer Griechenland
+        "EL": "GR",  # CORDIS nutzt EL für Griechenland
     }
 
     def _get(item: Any, key: str) -> Any:

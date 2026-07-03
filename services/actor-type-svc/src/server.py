@@ -1,4 +1,4 @@
-"""gRPC Server fuer den UC11 Actor Type Service."""
+"""gRPC Server für den UC11 Actor Type Service."""
 
 from __future__ import annotations
 
@@ -61,7 +61,7 @@ GRPC_REQUEST_DURATION = Histogram(
 )
 DB_POOL_SIZE = Gauge(
     "db_pool_size",
-    "Aktuelle DB Connection Pool Groesse",
+    "Aktuelle DB Connection Pool Größe",
     ["service"],
 )
 
@@ -104,7 +104,7 @@ async def serve() -> None:
         uc11_actor_type_pb2_grpc.add_ActorTypeServiceServicer_to_server(servicer, server)
         logger.info("servicer_registriert", service="ActorTypeService")
     else:
-        logger.warning("stubs_nicht_verfuegbar")
+        logger.warning("stubs_nicht_verfügbar")
 
     if grpc_health is not None and health_pb2_grpc is not None:
         health_servicer = grpc_health.HealthServicer()

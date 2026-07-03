@@ -1,7 +1,7 @@
-"""Unit-Tests fuer CrossEncoderReranker.
+"""Unit-Tests für CrossEncoderReranker.
 
-CrossEncoder.predict wird gemockt — kein Modell-Download noetig.
-sentence_transformers wird als sys.modules-Mock eingefuegt, damit
+CrossEncoder.predict wird gemockt — kein Modell-Download nötig.
+sentence_transformers wird als sys.modules-Mock eingefügt, damit
 kein echtes ML-Paket installiert sein muss.
 """
 from __future__ import annotations
@@ -76,7 +76,7 @@ def _build_reranker(predict_scores: list[float]) -> tuple[CrossEncoderReranker, 
 # ---------------------------------------------------------------------------
 
 class TestCrossEncoderReranker:
-    """Tests fuer CrossEncoderReranker — Reranking via Cross-Encoder."""
+    """Tests für CrossEncoderReranker — Reranking via Cross-Encoder."""
 
     async def test_rerank_returns_sorted_by_score(self):
         """Dokumente werden nach Cross-Encoder Score absteigend sortiert."""
@@ -96,7 +96,7 @@ class TestCrossEncoderReranker:
         assert result[2].source_id == "A"  # score 0.3
 
     async def test_rerank_empty_docs(self):
-        """Leere Dokumentenliste gibt leere Liste zurueck."""
+        """Leere Dokumentenliste gibt leere Liste zurück."""
         reranker, mock_model = _build_reranker([])
 
         result = await reranker.rerank(query="test", documents=[], top_k=5)
@@ -105,7 +105,7 @@ class TestCrossEncoderReranker:
         mock_model.predict.assert_not_called()
 
     async def test_rerank_top_k_truncation(self):
-        """top_k=2 bei 5 Dokumenten gibt nur 2 zurueck."""
+        """top_k=2 bei 5 Dokumenten gibt nur 2 zurück."""
         reranker, _mock = _build_reranker([0.1, 0.9, 0.5, 0.3, 0.7])
 
         docs = [_make_doc(source_id=str(i)) for i in range(5)]

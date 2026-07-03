@@ -1,6 +1,6 @@
-"""Conftest fuer patent-grant-svc Tests.
+"""Conftest für patent-grant-svc Tests.
 
-Fuegt Projekt-Root und Service-Root zum sys.path hinzu, damit sowohl
+Fügt Projekt-Root und Service-Root zum sys.path hinzu, damit sowohl
 ``shared.*`` als auch ``src.*`` importierbar sind.
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 _SERVICE_ROOT = Path(__file__).resolve().parent.parent
 # Projekt-Root: mvp_v3.0/
 _PROJECT_ROOT = _SERVICE_ROOT.parent.parent
-# Packages-Root: damit ``import shared.*`` aufloest
+# Packages-Root: damit ``import shared.*`` auflöst
 _PACKAGES_ROOT = _PROJECT_ROOT / "packages"
 
 for p in (_PROJECT_ROOT, _SERVICE_ROOT, _PACKAGES_ROOT):

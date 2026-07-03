@@ -25,7 +25,7 @@ from scipy.optimize import curve_fit  # type: ignore[import-untyped]
 
 logger = logging.getLogger(__name__)
 
-# Sentinel-Wert fuer nicht-berechenbare AICc (z.B. perfekter Fit oder n <= k+1)
+# Sentinel-Wert für nicht-berechenbare AICc (z.B. perfekter Fit oder n <= k+1)
 AICC_UNDEFINED = float("inf")
 
 
@@ -38,7 +38,7 @@ def compute_aicc(
 
     AICc = n * ln(RSS/n) + 2k + 2k(k+1)/(n-k-1)
 
-    Dabei ist k = num_params + 1 (Modellparameter + Fehlervarianz-Schaetzung).
+    Dabei ist k = num_params + 1 (Modellparameter + Fehlervarianz-Schätzung).
     Niedrigere Werte bedeuten bessere Modelle. Die Korrektur (dritter Term)
     ist besonders bei kleinen Stichproben (n < 30) relevant und bestraft
     Überanpassung stärker als das Standard-AIC.
@@ -58,9 +58,9 @@ def compute_aicc(
     pred = np.asarray(predicted, dtype=np.float64)
 
     n = len(obs)
-    k = num_params + 1  # +1 fuer Fehlervarianz-Parameter
+    k = num_params + 1  # +1 für Fehlervarianz-Parameter
 
-    # Mindestens k+2 Datenpunkte noetig, damit der Korrekturfaktor definiert ist
+    # Mindestens k+2 Datenpunkte nötig, damit der Korrekturfaktor definiert ist
     if n <= k + 1:
         logger.debug(
             "AICc nicht berechenbar: n=%d <= k+1=%d (zu wenige Datenpunkte)",
@@ -73,7 +73,7 @@ def compute_aicc(
 
     # Perfekter Fit (RSS=0) → ln(0) undefiniert
     if rss <= 0.0:
-        logger.debug("AICc: RSS=0 (perfekter Fit), gebe -inf zurueck")
+        logger.debug("AICc: RSS=0 (perfekter Fit), gebe -inf zurück")
         return float("-inf")
 
     # AICc-Berechnung
@@ -91,9 +91,9 @@ def logistic_function(
 
     Args:
         x: Zeitpunkte (Jahre)
-        L: Saettigungsniveau (Obergrenze)
+        L: Sättigungsniveau (Obergrenze)
         k: Wachstumsrate (Steilheit)
-        x0: Wendepunkt (Jahr mit staerkstem Wachstum)
+        x0: Wendepunkt (Jahr mit stärkstem Wachstum)
     """
     result: NDArray[np.float64] = L / (1.0 + np.exp(-k * (x - x0)))
     return result
@@ -104,20 +104,20 @@ def estimate_initial_params(
     cumulative: NDArray[np.float64],
 ) -> tuple[float, float, float]:
     """
-    Initiale Parameter fuer curve_fit schaetzen.
+    Initiale Parameter für curve_fit schätzen.
 
     Returns:
-        (L0, k0, x0) — Startwerte fuer Saettigung, Wachstumsrate, Wendepunkt
+        (L0, k0, x0) — Startwerte für Sättigung, Wachstumsrate, Wendepunkt
     """
     y_max = float(cumulative[-1])
     sat = y_max * 1.5 if y_max > 0 else 1.0
 
-    # x0: Jahr, in dem cumulative am naechsten an sat/2 liegt
+    # x0: Jahr, in dem cumulative am nächsten an sat/2 liegt
     half_sat = sat / 2.0
     idx_mid = int(np.argmin(np.abs(cumulative - half_sat)))
     x0 = float(years[idx_mid])
 
-    # k0: Aus 10%-90% Transitionsbreite schaetzen
+    # k0: Aus 10%-90% Transitionsbreite schätzen
     threshold_10 = sat * 0.1
     threshold_90 = sat * 0.9
     idx_10 = int(np.argmin(np.abs(cumulative - threshold_10)))
@@ -149,7 +149,7 @@ def fit_s_curve(
     x = np.array(years, dtype=np.float64)
     y = np.array(cumulative, dtype=np.float64)
 
-    # Nur Nullen → kein Fit moeglich
+    # Nur Nullen → kein Fit möglich
     if y[-1] <= 0:
         return None
 
@@ -183,7 +183,7 @@ def fit_s_curve(
         # AICc berechnen (Logistic: 3 Parameter — L, k, x0)
         aicc = compute_aicc(y, fitted, num_params=3)
 
-        # Maturity Percent: aktueller Wert / Saettigung
+        # Maturity Percent: aktueller Wert / Sättigung
         maturity_percent = (float(y[-1]) / sat_fit) * 100.0 if sat_fit > 0 else 0.0
 
         return {
@@ -212,11 +212,11 @@ def gompertz_function(
     """
     Gompertz-Funktion: f(x) = L * exp(-b * exp(-k * (x - x0))).
 
-    Asymmetrische S-Kurve — Wachstum verlangsamt sich frueher als bei Logistic.
+    Asymmetrische S-Kurve — Wachstum verlangsamt sich früher als bei Logistic.
 
     Args:
         x: Zeitpunkte (Jahre)
-        L: Saettigungsniveau (Obergrenze)
+        L: Sättigungsniveau (Obergrenze)
         b: Verschiebungsparameter (bestimmt den Start)
         k: Wachstumsrate
         x0: Referenz-Zeitpunkt
@@ -324,21 +324,21 @@ def richards_function(
 
     Parameter m steuert die Asymmetrie:
     - m=1: identisch mit Logistic (symmetrisch)
-    - m<1: fruehere Saettigung (Gompertz-aehnlich)
-    - m>1: spaetere Saettigung
+    - m<1: frühere Sättigung (Gompertz-ähnlich)
+    - m>1: spätere Sättigung
 
     Referenz: Richards, F.J. (1959). A Flexible Growth Function for Empirical Use.
     Journal of Experimental Botany, 10(2), 290-301.
 
     Args:
         x: Zeitpunkte (Jahre)
-        L: Saettigungsniveau (Obergrenze)
+        L: Sättigungsniveau (Obergrenze)
         k: Wachstumsrate (Steilheit)
-        x0: Wendepunkt (Jahr mit staerkstem Wachstum)
+        x0: Wendepunkt (Jahr mit stärkstem Wachstum)
         m: Formparameter (Asymmetrie)
     """
     base = 1.0 + np.exp(-k * (x - x0))
-    # Numerische Stabilitaet: base > 0 ist garantiert (exp > 0 → base > 1)
+    # Numerische Stabilität: base > 0 ist garantiert (exp > 0 → base > 1)
     result: NDArray[np.float64] = L / np.power(base, 1.0 / m)
     return result
 
@@ -355,7 +355,7 @@ def fit_richards(
     zu vermeiden. Empfohlen: min. 20 Datenpunkte (n >= 20).
 
     Bei min_points < 5 wird der Fit nicht versucht (zu wenige Daten
-    fuer 4 Parameter). Standardwert ist 5, aber fuer robuste Ergebnisse
+    für 4 Parameter). Standardwert ist 5, aber für robuste Ergebnisse
     sollte n >= 20 gelten.
 
     Args:
@@ -410,7 +410,7 @@ def fit_richards(
         # AICc berechnen (Richards: 4 Parameter — L, k, x0, m)
         aicc = compute_aicc(y, fitted, num_params=4)
 
-        # Maturity Percent: aktueller Wert / Saettigung
+        # Maturity Percent: aktueller Wert / Sättigung
         maturity_percent = (float(y[-1]) / sat_fit) * 100.0 if sat_fit > 0 else 0.0
 
         return {
@@ -434,8 +434,8 @@ def fit_richards(
         return None
 
 
-# Schwellenwert: Ab dieser Stichprobengroesse wird Richards in die
-# Modellselektion einbezogen (4 Parameter erhoehen Overfitting-Risiko).
+# Schwellenwert: Ab dieser Stichprobengröße wird Richards in die
+# Modellselektion einbezogen (4 Parameter erhöhen Overfitting-Risiko).
 RICHARDS_MIN_SAMPLE_SIZE = 20
 
 
@@ -443,7 +443,7 @@ def fit_best_model(
     years: list[int],
     cumulative: list[int],
 ) -> dict[str, Any] | None:
-    """Alle verfuegbaren Modelle fitten, via AICc selektieren.
+    """Alle verfügbaren Modelle fitten, via AICc selektieren.
 
     Modell-Pool:
     - Logistic (3 Parameter) — immer
@@ -451,16 +451,16 @@ def fit_best_model(
     - Richards (4 Parameter) — nur bei n >= RICHARDS_MIN_SAMPLE_SIZE (20)
 
     Richards wird bei kleinen Stichproben ausgeschlossen, da 4 frei
-    variierbare Parameter (inkl. Formparameter m) zu Overfitting fuehren.
+    variierbare Parameter (inkl. Formparameter m) zu Overfitting führen.
 
     AICc (korrigiertes Akaike-Informationskriterium) bestraft Modell-
-    Komplexitaet und ist robuster als R² bei kleinen Stichproben.
+    Komplexität und ist robuster als R² bei kleinen Stichproben.
     Niedrigerer AICc = besseres Modell.
 
     Delta-AICc Interpretation (Burnham & Anderson 2002):
     - < 2: Kaum Unterschied, beide Modelle plausibel
-    - 2-7: Moderate Evidenz fuer das bessere Modell
-    - > 7: Starke Evidenz fuer das bessere Modell
+    - 2-7: Moderate Evidenz für das bessere Modell
+    - > 7: Starke Evidenz für das bessere Modell
 
     Falls AICc nicht berechenbar (zu wenige Datenpunkte), Fallback auf R².
 
@@ -499,7 +499,7 @@ def fit_best_model(
         selected["aicc_alternative"] = AICC_UNDEFINED
         return selected
 
-    # AICc-basierte Selektion ueber alle Kandidaten
+    # AICc-basierte Selektion über alle Kandidaten
     valid_aicc = [(c, c["aicc"]) for c in candidates if np.isfinite(c["aicc"])]
 
     if len(valid_aicc) >= 2:
@@ -524,7 +524,7 @@ def fit_best_model(
         return selected
 
     if len(valid_aicc) == 1:
-        # Nur ein Modell mit gueltigem AICc
+        # Nur ein Modell mit gültigem AICc
         selected = valid_aicc[0][0]
         # Finde Alternative (beliebiger anderer Kandidat)
         alternatives = [c for c in candidates if c is not selected]

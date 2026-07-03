@@ -1,4 +1,4 @@
-"""Unit-Tests fuer EmbeddingRepository und ChunkRepository.
+"""Unit-Tests für EmbeddingRepository und ChunkRepository.
 
 Testet die Source-Konfiguration, SQL-Query-Logik und Fehlerbehandlung.
 Alle DB-Zugriffe werden durch AsyncMock ersetzt.
@@ -29,8 +29,8 @@ def _make_pool(
     """Erstellt einen Mock-asyncpg-Pool.
 
     asyncpg.Pool.acquire() ist ein synchroner Aufruf, der einen
-    async context manager zurueckgibt — daher MagicMock fuer pool,
-    AsyncMock fuer die Connection.
+    async context manager zurückgibt — daher MagicMock für pool,
+    AsyncMock für die Connection.
     """
     pool = MagicMock()
     conn = AsyncMock()

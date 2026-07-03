@@ -1,7 +1,7 @@
-"""Tests fuer shared.domain.patent_definitions — Master-Scope fuer Patente.
+"""Tests für shared.domain.patent_definitions — Master-Scope für Patente.
 
 Hintergrund: Bug CRIT-4 — `total_patents` im Header vs. `total_applications`
-in UC12 wurden inkonsistent gezaehlt. Zentrale Scope-Enum + Kind-Code-Listen
+in UC12 wurden inkonsistent gezählt. Zentrale Scope-Enum + Kind-Code-Listen
 machen die Trennung verbindlich.
 """
 
@@ -46,12 +46,12 @@ class TestKindCodes:
         assert "B1" in GRANT_KIND_CODES
 
     def test_application_codes_complete(self):
-        """Alle gaengigen Application-Codes sind enthalten."""
+        """Alle gängigen Application-Codes sind enthalten."""
         expected = {"A", "A1", "A2", "A3", "A4", "A8", "A9"}
         assert expected <= APPLICATION_KIND_CODES
 
     def test_grant_codes_complete(self):
-        """Alle gaengigen Grant-Codes sind enthalten."""
+        """Alle gängigen Grant-Codes sind enthalten."""
         expected = {"B", "B1", "B2", "B3", "B4", "B8", "B9"}
         assert expected <= GRANT_KIND_CODES
 

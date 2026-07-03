@@ -1,6 +1,6 @@
 """UC-C PublicationAnalyticsServicer — gRPC-Implementierung der Publikations-Impact-Chain.
 
-Verknuepft CORDIS-Projekte mit ihren Publikationsoutputs und berechnet
+Verknüpft CORDIS-Projekte mit ihren Publikationsoutputs und berechnet
 Effizienz-Metriken (Publikationen pro Million EUR, DOI-Abdeckung).
 """
 
@@ -43,7 +43,7 @@ def _get_base_class() -> type:
 
 
 class PublicationAnalyticsServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC-C Publication Impact Chain."""
+    """gRPC-Servicer für UC-C Publication Impact Chain."""
 
     def __init__(self, pool: asyncpg.Pool, settings: Settings | None = None) -> None:
         self._pool = pool
@@ -162,9 +162,9 @@ class PublicationAnalyticsServicer(_get_base_class()):  # type: ignore[misc]
     def _build_response(self, **kwargs: Any) -> Any:
         if uc_c_publications_pb2 is None or common_pb2 is None:
             # MAJ-7/MAJ-8: ``data_complete_year`` aus dem shared-Helper
-            # macht das letzte vollstaendige Kalenderjahr explizit. Das
-            # Frontend nutzt den Wert fuer den ReferenceArea-Hinweis
-            # "Daten ggf. unvollstaendig" auf dem Pub-Trend-Chart.
+            # macht das letzte vollständige Kalenderjahr explizit. Das
+            # Frontend nutzt den Wert für den ReferenceArea-Hinweis
+            # "Daten ggf. unvollständig" auf dem Pub-Trend-Chart.
             return {
                 "total_publications": kwargs["total_publications"],
                 "total_projects_with_pubs": kwargs["total_projects_with_pubs"],

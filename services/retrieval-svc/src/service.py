@@ -1,8 +1,8 @@
-"""RetrievalServicer — duenner gRPC-Adapter.
+"""RetrievalServicer — dünner gRPC-Adapter.
 
-Extrahiert Request-Parameter aus Protobuf, delegiert Geschaeftslogik
+Extrahiert Request-Parameter aus Protobuf, delegiert Geschäftslogik
 an den RetrieveDocuments Use Case und mappt das RetrievalResult
-zurueck auf gRPC-/dict-Responses.
+zurück auf gRPC-/dict-Responses.
 """
 from __future__ import annotations
 
@@ -43,16 +43,16 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if retrieval_pb2_grpc is not None:
         return retrieval_pb2_grpc.RetrievalServiceServicer  # type: ignore[return-value]
     return object
 
 
 class RetrievalServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer den Retrieval-Service.
+    """gRPC-Servicer für den Retrieval-Service.
 
-    Duenner Adapter: extrahiert Parameter, delegiert an Use Case,
+    Dünner Adapter: extrahiert Parameter, delegiert an Use Case,
     mappt Ergebnis auf gRPC-Response.
     """
 
@@ -95,7 +95,7 @@ class RetrievalServicer(_get_base_class()):  # type: ignore[misc]
         request: Any,
         context: Any,
     ) -> Any:
-        """Semantische Suche ausfuehren.
+        """Semantische Suche ausführen.
 
         Args:
             request: tip.retrieval.RetrievalRequest Protobuf-Message

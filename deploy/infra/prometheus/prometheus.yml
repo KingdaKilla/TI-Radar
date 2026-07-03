@@ -38,8 +38,8 @@ scrape_configs:
           - "export-svc:8020"
     metrics_path: /metrics
 
-  # PostgreSQL — benoetigt postgres_exporter Container
-  # TODO: postgres_exporter als Sidecar hinzufuegen
+  # PostgreSQL — benötigt postgres_exporter Container
+  # TODO: postgres_exporter als Sidecar hinzufügen
   # - job_name: "postgresql"
   #   static_configs:
   #     - targets: ["postgres-exporter:9187"]

@@ -1,11 +1,11 @@
-"""Integrations-Tests fuer UC4 FundingRepository gegen PostgreSQL Testcontainer.
+"""Integrations-Tests für UC4 FundingRepository gegen PostgreSQL Testcontainer.
 
-Prueft das korrekte Verhalten des Foerderungs-Repositories:
-- EU-Foerderung pro Jahr (funding_by_year)
-- Foerderung nach Rahmenprogramm (funding_by_programme: H2020, HORIZON)
-- Foerderung nach Instrument (funding_by_instrument: RIA, IA, CSA)
+Prüft das korrekte Verhalten des Förderungs-Repositories:
+- EU-Förderung pro Jahr (funding_by_year)
+- Förderung nach Rahmenprogramm (funding_by_programme: H2020, HORIZON)
+- Förderung nach Instrument (funding_by_instrument: RIA, IA, CSA)
 - Top-finanzierte Organisationen (top_funded_organizations)
-- Foerderung pro Land (funding_by_country)
+- Förderung pro Land (funding_by_country)
 - Durchschnittliche Projektdauer (avg_project_duration)
 - Leere Ergebnis-Behandlung bei unbekannter Technologie
 
@@ -41,7 +41,7 @@ FundingRepository = _mod.FundingRepository
 
 @pytest_asyncio.fixture(scope="module")
 async def repo(populated_db):
-    """Erstellt ein FundingRepository gegen den befuellten Testcontainer."""
+    """Erstellt ein FundingRepository gegen den befüllten Testcontainer."""
     return FundingRepository(pool=populated_db)
 
 
@@ -51,11 +51,11 @@ async def repo(populated_db):
 
 
 class TestFundingByYear:
-    """Tests fuer FundingRepository.funding_by_year()."""
+    """Tests für FundingRepository.funding_by_year()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_foerderung_fuer_quantum_gefunden(self, repo):
-        """EU-Foerderung fuer Quantum-Computing aus CORDIS ist abrufbar."""
+        """EU-Förderung für Quantum-Computing aus CORDIS ist abrufbar."""
         ergebnisse = await repo.funding_by_year("quantum computing")
         assert isinstance(ergebnisse, list)
         assert len(ergebnisse) > 0
@@ -76,7 +76,7 @@ class TestFundingByYear:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_foerdervolumen_positiv(self, repo):
-        """Gesamt-Foerdervolumen fuer Quantum-Computing ist groesser als Null."""
+        """Gesamt-Fördervolumen für Quantum-Computing ist größer als Null."""
         ergebnisse = await repo.funding_by_year("quantum computing")
         gesamt = sum(e.funding for e in ergebnisse)
         assert gesamt > 0.0
@@ -90,21 +90,21 @@ class TestFundingByYear:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_jahresfilter_start(self, repo):
-        """start_year-Filter schliesst Jahre vor dem Grenzwert aus."""
+        """start_year-Filter schließt Jahre vor dem Grenzwert aus."""
         ergebnisse = await repo.funding_by_year("quantum computing", start_year=2021)
         for eintrag in ergebnisse:
             assert eintrag.year >= 2021
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_jahresfilter_ende(self, repo):
-        """end_year-Filter schliesst Jahre nach dem Grenzwert aus."""
+        """end_year-Filter schließt Jahre nach dem Grenzwert aus."""
         ergebnisse = await repo.funding_by_year("quantum computing", end_year=2020)
         for eintrag in ergebnisse:
             assert eintrag.year <= 2020
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_battery_foerderung_gefunden(self, repo):
-        """Foerderung fuer Solid-State-Battery-Projekte ist abrufbar."""
+        """Förderung für Solid-State-Battery-Projekte ist abrufbar."""
         ergebnisse = await repo.funding_by_year("solid state battery")
         assert len(ergebnisse) > 0
         gesamt = sum(e.funding for e in ergebnisse)
@@ -123,7 +123,7 @@ class TestFundingByYear:
 
 
 class TestFundingByProgramme:
-    """Tests fuer FundingRepository.funding_by_programme()."""
+    """Tests für FundingRepository.funding_by_programme()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_programme_vorhanden(self, repo):
@@ -152,7 +152,7 @@ class TestFundingByProgramme:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_absteigende_sortierung_nach_foerderung(self, repo):
-        """Ergebnisse sind absteigend nach Foerdervolumen sortiert."""
+        """Ergebnisse sind absteigend nach Fördervolumen sortiert."""
         ergebnisse = await repo.funding_by_programme("quantum computing")
         if len(ergebnisse) >= 2:
             foerderungen = [e["funding"] for e in ergebnisse]
@@ -171,11 +171,11 @@ class TestFundingByProgramme:
 
 
 class TestFundingByInstrument:
-    """Tests fuer FundingRepository.funding_by_instrument()."""
+    """Tests für FundingRepository.funding_by_instrument()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_instrumente_vorhanden(self, repo):
-        """RIA, IA, CSA erscheinen als Foerderinstrumente."""
+        """RIA, IA, CSA erscheinen als Förderinstrumente."""
         ergebnisse = await repo.funding_by_instrument("quantum computing")
         assert len(ergebnisse) > 0
 
@@ -193,7 +193,7 @@ class TestFundingByInstrument:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_ria_instrument_vorhanden(self, repo):
-        """RIA ist das haeufigste Instrument in den Quantum-Testdaten."""
+        """RIA ist das häufigste Instrument in den Quantum-Testdaten."""
         ergebnisse = await repo.funding_by_instrument("quantum computing")
         schemata = {e["funding_scheme"] for e in ergebnisse}
         assert "RIA" in schemata
@@ -219,11 +219,11 @@ class TestFundingByInstrument:
 
 
 class TestTopFundedOrganizations:
-    """Tests fuer FundingRepository.top_funded_organizations()."""
+    """Tests für FundingRepository.top_funded_organizations()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_organisationen_gefunden(self, repo):
-        """Top-finanzierte Organisationen fuer Quantum sind abrufbar."""
+        """Top-finanzierte Organisationen für Quantum sind abrufbar."""
         ergebnisse = await repo.top_funded_organizations("quantum computing")
         assert len(ergebnisse) > 0
 
@@ -243,14 +243,14 @@ class TestTopFundedOrganizations:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_foerdervolumen_positiv(self, repo):
-        """Alle Eintraege haben nicht-negatives Foerdervolumen."""
+        """Alle Einträge haben nicht-negatives Fördervolumen."""
         ergebnisse = await repo.top_funded_organizations("quantum computing")
         for eintrag in ergebnisse:
             assert eintrag["funding"] >= 0.0
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_absteigende_sortierung(self, repo):
-        """Ergebnisse sind absteigend nach Foerdervolumen sortiert."""
+        """Ergebnisse sind absteigend nach Fördervolumen sortiert."""
         ergebnisse = await repo.top_funded_organizations("quantum computing")
         if len(ergebnisse) >= 2:
             foerderungen = [e["funding"] for e in ergebnisse]
@@ -264,7 +264,7 @@ class TestTopFundedOrganizations:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_basf_in_battery_top_list(self, repo):
-        """BASF SE ist der groesste Emfaenger in den Battery-Testdaten."""
+        """BASF SE ist der größte Emfänger in den Battery-Testdaten."""
         ergebnisse = await repo.top_funded_organizations("solid state battery")
         namen = [e["name"] for e in ergebnisse]
         assert any("BASF" in name for name in namen)
@@ -282,11 +282,11 @@ class TestTopFundedOrganizations:
 
 
 class TestFundingByCountry:
-    """Tests fuer FundingRepository.funding_by_country()."""
+    """Tests für FundingRepository.funding_by_country()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_laender_gefunden(self, repo):
-        """Foerderung nach Land fuer Quantum-Projekte ist abrufbar."""
+        """Förderung nach Land für Quantum-Projekte ist abrufbar."""
         ergebnisse = await repo.funding_by_country("quantum computing")
         assert len(ergebnisse) > 0
 
@@ -304,7 +304,7 @@ class TestFundingByCountry:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_deutschland_als_top_empfaenger(self, repo):
-        """DE ist aufgrund der Testdaten ein fuehrender Empfaenger."""
+        """DE ist aufgrund der Testdaten ein führender Empfänger."""
         ergebnisse = await repo.funding_by_country("quantum computing")
         laender = {e["country"] for e in ergebnisse}
         assert "DE" in laender
@@ -328,11 +328,11 @@ class TestFundingByCountry:
 
 
 class TestAvgProjectDuration:
-    """Tests fuer FundingRepository.avg_project_duration()."""
+    """Tests für FundingRepository.avg_project_duration()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_dauer_positiv(self, repo):
-        """Durchschnittliche Projektdauer ist groesser als Null (in Monaten)."""
+        """Durchschnittliche Projektdauer ist größer als Null (in Monaten)."""
         dauer = await repo.avg_project_duration("quantum computing")
         assert isinstance(dauer, float)
         assert dauer > 0.0
@@ -345,7 +345,7 @@ class TestAvgProjectDuration:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_battery_dauer(self, repo):
-        """Durchschnittliche Dauer fuer Battery-Projekte ist berechenbar."""
+        """Durchschnittliche Dauer für Battery-Projekte ist berechenbar."""
         dauer = await repo.avg_project_duration("solid state battery")
         assert isinstance(dauer, float)
         assert dauer > 0.0

@@ -7,7 +7,7 @@
 import type { CompetitivePanel, RadarResponse, UseCaseKey } from "./types";
 import { METRIC_TOOLTIPS } from "./metric-tooltips";
 
-// INFO-12: Single Source of Truth fuer die h-Index-Schwellen-Erklaerung,
+// INFO-12: Single Source of Truth für die h-Index-Schwellen-Erklärung,
 // die der ExecutiveSummary-Tooltip beim Hover auf den Impact-Badge anzeigt.
 const H_INDEX_THRESHOLD_TOOLTIP = METRIC_TOOLTIPS.h_index_thresholds;
 
@@ -19,7 +19,7 @@ const H_INDEX_THRESHOLD_TOOLTIP = METRIC_TOOLTIPS.h_index_thresholds;
  * landen in einem eigenen Badge-Slot "Trend: ...".
  *
  * Schwelle ±2 % p. a. trennt Stagnation von echtem
- * Wachstum / Rueckgang.
+ * Wachstum / Rückgang.
  * ────────────────────────────────────────────── */
 export type TrendLabel = "Wachstum" | "Stagnation" | "Rückgang";
 
@@ -34,12 +34,12 @@ export function trendFromCagr(cagr: number): TrendLabel {
  * AP7 / MAJ-6: Konzentrations-Label aus UC3.
  *
  * Bevorzugt das Backend-Feld `concentration`
- * (CompetitivePanel.concentration). Fehlt es, faellt
- * die Funktion auf eine HHI-Heuristik zurueck — in
- * keinem Fall wird der frueher hartcodierte Fallback
+ * (CompetitivePanel.concentration). Fehlt es, fällt
+ * die Funktion auf eine HHI-Heuristik zurück — in
+ * keinem Fall wird der früher hartcodierte Fallback
  * "Wettbewerbsintensiver Markt" verwendet.
  *
- * HHI-Schwellen folgen der gaengigen Definition:
+ * HHI-Schwellen folgen der gängigen Definition:
  *   HHI < 1500  → niedrig  ("Niedrige Konzentration")
  *   HHI < 2500  → mittel   ("Moderate Konzentration")
  *   sonst       → hoch     ("Hohe Konzentration")
@@ -90,9 +90,9 @@ export interface ClusterData {
     technology: string;
     text: string;
     badges: string[];
-    /** INFO-12: Optionale Tooltip-Texte fuer einzelne Badges.
+    /** INFO-12: Optionale Tooltip-Texte für einzelne Badges.
      *  Key = exakter Badge-Text (z. B. "Sehr hoher Impact (h=120)"),
-     *  Value = Erklaerungstext fuer den InfoTooltip (z. B. die
+     *  Value = Erklärungstext für den InfoTooltip (z. B. die
      *  hartcodierten h-Index-Schwellen). Fehlt der Key, rendert die UI
      *  keinen Info-Icon.
      */
@@ -126,7 +126,7 @@ export function buildClusterData(data: RadarResponse): ClusterData {
   // h-Index als natürlichsprachige Einschätzung.
   // INFO-12: Schwellen sind hartcodiert (100/50/20). Damit Nutzer den
   // qualitativen Begriff (z. B. „Sehr hoher Impact") mit dem konkreten
-  // Zahlenwert belegen koennen, wird der h-Index inline mitgegeben:
+  // Zahlenwert belegen können, wird der h-Index inline mitgegeben:
   //   "Sehr hoher Impact (h=120)" statt nur "Sehr hoher Forschungsimpact".
   // Die Schwellen selbst werden in `metric-tooltips.ts` als Tooltip
   // hinterlegt (Key: H_INDEX_THRESHOLDS).
@@ -141,10 +141,10 @@ export function buildClusterData(data: RadarResponse): ClusterData {
     : undefined;
 
   // AP7 / MAJ-5: Phase- und Trend-Badge stehen in *getrennten* Slots.
-  // - Phase  = exakt das UC2-`phase_label` (kein Anhaengsel mehr).
+  // - Phase  = exakt das UC2-`phase_label` (kein Anhängsel mehr).
   // - Trend  = grobe CAGR-Klassifikation in eigenem Slot "Trend: ...".
-  // Damit verschwindet die irrefuehrende Verkettung
-  // "Reife + Rueckläufige Entwicklung".
+  // Damit verschwindet die irreführende Verkettung
+  // "Reife + Rückläufige Entwicklung".
   const phaseBadge =
     data.maturity?.phase_label && data.maturity.phase_label.trim().length > 0
       ? `Phase: ${data.maturity.phase_label}`
@@ -182,8 +182,8 @@ export function buildClusterData(data: RadarResponse): ClusterData {
   if (funding) badges.push(`\u20AC${(funding / 1_000_000).toFixed(0)}M F\u00F6rderung`);
   if (hLabel) badges.push(hLabel);
 
-  // INFO-12: Tooltip-Texte fuer Badges, die hartcodierte Schwellen-Werte
-  // erklaeren. Aktuell nur fuer den h-Index-Impact-Badge.
+  // INFO-12: Tooltip-Texte für Badges, die hartcodierte Schwellen-Werte
+  // erklären. Aktuell nur für den h-Index-Impact-Badge.
   const badgeTooltips: Record<string, string> = {};
   if (hLabel) {
     badgeTooltips[hLabel] = H_INDEX_THRESHOLD_TOOLTIP;

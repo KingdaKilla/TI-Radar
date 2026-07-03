@@ -1,4 +1,4 @@
-"""Tests fuer die Publikations-Konsistenz (Bug CRIT-1) auf Repository-Ebene.
+"""Tests für die Publikations-Konsistenz (Bug CRIT-1) auf Repository-Ebene.
 
 Das Publikations-Svc (UC13) MUSS dieselbe Master-Query wie das
 landscape-svc (UC1 Header-Summary) verwenden.  Dieser Test sichert per
@@ -36,7 +36,7 @@ def _load_landscape_repo_cls():
 
 
 # ---------------------------------------------------------------------------
-# Minimaler Fake-Pool (aequivalent zu integration/test_publication_consistency.py).
+# Minimaler Fake-Pool (äquivalent zu integration/test_publication_consistency.py).
 # ---------------------------------------------------------------------------
 
 
@@ -91,7 +91,7 @@ class TestCrossServicePublicationCountCrit1:
 
         Das ist die strukturelle Zusage hinter CRIT-1: sobald beide Services
         dieselbe Master-Query nutzen, ist die Divergenz aus dem Audit
-        unmoeglich.
+        unmöglich.
         """
         # Nachladen verhindert sys.path-Konflikte mit src.infrastructure in
         # zweigleisiger Test-Session.

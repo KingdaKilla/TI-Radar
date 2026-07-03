@@ -1,8 +1,8 @@
-"""Cross-Service Konsistenz-Test fuer Akteurs-Zaehlungen (Bug CRIT-3 / AP3).
+"""Cross-Service Konsistenz-Test für Akteurs-Zählungen (Bug CRIT-3 / AP3).
 
 Drei Services (UC8 Temporal, UC9 Tech-Cluster, UC11 Actor-Type) liefern drei
-*fachlich unterschiedliche* Akteurs-Zahlen. Vorher fuehrte das zu Nutzer-
-verwirrung (mRNA: UC8=34, UC9=29, UC11=363, Faktor 12 ohne Erklaerung).
+*fachlich unterschiedliche* Akteurs-Zahlen. Vorher führte das zu Nutzer-
+verwirrung (mRNA: UC8=34, UC9=29, UC11=363, Faktor 12 ohne Erklärung).
 
 AP3 behebt die Verwirrung, nicht die Zahlen:
 
@@ -10,16 +10,16 @@ AP3 behebt die Verwirrung, nicht die Zahlen:
    (``shared.domain.actor_definitions.canonical_actor_label``).
 2. Die drei Scopes sind eindeutig: ACTIVE_IN_WINDOW (UC8), CLUSTER_MEMBER
    (UC9), CLASSIFIED (UC11).
-3. Plausibilitaetsregel (mit realen Datenvolumina):
+3. Plausibilitätsregel (mit realen Datenvolumina):
    ``UC8.active_actors <= UC11.classified_actors`` — Patent-Anmelder im
    Zeitfenster sind typischerweise eine Teilmenge aller klassifizierten
    CORDIS-Organisationen. Dieser Test dokumentiert die Regel; die konkrete
    Durchsetzung erfolgt im Live-System via Playwright-Verifikation (AP10).
 
-Der Test hier arbeitet mit Mock-Pools und prueft die *Service-seitige*
+Der Test hier arbeitet mit Mock-Pools und prüft die *Service-seitige*
 Wahrheit — also, dass jeder Service in seinem Dict-Response das korrekte
 Scope-Label setzt. Integrationstests gegen echte DB erfordern Docker
-(Testcontainer) und werden in ``services/*/tests/integration/`` gefuehrt.
+(Testcontainer) und werden in ``services/*/tests/integration/`` geführt.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ import pathlib
 import sys
 
 # ---------------------------------------------------------------------------
-# Pfad-Setup (packages/ auf sys.path fuer shared.domain.* Imports)
+# Pfad-Setup (packages/ auf sys.path für shared.domain.* Imports)
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -38,7 +38,7 @@ if str(_PACKAGES_ROOT) not in sys.path:
 
 
 # ---------------------------------------------------------------------------
-# Shared-Imports (nach sys.path-Setup verfuegbar)
+# Shared-Imports (nach sys.path-Setup verfügbar)
 # ---------------------------------------------------------------------------
 
 from shared.domain.actor_definitions import (  # noqa: E402
@@ -47,7 +47,7 @@ from shared.domain.actor_definitions import (  # noqa: E402
 )
 
 # ===========================================================================
-# Invariante 1: Kanonische Scope-Labels sind verfuegbar
+# Invariante 1: Kanonische Scope-Labels sind verfügbar
 # ===========================================================================
 
 
@@ -75,41 +75,41 @@ class TestCanonicalScopeLabels:
 
 
 # ===========================================================================
-# Invariante 2: Plausibilitaetsregel (dokumentarisch)
+# Invariante 2: Plausibilitätsregel (dokumentarisch)
 # ===========================================================================
 #
 # Die Scope-Label-Integration pro Service wird in den Service-Unit-Tests
-# geprueft (``services/<svc>/tests/unit/test_actor_scope_label.py``). Ein
-# gemeinsamer Test ist nicht moeglich, weil die drei Services jeweils einen
+# geprüft (``services/<svc>/tests/unit/test_actor_scope_label.py``). Ein
+# gemeinsamer Test ist nicht möglich, weil die drei Services jeweils einen
 # lokalen ``src.domain.metrics``-Namespace haben, der beim paralellen
 # Laden im selben Prozess kollidiert.
 # ===========================================================================
 
 
 class TestActorCountPlausibility:
-    """Plausibilitaetsregel fuer Live-Daten (siehe KONSOLIDIERUNG.md/CRIT-3).
+    """Plausibilitätsregel für Live-Daten (siehe KONSOLIDIERUNG.md/CRIT-3).
 
     In produktiven Daten gilt typischerweise:
         UC9.CLUSTER_MEMBER <= UC8.ACTIVE_IN_WINDOW <= UC11.CLASSIFIED
 
     Weil:
-    - UC11 (CLASSIFIED) zaehlt *alle* CORDIS-Organisationen mit activity_type
-      (unabhaengig vom Zeitfenster).
-    - UC8 (ACTIVE_IN_WINDOW) zaehlt Patent-Anmelder + CORDIS-Teilnehmer,
+    - UC11 (CLASSIFIED) zählt *alle* CORDIS-Organisationen mit activity_type
+      (unabhängig vom Zeitfenster).
+    - UC8 (ACTIVE_IN_WINDOW) zählt Patent-Anmelder + CORDIS-Teilnehmer,
       die im Zeitfenster aktiv waren — Teilmenge der klassifizierten.
-    - UC9 (CLUSTER_MEMBER) zaehlt Patent-Anmelder, die via CPC-Cooccurrence
-      einem Cluster zugeordnet wurden — weitere Einschraenkung.
+    - UC9 (CLUSTER_MEMBER) zählt Patent-Anmelder, die via CPC-Cooccurrence
+      einem Cluster zugeordnet wurden — weitere Einschränkung.
 
     Die konkrete Durchsetzung erfolgt im Live-System via Playwright-MCP
     (siehe AP10). Hier dokumentieren wir die Regel.
     """
 
     def test_scope_hierarchy_dokumentiert(self):
-        """Die drei Scopes sind nach wachsender Restriktivitaet geordnet."""
-        # Dokumentarischer Test — keine Ausfuehrung von DB-Queries.
+        """Die drei Scopes sind nach wachsender Restriktivität geordnet."""
+        # Dokumentarischer Test — keine Ausführung von DB-Queries.
         # Hierarchie wird in AP10 via Live-System verifiziert.
         hierarchy = [
-            ActorScope.CLASSIFIED,       # groesste Menge
+            ActorScope.CLASSIFIED,       # größte Menge
             ActorScope.ACTIVE_IN_WINDOW,  # Teilmenge: im Zeitfenster aktiv
             ActorScope.CLUSTER_MEMBER,    # Teilmenge: clusterisiert
         ]

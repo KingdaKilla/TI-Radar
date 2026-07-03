@@ -21,7 +21,7 @@ jobs:
 
       - name: Install grpcio-tools
         # protobuf<6 pinnen: google-generativeai (llm-svc) klemmt transitiv
-        # protobuf<6.0.0.dev0. gencode 5.x ist aufwaertskompatibel mit
+        # protobuf<6.0.0.dev0. gencode 5.x ist aufwärtskompatibel mit
         # Runtime-protobuf 6.x, also funktionieren die Stubs in allen Services.
         run: pip install grpcio-tools "protobuf<6"
 
@@ -104,7 +104,7 @@ jobs:
             dockerfile: database/Dockerfile
             context: .
             build-args: ""
-          # Eigenstaendige Services
+          # Eigenständige Services
           - service: orchestrator-svc
             dockerfile: services/orchestrator-svc/Dockerfile
             context: .

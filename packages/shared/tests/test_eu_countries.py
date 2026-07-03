@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.eu_countries — EU/EEA-Laenderset."""
+"""Tests für shared.domain.eu_countries — EU/EEA-Länderset."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ class TestEuCountries:
         assert "UK" in EU_EEA_COUNTRIES
 
     def test_cordis_alias(self):
-        assert "EL" in EU_EEA_COUNTRIES  # CORDIS-Alias fuer GR
+        assert "EL" in EU_EEA_COUNTRIES  # CORDIS-Alias für GR
 
     def test_non_european(self):
         for code in ["US", "CN", "JP", "KR", "IN", "BR"]:

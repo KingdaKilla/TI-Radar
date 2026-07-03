@@ -1,8 +1,8 @@
-"""UC4 FundingServicer — gRPC-Implementierung der EU-Foerderungs-Analyse.
+"""UC4 FundingServicer — gRPC-Implementierung der EU-Förderungs-Analyse.
 
-Empfaengt AnalysisRequest, fuehrt parallele Abfragen gegen CORDIS-Daten
+Empfängt AnalysisRequest, führt parallele Abfragen gegen CORDIS-Daten
 in PostgreSQL durch, berechnet CAGR und baut FundingResponse mit
-Programmverteilung, Instrumenten-Aufschluesselung und Zeitreihen.
+Programmverteilung, Instrumenten-Aufschlüsselung und Zeitreihen.
 
 Migration von MVP v1.0:
 - SQLite FTS5 MATCH -> PostgreSQL tsvector @@ plainto_tsquery
@@ -51,21 +51,21 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc4_funding_pb2_grpc is not None:
         return uc4_funding_pb2_grpc.FundingServiceServicer  # type: ignore[return-value]
     return object
 
 
 class FundingServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC4 Funding Radar.
+    """gRPC-Servicer für UC4 Funding Radar.
 
     Koordiniert parallele Abfragen gegen CORDIS-Daten:
-    1. Foerderung pro Jahr (Zeitreihe)
-    2. Foerderung pro Programm (FP7, H2020, Horizon Europe)
-    3. Foerderung pro Instrument (RIA, IA, CSA)
+    1. Förderung pro Jahr (Zeitreihe)
+    2. Förderung pro Programm (FP7, H2020, Horizon Europe)
+    3. Förderung pro Instrument (RIA, IA, CSA)
     4. Top-Organisationen
-    5. Laenderverteilung
+    5. Länderverteilung
 
     Berechnet CAGR und Durchschnittswerte.
     """
@@ -80,7 +80,7 @@ class FundingServicer(_get_base_class()):  # type: ignore[misc]
         request: Any,
         context: Any,
     ) -> Any:
-        """UC4: EU-Foerderung analysieren.
+        """UC4: EU-Förderung analysieren.
 
         Args:
             request: tip.common.AnalysisRequest Protobuf-Message
@@ -211,10 +211,10 @@ class FundingServicer(_get_base_class()):  # type: ignore[misc]
             logger.warning("avg_duration_fehlgeschlagen", fehler=str(e))
 
         # --- CAGR berechnen (Bug C-005) ---
-        # Kanonisch mit landscape-svc: das laufende (unvollstaendige) Kalender-
+        # Kanonisch mit landscape-svc: das laufende (unvollständige) Kalender-
         # jahr wird vor der CAGR-Berechnung abgeschnitten. Sonst verzerrt das
         # Teiljahr das Endglied und kann das Vorzeichen kippen (z.B. mRNA:
-        # -11.7% in funding vs. +0.01% in landscape bei gleicher Rohgroesse).
+        # -11.7% in funding vs. +0.01% in landscape bei gleicher Rohgröße).
         data_complete_year = last_complete_year()
         funding_cagr = 0.0
         trimmed = [
@@ -483,7 +483,7 @@ class FundingServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             total_funding=0.0, total_projects=0, funding_cagr=0.0,

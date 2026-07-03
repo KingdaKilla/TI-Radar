@@ -28,7 +28,7 @@ function fmtPct(value: number | null | undefined): string {
   return `${fmt(value * 100, 1)} %`;
 }
 
-/** Bestimmt welche Zelle "besser" ist (gruen hervorgehoben) */
+/** Bestimmt welche Zelle "besser" ist (grün hervorgehoben) */
 function betterClass(
   a: number | null | undefined,
   b: number | null | undefined,

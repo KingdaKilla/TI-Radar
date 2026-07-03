@@ -1,4 +1,4 @@
-"""FastAPI Application Factory fuer den Import Service.
+"""FastAPI Application Factory für den Import Service.
 
 Erstellt und konfiguriert die FastAPI-Anwendung mit:
 - Lifespan-Management (asyncpg Connection-Pool)
@@ -36,10 +36,10 @@ logger = structlog.get_logger(__name__)
 
 
 def _configure_structlog(*, debug: bool = False) -> None:
-    """Konfiguriert structlog fuer strukturiertes JSON-Logging.
+    """Konfiguriert structlog für strukturiertes JSON-Logging.
 
     Entwicklungsmodus: farbige Console-Ausgabe (human-readable).
-    Produktion: JSON-Lines fuer Log-Aggregatoren (ELK, Loki).
+    Produktion: JSON-Lines für Log-Aggregatoren (ELK, Loki).
     """
     processors: list[structlog.types.Processor] = [
         structlog.contextvars.merge_contextvars,
@@ -54,7 +54,7 @@ def _configure_structlog(*, debug: bool = False) -> None:
         # Farbige Console-Ausgabe im Entwicklungsmodus
         processors.append(structlog.dev.ConsoleRenderer())
     else:
-        # JSON-Lines fuer Produktion
+        # JSON-Lines für Produktion
         processors.append(structlog.processors.JSONRenderer())
 
     # Python stdlib-Logging konfigurieren (Handler + Level)
@@ -76,7 +76,7 @@ def _configure_structlog(*, debug: bool = False) -> None:
 
 
 def _mask_dsn(dsn: str) -> str:
-    """Maskiert das Passwort in einem DSN-String fuer sichere Ausgabe."""
+    """Maskiert das Passwort in einem DSN-String für sichere Ausgabe."""
     import re
 
     return re.sub(r"://([^:]+):([^@]+)@", r"://\1:***@", dsn)
@@ -96,7 +96,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
       2. Konfiguration loggen
 
     Shutdown:
-      1. Connection-Pool graceful schliessen
+      1. Connection-Pool graceful schließen
     """
     settings = Settings()
 
@@ -116,7 +116,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             dsn=settings.database_url,
             min_size=2,
             max_size=settings.max_workers + 2,
-            command_timeout=300.0,  # Bulk-Imports brauchen laengere Timeouts
+            command_timeout=300.0,  # Bulk-Imports brauchen längere Timeouts
         )
         app.state.db_pool = pool
         logger.info("db_pool_erstellt", dsn=_mask_dsn(settings.database_url))
@@ -124,10 +124,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.error(
             "db_pool_fehler",
             error=str(exc),
-            hint="Import-Endpoints nicht verfuegbar ohne Datenbankverbindung",
+            hint="Import-Endpoints nicht verfügbar ohne Datenbankverbindung",
         )
 
-    # Settings in app.state speichern fuer Router-Zugriff
+    # Settings in app.state speichern für Router-Zugriff
     app.state.settings = settings
 
     # --- Scheduler starten ---
@@ -186,7 +186,7 @@ def create_app() -> FastAPI:
         description=(
             "Technology Intelligence Radar v2 — Bulk-Datenimport von "
             "EPO-Patenten und CORDIS-EU-Forschungsprojekten in PostgreSQL 17. "
-            "Verwendet asyncpg COPY-Protokoll fuer maximalen Durchsatz."
+            "Verwendet asyncpg COPY-Protokoll für maximalen Durchsatz."
         ),
         version="2.0.0",
         lifespan=lifespan,
@@ -211,7 +211,7 @@ def create_app() -> FastAPI:
     # --- Health Endpoint ---
     @app.get("/healthz", tags=["Health"])
     async def healthz() -> JSONResponse:
-        """Liveness-Probe fuer Kubernetes/Docker."""
+        """Liveness-Probe für Kubernetes/Docker."""
         db_ok = app.state.db_pool is not None and not app.state.db_pool._closed
         return JSONResponse(
             status_code=200 if db_ok else 503,

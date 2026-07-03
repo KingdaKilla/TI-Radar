@@ -15,7 +15,7 @@ interface CpcChordDiagramProps {
   links: CpcFlowLink[];
 }
 
-/** Erweiterte Palette fuer >8 Nodes */
+/** Erweiterte Palette für >8 Nodes */
 const CHORD_COLORS = [
   ...PALETTE,
   "#00b4d8", // Cyan
@@ -31,14 +31,14 @@ export default function CpcChordDiagram({ nodes, links }: CpcChordDiagramProps) 
   const n = nodes.length;
   const matrix: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
 
-  // Lookup fuer Tooltip-Daten (Jaccard + Co-Occurrence pro Paar)
+  // Lookup für Tooltip-Daten (Jaccard + Co-Occurrence pro Paar)
   const pairData = new Map<string, { jaccard: number; coOcc: number }>();
 
   for (const link of links) {
     const si = indexMap.get(link.source);
     const ti = indexMap.get(link.target);
     if (si !== undefined && ti !== undefined) {
-      // Jaccard als primaere Metrik, Fallback auf Co-Occurrence
+      // Jaccard als primäre Metrik, Fallback auf Co-Occurrence
       const weight = link.similarity > 0
         ? Math.round(link.similarity * 1000)
         : link.value;
@@ -53,13 +53,13 @@ export default function CpcChordDiagram({ nodes, links }: CpcChordDiagramProps) 
     }
   }
 
-  // Pruefen ob Matrix komplett leer ist
+  // Prüfen ob Matrix komplett leer ist
   const hasData = matrix.some((row) => row.some((v) => v > 0));
   if (!hasData) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-sm italic text-[var(--color-text-muted)]">
-          Keine ausreichenden Daten fuer die Chord-Darstellung.
+          Keine ausreichenden Daten für die Chord-Darstellung.
         </p>
       </div>
     );
@@ -68,7 +68,7 @@ export default function CpcChordDiagram({ nodes, links }: CpcChordDiagramProps) 
   const keys = nodes.map((node) => node.id);
   const hasJaccard = links.some((l) => l.similarity > 0);
 
-  // Label-Lookup fuer Tooltips
+  // Label-Lookup für Tooltips
   const labelMap: Record<string, string> = {};
   for (const node of nodes) {
     labelMap[node.id] = node.label;

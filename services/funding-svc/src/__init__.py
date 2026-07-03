@@ -1,5 +1,5 @@
-"""UC4 Funding Radar Service — EU-Foerderungs-Analyse.
+"""UC4 Funding Radar Service — EU-Förderungs-Analyse.
 
-gRPC-Microservice fuer die Analyse von EU-Foerderungen
-mit Programmverteilung, Instrumenten-Aufschluesselung und CAGR.
+gRPC-Microservice für die Analyse von EU-Förderungen
+mit Programmverteilung, Instrumenten-Aufschlüsselung und CAGR.
 """

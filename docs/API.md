@@ -9,8 +9,8 @@ Der Orchestrator stellt eine REST/JSON-API auf Port 8000 bereit. Alle Analyse-En
 | `POST` | `/api/v1/radar` | Komplette Radar-Analyse (alle 13 UC-Services parallel) |
 | `POST` | `/api/v1/analyze-panel` | **v3.5.0:** LLM-Analyse eines einzelnen Panels |
 | `POST` | `/api/v1/chat` | **v3.6.0:** RAG-Chat (semantische Suche + LLM-Antwort) |
-| `GET` | `/api/v1/suggestions` | Autocomplete-Vorschlaege (Pool + DB-ngrams) |
-| `GET` | `/api/v1/suggestions/pool` | **v3.6.7:** Komplette kuratierte Technologie-Whitelist (93 Eintraege) |
+| `GET` | `/api/v1/suggestions` | Autocomplete-Vorschläge (Pool + DB-ngrams) |
+| `GET` | `/api/v1/suggestions/pool` | **v3.6.7:** Komplette kuratierte Technologie-Whitelist (93 Einträge) |
 | `GET` | `/health` | Health Check (shallow oder deep) |
 | `GET` | `/metrics` | Prometheus-Metriken (OpenMetrics-Format) |
 | `POST` | `/api/v1/import/epo` | EPO-Patent-Bulk-Import |
@@ -21,7 +21,7 @@ Der Orchestrator stellt eine REST/JSON-API auf Port 8000 bereit. Alle Analyse-En
 | `GET` | `/api/v1/import/schedule` | Scheduler-Status abfragen |
 | `POST` | `/api/v1/import/api-delta` | Manueller API-Delta-Update (EPO OPS + CORDIS) |
 
-**Hinweis:** Die Radar-Response enthaelt jetzt zusaetzlich `panels` (typisierte UC-Panel-Liste mit Discriminator) und `_links` (HATEOAS-Links zu Export-Endpoints und Suggestions). Siehe [POST /api/v1/radar](#post-apiv1radar) fuer Details.
+**Hinweis:** Die Radar-Response enthält jetzt zusätzlich `panels` (typisierte UC-Panel-Liste mit Discriminator) und `_links` (HATEOAS-Links zu Export-Endpoints und Suggestions). Siehe [POST /api/v1/radar](#post-apiv1radar) für Details.
 
 ---
 
@@ -125,8 +125,8 @@ curl -X POST http://localhost:8000/api/v1/radar \
 | Feld | Beschreibung |
 |---|---|
 | `panels` | Typisierte Liste aller UC-Panel-Ergebnisse. Jedes Panel hat ein `use_case`-Discriminator-Feld, `data` (Ergebnisse) und `metadata` (Laufzeit, Request-ID). |
-| `landscape`, `maturity`, ... | Flache Panel-Felder (Abwaertskompatibilitaet). Identischer Inhalt wie in `panels[].data`. |
-| `_links` | HATEOAS-Links zu verwandten Ressourcen (Export-Formate, Suggestions). Clients koennen diesen Links folgen statt URLs hartzukodieren. |
+| `landscape`, `maturity`, ... | Flache Panel-Felder (Abwärtskompatibilität). Identischer Inhalt wie in `panels[].data`. |
+| `_links` | HATEOAS-Links zu verwandten Ressourcen (Export-Formate, Suggestions). Clients können diesen Links folgen statt URLs hartzukodieren. |
 
 Jedes UC-Panel (`landscape`, `maturity`, etc.) enthält die service-spezifische Analyse als JSON-Objekt. Die genaue Struktur wird durch die jeweilige Protobuf-Definition bestimmt (siehe `proto/uc*.proto`).
 
@@ -185,15 +185,15 @@ Nicht angeforderte Panels werden in der Response als leere Objekte `{}` zurückg
 
 Liefert Autocomplete-Vorschläge. Verhalten abhängig vom `q`-Parameter:
 
-- **Leer oder < 2 Zeichen** → Prefix-Top-N aus der kuratierten 93-Eintraege-Whitelist (`_DEFAULT_SUGGESTIONS`).
+- **Leer oder < 2 Zeichen** → Prefix-Top-N aus der kuratierten 93-Einträge-Whitelist (`_DEFAULT_SUGGESTIONS`).
 - **≥ 2 Zeichen** → Ngram-Extraktion aus Patent- und Projekttiteln (`ILIKE '%q%'` + Stopword-Filter). Fallback auf Whitelist-Filter bei DB-Fehler.
 
-**Hinweis:** Die SearchBar im Frontend nutzt seit v3.6.7 ausschliesslich den Pool-Endpoint (`/suggestions/pool`) und nicht mehr diesen hier — DB-ngram-Vorschlaege waren zu unsauber und haben unsinnige Freitext-Eingaben begünstigt. Dieser Endpoint bleibt für Drittintegrationen verfügbar.
+**Hinweis:** Die SearchBar im Frontend nutzt seit v3.6.7 ausschließlich den Pool-Endpoint (`/suggestions/pool`) und nicht mehr diesen hier — DB-ngram-Vorschläge waren zu unsauber und haben unsinnige Freitext-Eingaben begünstigt. Dieser Endpoint bleibt für Drittintegrationen verfügbar.
 
 ### Request
 
 ```bash
-# Default-Vorschlaege (leerer Query)
+# Default-Vorschläge (leerer Query)
 curl "http://localhost:8000/api/v1/suggestions"
 
 # Suche nach Substring
@@ -388,7 +388,7 @@ curl http://localhost:8000/api/v1/import/status \
 
 ### GET /api/v1/import/schedule
 
-Gibt den Status des woechentlichen Import-Schedulers zurueck (naechster Lauf, letzter Lauf, Ergebnis).
+Gibt den Status des wöchentlichen Import-Schedulers zurück (nächster Lauf, letzter Lauf, Ergebnis).
 
 ```bash
 curl http://localhost:8000/api/v1/import/schedule \
@@ -411,7 +411,7 @@ curl http://localhost:8000/api/v1/import/schedule \
 
 ### Authentifizierung der Import-Endpunkte
 
-Die Import-Endpunkte (`POST /epo`, `/cordis`, `/euroscivoc`, `/enrich-epo`, `/refresh-views` sowie `GET /schedule` und `/status`) erfordern den Header `X-Admin-Key`, wenn die Umgebungsvariable `TI_RADAR_ADMIN_KEY` gesetzt ist. Ohne gesetzten Key laeuft das System im MVP-Modus (kein Auth).
+Die Import-Endpunkte (`POST /epo`, `/cordis`, `/euroscivoc`, `/enrich-epo`, `/refresh-views` sowie `GET /schedule` und `/status`) erfordern den Header `X-Admin-Key`, wenn die Umgebungsvariable `TI_RADAR_ADMIN_KEY` gesetzt ist. Ohne gesetzten Key läuft das System im MVP-Modus (kein Auth).
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/import/epo \
@@ -450,9 +450,9 @@ Alle externen API-Zugriffe folgen demselben Ablauf:
 
 ## Export-Endpunkte
 
-Der Export-Service (`export-svc`, Port 8020) stellt Endpunkte fuer den Datenexport in verschiedenen Formaten bereit. Alle Export-Endpunkte erfordern den `X-Admin-Key`-Header (wenn `TI_RADAR_ADMIN_KEY` gesetzt ist).
+Der Export-Service (`export-svc`, Port 8020) stellt Endpunkte für den Datenexport in verschiedenen Formaten bereit. Alle Export-Endpunkte erfordern den `X-Admin-Key`-Header (wenn `TI_RADAR_ADMIN_KEY` gesetzt ist).
 
-### Endpunkt-Uebersicht
+### Endpunkt-Übersicht
 
 | Methode | Pfad | Beschreibung |
 |---|---|---|
@@ -462,16 +462,16 @@ Der Export-Service (`export-svc`, Port 8020) stellt Endpunkte fuer den Datenexpo
 | `POST` | `/api/v1/export/pdf` | PDF-Report (WeasyPrint + Matplotlib-Charts) |
 | `POST` | `/api/v1/export/batch` | ZIP-Batch-Export (mehrere Technologien) |
 | `GET` | `/api/v1/export/history` | Export-Historie / Audit-Log (paginiert, `X-Total-Count`) |
-| `DELETE` | `/api/v1/export/cache` | Abgelaufene Cache-Eintraege bereinigen |
+| `DELETE` | `/api/v1/export/cache` | Abgelaufene Cache-Einträge bereinigen |
 | `POST` | `/api/v1/export/webhooks` | Webhook registrieren (Event-Hub Pattern) |
 | `GET` | `/api/v1/export/webhooks` | Registrierte Webhooks auflisten |
 | `DELETE` | `/api/v1/export/webhooks/{id}` | Webhook abmelden |
 
 ### POST /api/v1/export/{format}
 
-Exportiert Analyseergebnisse im gewuenschten Format. Der Export-Service ruft intern die Orchestrator-API auf, fuehrt die Analyse durch und formatiert die Ergebnisse.
+Exportiert Analyseergebnisse im gewünschten Format. Der Export-Service ruft intern die Orchestrator-API auf, führt die Analyse durch und formatiert die Ergebnisse.
 
-#### Request (identisch fuer CSV, XLSX, JSON, PDF)
+#### Request (identisch für CSV, XLSX, JSON, PDF)
 
 ```bash
 curl -X POST http://localhost:8020/api/v1/export/pdf \
@@ -492,8 +492,8 @@ curl -X POST http://localhost:8020/api/v1/export/pdf \
 |---|---|---|---|---|
 | `technology` | `string` | ja | -- | Technologie-Suchbegriff |
 | `years` | `int` | nein | `10` | Analysezeitraum in Jahren (3-30) |
-| `european_only` | `bool` | nein | `false` | Nur EU-27 + assoziierte Laender |
-| `use_cases` | `string[]` | nein | `[]` | Selektive UC-Ausfuehrung (leer = alle) |
+| `european_only` | `bool` | nein | `false` | Nur EU-27 + assoziierte Länder |
+| `use_cases` | `string[]` | nein | `[]` | Selektive UC-Ausführung (leer = alle) |
 
 #### Response-Formate
 
@@ -506,7 +506,7 @@ curl -X POST http://localhost:8020/api/v1/export/pdf \
 
 ### POST /api/v1/export/batch
 
-Batch-Export fuer mehrere Technologien als ZIP-Archiv.
+Batch-Export für mehrere Technologien als ZIP-Archiv.
 
 ```bash
 curl -X POST http://localhost:8020/api/v1/export/batch \
@@ -522,26 +522,26 @@ curl -X POST http://localhost:8020/api/v1/export/batch \
 
 ### GET /api/v1/export/history
 
-Gibt die Export-Historie als paginiertes Audit-Log zurueck. Der Response-Header `X-Total-Count` enthaelt die Gesamtanzahl aller Eintraege.
+Gibt die Export-Historie als paginiertes Audit-Log zurück. Der Response-Header `X-Total-Count` enthält die Gesamtanzahl aller Einträge.
 
 ```bash
-# Seite 1 (Standard: 50 Eintraege)
+# Seite 1 (Standard: 50 Einträge)
 curl http://localhost:8020/api/v1/export/history
 
-# Seite 2, je 20 Eintraege
+# Seite 2, je 20 Einträge
 curl "http://localhost:8020/api/v1/export/history?offset=20&limit=20"
 ```
 
 | Parameter | Typ | Default | Beschreibung |
 |---|---|---|---|
 | `offset` | `int` | `0` | Startindex (0-basiert) |
-| `limit` | `int` | `50` | Max. Eintraege (max. 500) |
+| `limit` | `int` | `50` | Max. Einträge (max. 500) |
 
-**Response-Header:** `X-Total-Count: 247` (Gesamtanzahl aller Log-Eintraege)
+**Response-Header:** `X-Total-Count: 247` (Gesamtanzahl aller Log-Einträge)
 
 ### DELETE /api/v1/export/cache
 
-Bereinigt abgelaufene Cache-Eintraege in `export_schema.analysis_cache`. Loest einen `cache.purged`-Webhook-Event aus.
+Bereinigt abgelaufene Cache-Einträge in `export_schema.analysis_cache`. Löst einen `cache.purged`-Webhook-Event aus.
 
 ```bash
 curl -X DELETE http://localhost:8020/api/v1/export/cache \
@@ -550,7 +550,7 @@ curl -X DELETE http://localhost:8020/api/v1/export/cache \
 
 ### POST /api/v1/export/webhooks (Event-Hub Pattern)
 
-Registriert einen Webhook fuer Event-Benachrichtigungen. Bei relevanten Events sendet der Export-Service einen HTTP POST mit dem Event-Payload an die registrierte Callback-URL.
+Registriert einen Webhook für Event-Benachrichtigungen. Bei relevanten Events sendet der Export-Service einen HTTP POST mit dem Event-Payload an die registrierte Callback-URL.
 
 ```bash
 curl -X POST http://localhost:8020/api/v1/export/webhooks \
@@ -562,13 +562,13 @@ curl -X POST http://localhost:8020/api/v1/export/webhooks \
   }'
 ```
 
-**Gueltige Event-Typen:**
+**Gültige Event-Typen:**
 
 | Event | Beschreibung |
 |---|---|
 | `export.completed` | Ein Export wurde erfolgreich abgeschlossen |
 | `export.failed` | Ein Export ist fehlgeschlagen |
-| `cache.purged` | Cache-Eintraege wurden bereinigt |
+| `cache.purged` | Cache-Einträge wurden bereinigt |
 
 **Response (201 Created):**
 
@@ -593,7 +593,7 @@ curl -X DELETE http://localhost:8020/api/v1/export/webhooks/a1b2c3d4
 
 Der Export-Service cached Analyseergebnisse in `export_schema.analysis_cache`:
 
-- **Cache-Key:** SHA-256 ueber `(technology, start_year, end_year, use_cases, european_only)`
+- **Cache-Key:** SHA-256 über `(technology, start_year, end_year, use_cases, european_only)`
 - **TTL:** 24 Stunden (konfigurierbar)
 - Wiederholte Exporte derselben Analyse werden aus dem Cache bedient (kein erneuter Orchestrator-Aufruf)
 
@@ -605,15 +605,15 @@ Der Export-Service cached Analyseergebnisse in `export_schema.analysis_cache`:
 |---|---|
 | `200` | Erfolg |
 | `201` | Ressource erstellt (Webhook-Registrierung) |
-| `204` | Erfolgreich geloescht (Webhook-Abmeldung) |
-| `400` | Ungueltige Anfrage (Validierungsfehler: ungueltige CPC-Codes, unbekannte use_cases, ungueltige Event-Typen) |
-| `401` | Fehlender oder ungueltiger API-Key |
+| `204` | Erfolgreich gelöscht (Webhook-Abmeldung) |
+| `400` | Ungültige Anfrage (Validierungsfehler: ungültige CPC-Codes, unbekannte use_cases, ungültige Event-Typen) |
+| `401` | Fehlender oder ungültiger API-Key |
 | `404` | Ressource nicht gefunden (z.B. Webhook-ID) |
-| `422` | Pydantic-Validierungsfehler (z.B. `technology` zu lang, `years` ausserhalb 3-30) |
-| `429` | Rate Limit ueberschritten (100 Requests/Minute) |
+| `422` | Pydantic-Validierungsfehler (z.B. `technology` zu lang, `years` außerhalb 3-30) |
+| `429` | Rate Limit überschritten (100 Requests/Minute) |
 | `500` | Interner Serverfehler |
 | `502` | Orchestrator nicht erreichbar (Export-Service) |
-| `503` | Datenbank nicht verfuegbar |
+| `503` | Datenbank nicht verfügbar |
 | `504` | Orchestrator-Timeout (Export-Service) |
 
 ### Fehler-Response (422)

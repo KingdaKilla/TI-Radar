@@ -1,7 +1,7 @@
-"""Unit-Tests fuer PatentGrantRepository: Scope-Trennung (Bug CRIT-4).
+"""Unit-Tests für PatentGrantRepository: Scope-Trennung (Bug CRIT-4).
 
-Prueft, dass die Kind-Code-Listen aus ``shared.domain.patent_definitions``
-stammen, nicht aus lokalen Duplikaten, und dass die Plausibilitaetsregel
+Prüft, dass die Kind-Code-Listen aus ``shared.domain.patent_definitions``
+stammen, nicht aus lokalen Duplikaten, und dass die Plausibilitätsregel
 ``ALL_PATENTS >= APPLICATIONS_ONLY + GRANTS_ONLY`` durch die Query-Logik
 garantiert wird.
 """
@@ -23,7 +23,7 @@ from src.infrastructure.repository import PatentGrantRepository
 
 
 # ---------------------------------------------------------------------------
-# Dummy-Pool fuer Unit-Level-Tests
+# Dummy-Pool für Unit-Level-Tests
 # ---------------------------------------------------------------------------
 
 
@@ -72,7 +72,7 @@ class _DummyConn:
                 for y, c in sorted(by_year.items())
             ]
 
-        # total_patent_counts (neue Methode) — erwartet Summary-Row zurueck.
+        # total_patent_counts (neue Methode) — erwartet Summary-Row zurück.
         if "total_applications" in sql and "total_grants" in sql and "total_all" in sql:
             total_all = len(pool)
             apps = sum(1 for p in pool if p.kind in APPLICATION_KIND_CODES)
@@ -120,15 +120,15 @@ def repo() -> PatentGrantRepository:
 
 
 class TestKindCodeSource:
-    """Prueft, dass Kind-Code-Listen aus shared.domain kommen, nicht lokal."""
+    """Prüft, dass Kind-Code-Listen aus shared.domain kommen, nicht lokal."""
 
     def test_query_references_shared_constants(self, repo: PatentGrantRepository) -> None:
         """``grant_rate_by_year`` soll Shared-Konstanten verwenden.
 
-        Akzeptanzkriterium: entweder enthaelt der Source-Code einen Import von
+        Akzeptanzkriterium: entweder enthält der Source-Code einen Import von
         ``APPLICATION_KIND_CODES`` / ``GRANT_KIND_CODES`` aus
-        ``shared.domain.patent_definitions``, oder die SQL-Query enthaelt
-        vollstaendig dieselben Codes wie die Shared-Definition.
+        ``shared.domain.patent_definitions``, oder die SQL-Query enthält
+        vollständig dieselben Codes wie die Shared-Definition.
         """
         module = inspect.getmodule(repo.grant_rate_by_year)
         assert module is not None
@@ -144,7 +144,7 @@ class TestKindCodeSource:
         if uses_shared_import:
             return
 
-        # Fallback: alle Codes muessen explizit in der Query stehen
+        # Fallback: alle Codes müssen explizit in der Query stehen
         method_src = inspect.getsource(repo.grant_rate_by_year)
         missing_apps = [c for c in APPLICATION_KIND_CODES if f"'{c}'" not in method_src]
         missing_grants = [c for c in GRANT_KIND_CODES if f"'{c}'" not in method_src]
@@ -153,7 +153,7 @@ class TestKindCodeSource:
 
 
 class TestGrantRateByYearAggregation:
-    """Prueft die Semantik der Aggregation gegen den Mini-Datensatz."""
+    """Prüft die Semantik der Aggregation gegen den Mini-Datensatz."""
 
     @pytest.mark.asyncio
     async def test_applications_count_matches_a_codes(
@@ -179,7 +179,7 @@ class TestGrantRateByYearAggregation:
     async def test_unknown_kind_not_counted(
         self, repo: PatentGrantRepository,
     ) -> None:
-        """U-Codes und leere Kind-Codes duerfen weder als App noch als Grant zaehlen."""
+        """U-Codes und leere Kind-Codes dürfen weder als App noch als Grant zählen."""
         rows = await repo.grant_rate_by_year(
             "quantum", start_year=2020, end_year=2024,
         )
@@ -188,7 +188,7 @@ class TestGrantRateByYearAggregation:
 
 
 class TestTotalPatentCounts:
-    """Prueft die neue Methode ``total_patent_counts`` (alle drei Scopes)."""
+    """Prüft die neue Methode ``total_patent_counts`` (alle drei Scopes)."""
 
     @pytest.mark.asyncio
     async def test_method_exists(self, repo: PatentGrantRepository) -> None:
@@ -221,7 +221,7 @@ class TestTotalPatentCounts:
         apps = result[PatentScope.APPLICATIONS_ONLY.value]
         grants = result[PatentScope.GRANTS_ONLY.value]
         assert total_all >= apps + grants, (
-            f"Plausibilitaet verletzt: all={total_all}, apps={apps}, grants={grants}"
+            f"Plausibilität verletzt: all={total_all}, apps={apps}, grants={grants}"
         )
 
     @pytest.mark.asyncio

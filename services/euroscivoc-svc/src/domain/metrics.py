@@ -1,7 +1,7 @@
-"""UC10-spezifische Metriken: Interdisziplinaritaet und Taxonomie.
+"""UC10-spezifische Metriken: Interdisziplinarität und Taxonomie.
 
-Shannon-Index, Simpson-Index und Rao-Stirling-Diversitaet
-fuer die EuroSciVoc-Disziplin-Verteilung.
+Shannon-Index, Simpson-Index und Rao-Stirling-Diversität
+für die EuroSciVoc-Disziplin-Verteilung.
 """
 
 from __future__ import annotations
@@ -11,11 +11,11 @@ from typing import Any
 
 
 def compute_shannon_index(counts: dict[str, int]) -> float:
-    """Shannon-Diversitaetsindex fuer Disziplin-Verteilung.
+    """Shannon-Diversitätsindex für Disziplin-Verteilung.
 
     Definition: H = -Sigma(p_i * log2(p_i)).
 
-    Defensive Sonderfaelle:
+    Defensive Sonderfälle:
     - Leere Eingabe -> 0.0
     - Eine einzige Kategorie (mit count > 0) -> 0.0
       (math: -1 * log2(1) = 0, exakt).
@@ -40,7 +40,7 @@ def compute_shannon_index(counts: dict[str, int]) -> float:
 
 
 def compute_simpson_index(counts: dict[str, int]) -> float:
-    """Simpson-Diversitaetsindex (1 - D)."""
+    """Simpson-Diversitätsindex (1 - D)."""
     total = sum(counts.values())
     if total <= 1:
         return 0.0
@@ -49,7 +49,7 @@ def compute_simpson_index(counts: dict[str, int]) -> float:
 
 
 def compute_jaccard_similarity(set_a: set[str], set_b: set[str]) -> float:
-    """Jaccard-Aehnlichkeit zweier Disziplin-Sets."""
+    """Jaccard-Ähnlichkeit zweier Disziplin-Sets."""
     if not set_a and not set_b:
         return 0.0
     intersection = len(set_a & set_b)
@@ -62,8 +62,8 @@ def build_discipline_tree(
 ) -> list[dict[str, Any]]:
     """Hierarchischen Baum aus flacher EuroSciVoc-Knotenliste bauen.
 
-    Erwartet Eintraege mit: id, label, parent_id, level, count.
-    Gibt Wurzel-Knoten mit verschachtelten children zurueck.
+    Erwartet Einträge mit: id, label, parent_id, level, count.
+    Gibt Wurzel-Knoten mit verschachtelten children zurück.
     """
     node_map: dict[str, dict[str, Any]] = {}
     for n in nodes:
@@ -93,7 +93,7 @@ def classify_interdisciplinarity(
     shannon: float,
     active_fields: int,
 ) -> bool:
-    """Prueft ob die Technologie als interdisziplinaer gilt.
+    """Prüft ob die Technologie als interdisziplinär gilt.
 
     Schwellenwert: Shannon > 2.0 ODER aktive Felder >= 3.
     """

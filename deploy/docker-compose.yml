@@ -346,8 +346,8 @@ services:
       - backend
 
   # ==================== LLM-Service (v3.5.0) ====================
-  # Stateless gRPC-Microservice fuer textuelle KI-Analyse von UC-Panel-Daten.
-  # Default-Provider: Gemini 2.0 Flash (API-Key ueber GEMINI_API_KEY in .env).
+  # Stateless gRPC-Microservice für textuelle KI-Analyse von UC-Panel-Daten.
+  # Default-Provider: Gemini 2.0 Flash (API-Key über GEMINI_API_KEY in .env).
   # Kein DB-Zugriff.
   llm-svc:
     build:

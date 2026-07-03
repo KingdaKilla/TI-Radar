@@ -1,9 +1,9 @@
-"""Tests fuer LLM Faithfulness-Guards (Asai et al. 2023, Yan et al. 2024).
+"""Tests für LLM Faithfulness-Guards (Asai et al. 2023, Yan et al. 2024).
 
-Prueft:
+Prüft:
 - LLMFaithfulnessChecker.check_sufficiency: Context-Sufficiency-Check (CRAG)
 - LLMFaithfulnessChecker.check_faithfulness: Faithfulness-Self-Check (Self-RAG)
-- _parse_claims: Regex-Parser fuer CLAIM/VERDICT-Zeilen
+- _parse_claims: Regex-Parser für CLAIM/VERDICT-Zeilen
 - AnalyzePanelWithContext Integration: Dynamische Konfidenz statt hardcoded 0.85
 - Settings: Neue faithfulness-Konfigurationsfelder
 
@@ -30,7 +30,7 @@ from src.use_case import AnalyzePanelWithContext
 
 
 class MockLLMProvider(LLMProviderPort):
-    """Test-Double fuer LLMProviderPort mit konfigurierbarer Antwort."""
+    """Test-Double für LLMProviderPort mit konfigurierbarer Antwort."""
 
     def __init__(
         self,
@@ -73,7 +73,7 @@ class FailingLLMProvider(LLMProviderPort):
 
 
 class TestFaithfulnessSettings:
-    """Prueft ob Settings die neuen Faithfulness-Felder hat."""
+    """Prüft ob Settings die neuen Faithfulness-Felder hat."""
 
     def test_default_values(self) -> None:
         """Standardwerte der Faithfulness-Konfiguration."""
@@ -88,7 +88,7 @@ class TestFaithfulnessSettings:
         assert s.faithfulness_enabled is True
 
     def test_threshold_override(self) -> None:
-        """sufficiency_threshold kann ueberschrieben werden."""
+        """sufficiency_threshold kann überschrieben werden."""
         s = Settings(_env_file=None, sufficiency_threshold="SUFFICIENT")
         assert s.sufficiency_threshold == "SUFFICIENT"
 
@@ -310,7 +310,7 @@ class TestCheckFaithfulness:
 
 
 class TestParseClaims:
-    """Regex-Parser fuer CLAIM/VERDICT-Zeilen."""
+    """Regex-Parser für CLAIM/VERDICT-Zeilen."""
 
     def test_standard_format(self) -> None:
         """Standard-Format wird korrekt geparst."""
@@ -330,7 +330,7 @@ class TestParseClaims:
         assert len(claims) == 3
 
     def test_case_insensitive(self) -> None:
-        """Gross-/Kleinschreibung wird korrekt behandelt."""
+        """Groß-/Kleinschreibung wird korrekt behandelt."""
         text = "Claim: Some fact | Verdict: Supported"
         claims = _parse_claims(text)
         assert len(claims) == 1
@@ -354,7 +354,7 @@ class TestParseClaims:
         assert _parse_claims("") == []
 
     def test_mixed_with_preamble(self) -> None:
-        """Claims werden auch mit Praembel-Text korrekt geparst."""
+        """Claims werden auch mit Prämbel-Text korrekt geparst."""
         text = (
             "Here are the claims I found:\n\n"
             "CLAIM: First claim | VERDICT: SUPPORTED\n"
@@ -439,7 +439,7 @@ class TestAnalyzePanelWithContextFaithfulness:
         faith_mock.check_faithfulness.assert_not_called()
 
     async def test_partial_context_accepted_with_partial_threshold(self) -> None:
-        """PARTIAL mit threshold PARTIAL -> Generierung wird ausgefuehrt."""
+        """PARTIAL mit threshold PARTIAL -> Generierung wird ausgeführt."""
         main_llm = MockLLMProvider(generate_text="Partial analysis result.")
 
         faith_mock = AsyncMock(spec=FaithfulnessPort)
@@ -462,7 +462,7 @@ class TestAnalyzePanelWithContextFaithfulness:
         assert len(main_llm.generate_calls) == 1
 
     async def test_partial_rejected_with_sufficient_threshold(self) -> None:
-        """PARTIAL mit threshold SUFFICIENT -> Generierung wird uebersprungen."""
+        """PARTIAL mit threshold SUFFICIENT -> Generierung wird übersprungen."""
         main_llm = MockLLMProvider(generate_text="Should not be called.")
 
         faith_mock = AsyncMock(spec=FaithfulnessPort)
@@ -484,7 +484,7 @@ class TestAnalyzePanelWithContextFaithfulness:
         assert len(main_llm.generate_calls) == 0
 
     async def test_sufficient_accepted_with_sufficient_threshold(self) -> None:
-        """SUFFICIENT mit threshold SUFFICIENT -> Generierung wird ausgefuehrt."""
+        """SUFFICIENT mit threshold SUFFICIENT -> Generierung wird ausgeführt."""
         main_llm = MockLLMProvider(generate_text="High-quality analysis.")
 
         faith_mock = AsyncMock(spec=FaithfulnessPort)

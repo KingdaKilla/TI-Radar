@@ -65,7 +65,7 @@ async def _get_llm_stub(settings: Settings) -> Any:
         try:
             from shared.generated.python import llm_pb2_grpc  # type: ignore
         except ImportError as exc:
-            logger.warning("llm_stubs_nicht_verfuegbar", error=str(exc))
+            logger.warning("llm_stubs_nicht_verfügbar", error=str(exc))
             return None
         channel = grpc.aio.insecure_channel(
             settings.llm_address,
@@ -90,7 +90,7 @@ async def _get_retrieval_stub(settings: Settings) -> Any:
         try:
             from shared.generated.python import retrieval_pb2_grpc  # type: ignore
         except ImportError as exc:
-            logger.warning("retrieval_stubs_nicht_verfuegbar", error=str(exc))
+            logger.warning("retrieval_stubs_nicht_verfügbar", error=str(exc))
             return None
         channel = grpc.aio.insecure_channel(
             settings.retrieval_address,
@@ -175,7 +175,7 @@ async def chat(
     try:
         from shared.generated.python import llm_pb2  # type: ignore
     except ImportError:
-        logger.warning("llm_pb2_nicht_verfuegbar_chat")
+        logger.warning("llm_pb2_nicht_verfügbar_chat")
         return fallback()
 
     # v3.6.0: RAG-Retrieval vor dem LLM-Call (Graceful bei Fehler)

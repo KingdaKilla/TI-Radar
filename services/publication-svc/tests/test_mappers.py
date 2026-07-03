@@ -1,7 +1,7 @@
-"""Unit-Tests fuer publication-svc dict_response Mapper.
+"""Unit-Tests für publication-svc dict_response Mapper.
 
 Testet die Konvertierung von PublicationResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 """
 
 from __future__ import annotations
@@ -181,7 +181,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Nullwerte, Default-Result."""
+    """Testet Randfälle: leere Listen, Nullwerte, Default-Result."""
 
     def test_empty_lists(self):
         result = _make_result(

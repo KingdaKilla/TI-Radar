@@ -1,7 +1,7 @@
-"""SparseSearchRepository — BM25/Full-Text-Suche ueber PostgreSQL tsvector.
+"""SparseSearchRepository — BM25/Full-Text-Suche über PostgreSQL tsvector.
 
-Fuehrt pro Quelle (patents, projects, papers) eine Full-Text-Suche
-mit ts_rank_cd durch und gibt RetrievedDoc-Instanzen zurueck.
+Führt pro Quelle (patents, projects, papers) eine Full-Text-Suche
+mit ts_rank_cd durch und gibt RetrievedDoc-Instanzen zurück.
 """
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ _SPARSE_QUERIES: dict[str, str] = {
     """,
 }
 
-# Mapping fuer Singularisierung der Quellnamen in Ergebnissen
+# Mapping für Singularisierung der Quellnamen in Ergebnissen
 _SOURCE_SINGULAR: dict[str, str] = {
     "patents": "patent",
     "projects": "project",
@@ -65,7 +65,7 @@ _SOURCE_SINGULAR: dict[str, str] = {
 
 
 class SparseSearchRepository(SparseSearchPort):
-    """Async PostgreSQL-Zugriff fuer BM25/Full-Text-Suche via tsvector."""
+    """Async PostgreSQL-Zugriff für BM25/Full-Text-Suche via tsvector."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -76,10 +76,10 @@ class SparseSearchRepository(SparseSearchPort):
         sources: list[str],
         top_k: int,
     ) -> list[RetrievedDoc]:
-        """Fuehrt BM25/Full-Text-Suche ueber angegebene Quellen durch.
+        """Führt BM25/Full-Text-Suche über angegebene Quellen durch.
 
         Args:
-            query: Suchbegriff fuer Full-Text-Suche
+            query: Suchbegriff für Full-Text-Suche
             sources: Liste der zu durchsuchenden Quellen
             top_k: Maximale Anzahl Ergebnisse pro Quelle
 
@@ -92,7 +92,7 @@ class SparseSearchRepository(SparseSearchPort):
             sql = _SPARSE_QUERIES.get(source)
             if sql is None:
                 logger.warning(
-                    "sparse_suche_unbekannte_quelle_uebersprungen",
+                    "sparse_suche_unbekannte_quelle_übersprungen",
                     source=source,
                     erlaubte_quellen=list(_SPARSE_QUERIES.keys()),
                 )

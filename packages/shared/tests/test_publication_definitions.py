@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.publication_definitions — Master-Scope fuer Publikationen.
+"""Tests für shared.domain.publication_definitions — Master-Scope für Publikationen.
 
 Hintergrund: Bug CRIT-1 — Header, UC7 und UC13 lieferten drei unterschiedliche
 Publikationszahlen (Faktor bis 1580). Zentrale Scope-Enum zwingt Services zu
@@ -35,7 +35,7 @@ class TestPublicationScope:
         assert PublicationScope.SEMANTIC_SCHOLAR_TOP is not None
 
     def test_exactly_three_scopes(self):
-        """Genau drei Scopes — keine stillen Ergaenzungen."""
+        """Genau drei Scopes — keine stillen Ergänzungen."""
         assert len(list(PublicationScope)) == 3
 
 

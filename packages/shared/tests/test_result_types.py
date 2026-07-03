@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.result_types — slotted dataclasses."""
+"""Tests für shared.domain.result_types — slotted dataclasses."""
 import pytest
 from shared.domain.result_types import (
     ActorScore,

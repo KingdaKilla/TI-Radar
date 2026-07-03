@@ -1,8 +1,8 @@
-"""Domain-Modelle fuer Technology Intelligence.
+"""Domain-Modelle für Technology Intelligence.
 
 Zentrale Datenstrukturen der Domain-Schicht. Diese Modelle sind
-framework-unabhaengig definiert (nur Pydantic fuer Serialisierung)
-und haben keine Abhaengigkeiten zu aeusseren Schichten (API, Infrastructure).
+framework-unabhängig definiert (nur Pydantic für Serialisierung)
+und haben keine Abhängigkeiten zu äußeren Schichten (API, Infrastructure).
 """
 
 from __future__ import annotations
@@ -63,13 +63,13 @@ class CompetitivePanel(BaseModel):
     network_nodes: list[dict[str, Any]] = []
     network_edges: list[dict[str, Any]] = []
 
-    # Vollstaendige Akteur-Tabelle
+    # Vollständige Akteur-Tabelle
     full_actors: list[dict[str, Any]] = []
     analysis_text: str = ""
 
 
 class FundingPanel(BaseModel):
-    """UC4: Foerderungs-Panel."""
+    """UC4: Förderungs-Panel."""
 
     total_funding_eur: float = 0.0
     funding_cagr: float = 0.0
@@ -139,8 +139,8 @@ class TemporalPanel(BaseModel):
 class TechClusterPanel(BaseModel):
     """UC9: Internationaler Vergleich (EU vs. Global).
 
-    Vergleicht europaeische und globale Metriken:
-    Patente, Projekte, Akteure, Foerderung.
+    Vergleicht europäische und globale Metriken:
+    Patente, Projekte, Akteure, Förderung.
     """
 
     # EU-Metriken
@@ -161,7 +161,7 @@ class TechClusterPanel(BaseModel):
     eu_project_share: float = 0.0
     eu_actor_share: float = 0.0
 
-    # Laendervergleich
+    # Ländervergleich
     eu_top_countries: list[dict[str, Any]] = []
     global_top_countries: list[dict[str, Any]] = []
 
@@ -171,7 +171,7 @@ class TechClusterPanel(BaseModel):
 # --- Explainability ---
 
 class ExplainabilityMetadata(BaseModel):
-    """Transparenz-Metadaten fuer jede Analyse."""
+    """Transparenz-Metadaten für jede Analyse."""
 
     sources_used: list[str] = []
     methods: list[str] = []

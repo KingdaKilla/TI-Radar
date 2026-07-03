@@ -3,7 +3,7 @@
 Liest CORDIS-Bulk-Downloads (JSON-ZIP-Archive oder CSV-Fallback),
 parst die Daten und schreibt sie batchweise in PostgreSQL.
 
-Primaerer Pfad (JSON-ZIP):
+Primärer Pfad (JSON-ZIP):
     /data/bulk/CORDIS/
         cordis-fp7projects-json.zip
         cordis-h2020projects-json.zip
@@ -11,7 +11,7 @@ Primaerer Pfad (JSON-ZIP):
         cordis-h2020projectPublications-json.zip
         cordis-HORIZONprojectPublications-json.zip
 
-    Jedes ZIP enthaelt project.json / organization.json als JSON-Arrays.
+    Jedes ZIP enthält project.json / organization.json als JSON-Arrays.
 
 Fallback (CSV):
     /data/bulk/CORDIS/
@@ -51,12 +51,12 @@ logger = structlog.get_logger(__name__)
 
 
 async def _is_already_imported(pool: asyncpg.Pool, source: str, filename: str) -> bool:
-    """Pruefen ob eine Datei bereits erfolgreich importiert wurde.
+    """Prüfen ob eine Datei bereits erfolgreich importiert wurde.
 
     Args:
         pool: asyncpg Connection-Pool.
         source: Datenquelle ('epo', 'cordis', 'euroscivoc').
-        filename: Name der zu pruefenden Datei.
+        filename: Name der zu prüfenden Datei.
 
     Returns:
         True wenn die Datei bereits importiert wurde, sonst False.
@@ -85,7 +85,7 @@ async def _log_import(
         pool: asyncpg Connection-Pool.
         source: Datenquelle ('epo', 'cordis', 'euroscivoc').
         filename: Name der importierten Datei.
-        record_count: Anzahl importierter Datensaetze.
+        record_count: Anzahl importierter Datensätze.
         duration_seconds: Import-Dauer in Sekunden.
     """
     await pool.execute(
@@ -113,11 +113,11 @@ class ImportResult:
     Attribute:
         source: Datenquelle (z.B. "EPO", "CORDIS").
         files_processed: Anzahl verarbeiteter Dateien.
-        records_imported: Anzahl erfolgreich importierter Datensaetze.
-        records_skipped: Anzahl uebersprungener Datensaetze (Duplikate, Fehler).
+        records_imported: Anzahl erfolgreich importierter Datensätze.
+        records_skipped: Anzahl übersprungener Datensätze (Duplikate, Fehler).
         errors: Liste von Fehlermeldungen.
         duration_seconds: Laufzeit in Sekunden.
-        details: Zusaetzliche Details (z.B. Projekte vs. Organisationen).
+        details: Zusätzliche Details (z.B. Projekte vs. Organisationen).
     """
 
     source: str = "CORDIS"
@@ -137,7 +137,7 @@ class ImportResult:
 def _parse_date(date_str: str | None) -> date | None:
     """Datum aus verschiedenen CORDIS-Formaten parsen.
 
-    Unterstuetzte Formate:
+    Unterstützte Formate:
         YYYY-MM-DD, DD/MM/YYYY, YYYY-MM-DDTHH:MM:SS
     """
     if not date_str or (isinstance(date_str, str) and not date_str.strip()):
@@ -163,7 +163,7 @@ def _parse_decimal(value: Any) -> Decimal | None:
     if not isinstance(value, str) or not value.strip():
         return None
     try:
-        # Komma als Dezimaltrennzeichen ersetzen (europaeisches Format)
+        # Komma als Dezimaltrennzeichen ersetzen (europäisches Format)
         cleaned = value.strip().replace(",", ".")
         return Decimal(cleaned)
     except (InvalidOperation, ValueError):
@@ -253,7 +253,7 @@ def _stream_json_from_zip(
                     )
     except zipfile.BadZipFile as exc:
         logger.error(
-            "ungueltige_zip_datei",
+            "ungültige_zip_datei",
             zip_datei=zip_path.name,
             error=str(exc),
         )
@@ -322,7 +322,7 @@ def _parse_project_json(record: dict[str, Any], framework: str) -> dict | None:
 
 
 def _safe_str(value: Any, max_len: int | None = None) -> str | None:
-    """Sicherer String-Zugriff mit optionaler Laengenbegrenzung."""
+    """Sicherer String-Zugriff mit optionaler Längenbegrenzung."""
     if value is None:
         return None
     s = str(value).strip()
@@ -368,7 +368,7 @@ def _parse_organization_json(record: dict[str, Any]) -> dict | None:
         except (ValueError, TypeError):
             return None
 
-        # Rolle normalisieren (CORDIS liefert teilweise Grossbuchstaben)
+        # Rolle normalisieren (CORDIS liefert teilweise Großbuchstaben)
         role = _safe_str(record.get("role"), max_len=20)
         if role:
             role = role.lower()
@@ -445,14 +445,14 @@ async def _insert_project_batch(
     pool: asyncpg.Pool,
     batch: list[dict],
 ) -> tuple[int, int]:
-    """Batch von Projekten via executemany in cordis_schema.projects einfuegen.
+    """Batch von Projekten via executemany in cordis_schema.projects einfügen.
 
-    ON CONFLICT DO NOTHING fuer idempotente Re-Imports.
-    Erweitert gegenueber CSV-Version: rcn, keywords, status, topics,
+    ON CONFLICT DO NOTHING für idempotente Re-Imports.
+    Erweitert gegenüber CSV-Version: rcn, keywords, status, topics,
     legal_basis werden jetzt auch importiert (JSON liefert mehr Felder).
 
     Returns:
-        Tuple (importiert, uebersprungen).
+        Tuple (importiert, übersprungen).
     """
     if not batch:
         return 0, 0
@@ -513,13 +513,13 @@ async def _insert_organization_batch(
     pool: asyncpg.Pool,
     batch: list[dict],
 ) -> tuple[int, int]:
-    """Batch von Organisationen via executemany in cordis_schema.organizations einfuegen.
+    """Batch von Organisationen via executemany in cordis_schema.organizations einfügen.
 
-    ON CONFLICT DO NOTHING fuer idempotente Re-Imports.
+    ON CONFLICT DO NOTHING für idempotente Re-Imports.
     Erweitert: organisation_id, short_name, total_cost werden jetzt importiert.
 
     Returns:
-        Tuple (importiert, uebersprungen).
+        Tuple (importiert, übersprungen).
     """
     if not batch:
         return 0, 0
@@ -570,12 +570,12 @@ async def _insert_publication_batch(
     pool: asyncpg.Pool,
     batch: list[dict],
 ) -> tuple[int, int]:
-    """Batch von Publikationen via executemany in cordis_schema.publications einfuegen.
+    """Batch von Publikationen via executemany in cordis_schema.publications einfügen.
 
-    ON CONFLICT (doi) DO NOTHING fuer Deduplikation.
+    ON CONFLICT (doi) DO NOTHING für Deduplikation.
 
     Returns:
-        Tuple (importiert, uebersprungen).
+        Tuple (importiert, übersprungen).
     """
     if not batch:
         return 0, 0
@@ -628,20 +628,20 @@ async def _process_json_records(
     *,
     parser_extra_args: tuple = (),
 ) -> tuple[int, int, list[str]]:
-    """Generische JSON-Record-Verarbeitung: Parsen und batchweise einfuegen.
+    """Generische JSON-Record-Verarbeitung: Parsen und batchweise einfügen.
 
     Args:
         pool: asyncpg Connection-Pool.
         records: Generator der JSON-Objekte.
         record_parser: Funktion zum Parsen eines JSON-Objekts.
         batch_inserter: Async-Funktion zum Batch-Insert.
-        batch_size: Anzahl Datensaetze pro Batch.
-        entity_name: Name der Entitaet (fuer Logging).
-        source_name: Name der Quelldatei (fuer Fehlermeldungen).
-        parser_extra_args: Zusaetzliche Argumente fuer den Parser.
+        batch_size: Anzahl Datensätze pro Batch.
+        entity_name: Name der Entität (für Logging).
+        source_name: Name der Quelldatei (für Fehlermeldungen).
+        parser_extra_args: Zusätzliche Argumente für den Parser.
 
     Returns:
-        Tuple (importiert, uebersprungen, fehler).
+        Tuple (importiert, übersprungen, fehler).
     """
     imported = 0
     skipped = 0
@@ -655,7 +655,7 @@ async def _process_json_records(
         else:
             skipped += 1
 
-        # Batch-Groesse erreicht -> in DB schreiben
+        # Batch-Größe erreicht -> in DB schreiben
         if len(batch) >= batch_size:
             try:
                 batch_imported, batch_skipped = await batch_inserter(pool, batch)
@@ -844,7 +844,7 @@ async def _process_csv_file(
     batch_size: int,
     entity_name: str,
 ) -> tuple[int, int, list[str]]:
-    """Generische CSV-Verarbeitung: Zeilen parsen und batchweise einfuegen.
+    """Generische CSV-Verarbeitung: Zeilen parsen und batchweise einfügen.
 
     Args:
         pool: asyncpg Connection-Pool.
@@ -852,10 +852,10 @@ async def _process_csv_file(
         row_parser: Funktion zum Parsen einer CSV-Zeile.
         batch_inserter: Async-Funktion zum Batch-Insert.
         batch_size: Anzahl Zeilen pro Batch.
-        entity_name: Name der Entitaet (fuer Logging).
+        entity_name: Name der Entität (für Logging).
 
     Returns:
-        Tuple (importiert, uebersprungen, fehler).
+        Tuple (importiert, übersprungen, fehler).
     """
     encoding = _detect_encoding(file_path)
     imported = 0
@@ -885,7 +885,7 @@ async def _process_csv_file(
                 else:
                     skipped += 1
 
-                # Batch-Groesse erreicht -> in DB schreiben
+                # Batch-Größe erreicht -> in DB schreiben
                 if len(batch) >= batch_size:
                     try:
                         batch_imported, batch_skipped = await batch_inserter(
@@ -971,10 +971,10 @@ async def _import_from_zip_files(
     orgs_skipped = 0
 
     for zip_path in project_zips:
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "cordis", zip_path.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=zip_path.name,
                 quelle="cordis",
             )
@@ -1040,10 +1040,10 @@ async def _import_from_zip_files(
     pubs_skipped = 0
 
     for zip_path in publication_zips:
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "cordis", zip_path.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=zip_path.name,
                 quelle="cordis",
             )
@@ -1135,10 +1135,10 @@ async def _import_from_csv_files(
     projects_skipped = 0
 
     for file_path in project_files:
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "cordis", file_path.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=file_path.name,
                 quelle="cordis",
             )
@@ -1174,10 +1174,10 @@ async def _import_from_csv_files(
     orgs_skipped = 0
 
     for file_path in org_files:
-        # Inkrementeller Import: bereits importierte Dateien ueberspringen
+        # Inkrementeller Import: bereits importierte Dateien überspringen
         if await _is_already_imported(pool, "cordis", file_path.name):
             logger.info(
-                "ueberspringe_bereits_importierte_datei",
+                "überspringe_bereits_importierte_datei",
                 datei=file_path.name,
                 quelle="cordis",
             )
@@ -1225,7 +1225,7 @@ async def import_cordis_bulk(
 ) -> ImportResult:
     """CORDIS-Bulk-Import: ZIP- oder CSV-Dateien lesen, parsen, in PostgreSQL laden.
 
-    Primaerer Pfad: JSON-ZIP-Archive (cordis-*projects-json.zip)
+    Primärer Pfad: JSON-ZIP-Archive (cordis-*projects-json.zip)
     Fallback-Pfad:  CSV-Dateien (*project*.csv, *organ*.csv)
 
     Die Entscheidung zwischen ZIP und CSV erfolgt automatisch:
@@ -1234,8 +1234,8 @@ async def import_cordis_bulk(
 
     Args:
         pool: asyncpg Connection-Pool.
-        data_dir: Basisverzeichnis fuer Bulk-Daten.
-        batch_size: Anzahl Datensaetze pro Batch-Insert.
+        data_dir: Basisverzeichnis für Bulk-Daten.
+        batch_size: Anzahl Datensätze pro Batch-Insert.
 
     Returns:
         ImportResult mit Statistiken zum Import-Vorgang.
@@ -1249,11 +1249,11 @@ async def import_cordis_bulk(
         logger.error("cordis_verzeichnis_fehlt", path=str(cordis_dir))
         return result
 
-    # ZIP-Dateien suchen (primaerer Pfad)
+    # ZIP-Dateien suchen (primärer Pfad)
     zip_files = sorted(cordis_dir.glob("*.zip"))
 
     if zip_files:
-        # --- JSON-ZIP-Pfad (primaer) ---
+        # --- JSON-ZIP-Pfad (primär) ---
         logger.info(
             "cordis_import_gestartet",
             modus="JSON-ZIP",

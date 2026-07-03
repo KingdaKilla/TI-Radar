@@ -1,16 +1,16 @@
-"""Unit-Tests fuer den CAGR-Trim im funding-svc (Bug C-005).
+"""Unit-Tests für den CAGR-Trim im funding-svc (Bug C-005).
 
-Bug: funding-svc hat das laufende (unvollstaendige) Kalenderjahr in die
-CAGR-Berechnung einbezogen, landscape-svc nicht. Bei identischer Rohgroesse
+Bug: funding-svc hat das laufende (unvollständige) Kalenderjahr in die
+CAGR-Berechnung einbezogen, landscape-svc nicht. Bei identischer Rohgröße
 konnte das Endglied das Vorzeichen kippen (mRNA: -11.7% vs. +0.01%).
 
 Kanonisch: Beide Services nutzen ``last_complete_year()`` als Endpunkt.
-Die Analyse laeuft ueber ``analysis_period=2016-2026``, fuer CAGR wird 2026
+Die Analyse läuft über ``analysis_period=2016-2026``, für CAGR wird 2026
 (laufendes Jahr) ausgeschlossen.
 
-Diese Tests ueberpruefen, dass der funding-svc:
-1. time_series auf ``year <= data_complete_year`` filtert, bevor CAGR laeuft;
-2. bei vollstaendigen Daten die gesamte Range benutzt;
+Diese Tests überprüfen, dass der funding-svc:
+1. time_series auf ``year <= data_complete_year`` filtert, bevor CAGR läuft;
+2. bei vollständigen Daten die gesamte Range benutzt;
 3. ``cagr_period_end`` in der Response liefert.
 """
 
@@ -44,7 +44,7 @@ def _force_dict_response(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 def servicer() -> FundingServicer:
-    """FundingServicer mit Mock-Pool (DB wird nicht beruehrt)."""
+    """FundingServicer mit Mock-Pool (DB wird nicht berührt)."""
     return FundingServicer(pool=MagicMock())
 
 
@@ -72,8 +72,8 @@ def _patch_repo(
 ) -> None:
     """Ersetzt die Repository-Methoden durch Fakes.
 
-    Nur ``funding_by_year`` liefert die Testdaten; die uebrigen Abfragen
-    sind fuer den CAGR-Test irrelevant und liefern leere Listen bzw. 0.
+    Nur ``funding_by_year`` liefert die Testdaten; die übrigen Abfragen
+    sind für den CAGR-Test irrelevant und liefern leere Listen bzw. 0.
     """
     async def _years(*_a: Any, **_kw: Any) -> list[FundingYear]:
         return funding_years
@@ -106,14 +106,14 @@ def _patch_repo(
 # ---------------------------------------------------------------------------
 
 class TestCagrTrimsIncompleteYear:
-    """CAGR darf das laufende (unvollstaendige) Jahr nicht einbeziehen."""
+    """CAGR darf das laufende (unvollständige) Jahr nicht einbeziehen."""
 
     async def test_cagr_uses_complete_years_only(
         self,
         servicer: FundingServicer,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Mit time_series 2016-2026 und 2026 unvollstaendig → CAGR nur 2016-2025."""
+        """Mit time_series 2016-2026 und 2026 unvollständig → CAGR nur 2016-2025."""
         # Fixiere "heute" auf 2026-04-17 -> last_complete_year() == 2025.
         monkeypatch.setattr(
             service_module,
@@ -122,7 +122,7 @@ class TestCagrTrimsIncompleteYear:
         )
 
         # 2016 -> 1.0M, stetiges Wachstum bis 2025 -> 2.0M, 2026 ein Teiljahr
-        # mit stark reduzierter Foerderung, das den CAGR sonst kippen wuerde.
+        # mit stark reduzierter Förderung, das den CAGR sonst kippen würde.
         years = [
             FundingYear(year=2016, funding=1_000_000.0, count=10),
             FundingYear(year=2017, funding=1_100_000.0, count=11),
@@ -142,14 +142,14 @@ class TestCagrTrimsIncompleteYear:
             _FakeRequest("mRNA", 2016, 2026), context=None,
         )
 
-        # Erwartung: CAGR nur ueber 2016-2025 (9 Jahre, 1.0M -> 2.0M).
+        # Erwartung: CAGR nur über 2016-2025 (9 Jahre, 1.0M -> 2.0M).
         expected_percent = cagr(1_000_000.0, 2_000_000.0, 9)
         # Response.cagr ist Fraktion (percent/100).
         assert response["cagr"] == pytest.approx(
             expected_percent / 100.0, abs=1e-6,
         )
         assert response["cagr_period_end"] == 2025
-        # Das Endjahr fuer CAGR ist strikt positiv, nicht negativ (Bug C-005).
+        # Das Endjahr für CAGR ist strikt positiv, nicht negativ (Bug C-005).
         assert response["cagr"] > 0
 
     async def test_full_range_when_last_year_is_complete(
@@ -157,7 +157,7 @@ class TestCagrTrimsIncompleteYear:
         servicer: FundingServicer,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Wenn 2026 bereits vollstaendig → ganze Range wird genutzt."""
+        """Wenn 2026 bereits vollständig → ganze Range wird genutzt."""
         # Fixiere "heute" auf 2027-01-01 -> last_complete_year() == 2026.
         monkeypatch.setattr(
             service_module,
@@ -176,7 +176,7 @@ class TestCagrTrimsIncompleteYear:
             _FakeRequest("mRNA", 2016, 2026), context=None,
         )
 
-        # Erwartung: CAGR ueber 2016-2026 (10 Jahre, 1.0M -> 2.5M).
+        # Erwartung: CAGR über 2016-2026 (10 Jahre, 1.0M -> 2.5M).
         expected_percent = cagr(1_000_000.0, 2_500_000.0, 10)
         assert response["cagr"] == pytest.approx(
             expected_percent / 100.0, abs=1e-6,
@@ -188,14 +188,14 @@ class TestCagrTrimsIncompleteYear:
         servicer: FundingServicer,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Wenn 2026 in den Daten fehlt → Range endet bei letztem verfuegbaren Jahr."""
+        """Wenn 2026 in den Daten fehlt → Range endet bei letztem verfügbaren Jahr."""
         monkeypatch.setattr(
             service_module,
             "last_complete_year",
             lambda: last_complete_year(today=date(2026, 4, 17)),
         )
 
-        # Keine 2026-Eintraege vorhanden, 2025 ist das letzte Jahr.
+        # Keine 2026-Einträge vorhanden, 2025 ist das letzte Jahr.
         years = [
             FundingYear(year=2016, funding=1_000_000.0, count=10),
             FundingYear(year=2020, funding=1_500_000.0, count=15),
@@ -244,21 +244,21 @@ class TestCagrTrimsIncompleteYear:
 # ---------------------------------------------------------------------------
 
 class TestCagrSymmetryWithLandscape:
-    """Gleiche Rohgroesse -> gleiches Vorzeichen in funding und landscape."""
+    """Gleiche Rohgröße -> gleiches Vorzeichen in funding und landscape."""
 
     async def test_sign_stable_between_services(
         self,
         servicer: FundingServicer,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Ohne Teiljahr-Trim wuerde das Vorzeichen kippen (Bug C-005)."""
+        """Ohne Teiljahr-Trim würde das Vorzeichen kippen (Bug C-005)."""
         monkeypatch.setattr(
             service_module,
             "last_complete_year",
             lambda: last_complete_year(today=date(2026, 4, 17)),
         )
 
-        # mRNA-aehnliches Szenario: stetiges Wachstum, 2026 stark unterzeichnet.
+        # mRNA-ähnliches Szenario: stetiges Wachstum, 2026 stark unterzeichnet.
         years = [
             FundingYear(year=2016, funding=500_000.0, count=5),
             FundingYear(year=2025, funding=1_500_000.0, count=15),
@@ -270,6 +270,6 @@ class TestCagrSymmetryWithLandscape:
             _FakeRequest("mRNA", 2016, 2026), context=None,
         )
 
-        # Vorzeichen muss positiv sein — ohne Trim waere es stark negativ.
+        # Vorzeichen muss positiv sein — ohne Trim wäre es stark negativ.
         assert response["cagr"] > 0
         assert response["cagr_period_end"] == 2025

@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Temporal-Service.
+"""Konfiguration für den Temporal-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 """
 
 from __future__ import annotations

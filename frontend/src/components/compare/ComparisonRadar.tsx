@@ -3,7 +3,7 @@
 /* ──────────────────────────────────────────────
  * TI-Radar v3 -- Vergleichs-Radar
  * Recharts RadarChart mit zwei Technologien als
- * ueberlagerte Polygone (normalisierte Achsen)
+ * überlagerte Polygone (normalisierte Achsen)
  * ────────────────────────────────────────────── */
 
 import {
@@ -41,7 +41,7 @@ export default function ComparisonRadar({
   const a = techA.data;
   const b = techB.data;
 
-  // Referenzwerte fuer Normalisierung (Maximum beider Technologien)
+  // Referenzwerte für Normalisierung (Maximum beider Technologien)
   const maxPatents = Math.max(
     a.landscape?.total_patents ?? 0,
     b.landscape?.total_patents ?? 0,
@@ -150,7 +150,7 @@ export default function ComparisonRadar({
         </ResponsiveContainer>
       </div>
       <p className="mt-2 text-center text-xs text-[var(--color-text-muted)]">
-        Achsen: Patente, Projekte, HHI (invertiert: hoeher = diverser), h-Index,
+        Achsen: Patente, Projekte, HHI (invertiert: höher = diverser), h-Index,
         Förderung. Werte relativ zum Maximum beider Technologien.
       </p>
     </div>

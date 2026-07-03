@@ -18,7 +18,7 @@
 
 ## Vorbemerkung — Kritischer Befund zum Rohmaterial
 
-In der Input-JSON ist für **alle 13 Panels** `activeTab = "Neue Analyse"` und `mainText` zu 100 % **identisch** — nämlich die Executive-Summary-Kopfzeile plus die statischen Cluster-Info-Boilerplate-Texte (`UC6 … UC9 … UC10 … UC12 … UC1 … UC2 … UC5 … UC3 … UC8 … UC11 … UC4 Förderungsanalyse`, jeweils mit "Dieser Analysebereich umfasst:" und "Klicken zum Zurueck").
+In der Input-JSON ist für **alle 13 Panels** `activeTab = "Neue Analyse"` und `mainText` zu 100 % **identisch** — nämlich die Executive-Summary-Kopfzeile plus die statischen Cluster-Info-Boilerplate-Texte (`UC6 … UC9 … UC10 … UC12 … UC1 … UC2 … UC5 … UC3 … UC8 … UC11 … UC4 Förderungsanalyse`, jeweils mit "Dieser Analysebereich umfasst:" und "Klicken zum Zurück").
 
 **Konsequenz:** Beim Live-Dashboard-Durchlauf wurde für perovskite solar cell **kein einziges Detail-Panel** tatsächlich gerendert. Sichtbar waren ausschließlich die 4 Cluster-Kacheln der Landing-Seite (Geographische Perspektive, Technologie & Reife, Marktakteure, Forschung & Förderung) mit ihren generischen UC-Beschreibungen. Der Nutzer hat dadurch de facto **keinen** der 13 UCs betreten — oder das Dashboard hat die Panels für diese Tech nicht geladen.
 

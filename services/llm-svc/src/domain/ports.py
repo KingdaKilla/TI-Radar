@@ -1,8 +1,8 @@
-"""Port-Interfaces fuer LLM-Service (Hexagonal Architecture).
+"""Port-Interfaces für LLM-Service (Hexagonal Architecture).
 
-Definiert abstrakte Schnittstellen fuer:
+Definiert abstrakte Schnittstellen für:
 - LLMProviderPort: LLM-Aufrufe (Anthropic, OpenAI, etc.)
-- FaithfulnessPort: Faithfulness-Pruefung (Task 16)
+- FaithfulnessPort: Faithfulness-Prüfung (Task 16)
 
 Sowie Ergebnis-Datenklassen:
 - AnalysisResult: Ergebnis einer Panel-Analyse
@@ -38,7 +38,7 @@ class ChatResult:
 
 
 class LLMProviderPort(ABC):
-    """Abstraktes Interface fuer LLM-Aufrufe.
+    """Abstraktes Interface für LLM-Aufrufe.
 
     Implementierungen kapseln die Kommunikation mit einem konkreten
     LLM-Provider (Anthropic Claude, OpenAI GPT, etc.).
@@ -48,10 +48,10 @@ class LLMProviderPort(ABC):
     async def generate(
         self, system_prompt: str, user_prompt: str
     ) -> tuple[str, str]:
-        """LLM aufrufen fuer Single-Turn-Generierung.
+        """LLM aufrufen für Single-Turn-Generierung.
 
         Args:
-            system_prompt: System-Kontext fuer das LLM.
+            system_prompt: System-Kontext für das LLM.
             user_prompt: Benutzer-Prompt mit Daten und Anweisungen.
 
         Returns:
@@ -65,7 +65,7 @@ class LLMProviderPort(ABC):
         """Chat-Completion mit Nachrichtenverlauf.
 
         Args:
-            system_prompt: System-Kontext fuer das LLM.
+            system_prompt: System-Kontext für das LLM.
             messages: Liste von Nachrichten mit 'role' und 'content'.
 
         Returns:
@@ -74,9 +74,9 @@ class LLMProviderPort(ABC):
 
 
 class FaithfulnessPort(ABC):
-    """Abstraktes Interface fuer Faithfulness-Pruefung (Task 16).
+    """Abstraktes Interface für Faithfulness-Prüfung (Task 16).
 
-    Prueft ob LLM-Antworten im bereitgestellten Kontext begruendet sind
+    Prüft ob LLM-Antworten im bereitgestellten Kontext begründet sind
     (EU AI Act 2024/1689 Compliance).
     """
 
@@ -84,7 +84,7 @@ class FaithfulnessPort(ABC):
     async def check_sufficiency(
         self, context: str, question: str
     ) -> str:
-        """Prueft ob der Kontext die Frage beantworten kann.
+        """Prüft ob der Kontext die Frage beantworten kann.
 
         Args:
             context: Zusammengefasster Kontext aus Retrieval-Dokumenten.
@@ -98,12 +98,12 @@ class FaithfulnessPort(ABC):
     async def check_faithfulness(
         self, context: str, answer: str
     ) -> tuple[float, list[str]]:
-        """Prueft ob die Antwort im Kontext begruendet ist.
+        """Prüft ob die Antwort im Kontext begründet ist.
 
         Args:
             context: Zusammengefasster Kontext aus Retrieval-Dokumenten.
             answer: Die LLM-generierte Antwort.
 
         Returns:
-            Tuple aus (faithfulness_score 0.0-1.0, liste_ungestuetzter_aussagen).
+            Tuple aus (faithfulness_score 0.0-1.0, liste_ungestützter_aussagen).
         """

@@ -1,7 +1,7 @@
-"""Unit-Tests fuer den bipartiten Jaccard cooperation_score (UC6).
+"""Unit-Tests für den bipartiten Jaccard cooperation_score (UC6).
 
-Der Score normalisiert absolute Kooperationszahlen auf die Gesamtaktivitaet
-der beiden Laender: (2 * co_projects) / (projects_a + projects_b).
+Der Score normalisiert absolute Kooperationszahlen auf die Gesamtaktivität
+der beiden Länder: (2 * co_projects) / (projects_a + projects_b).
 
 Diese Tests decken die Formel selbst sowie Edge-Cases ab (0 co-projects,
 Division-by-Zero-Schutz, Clamping, Symmetrie).
@@ -22,25 +22,25 @@ from src.service import _bipartite_jaccard
 
 
 class TestBipartiteJaccardFormula:
-    """Prueft die grundlegende Formel (2 * co) / (a + b)."""
+    """Prüft die grundlegende Formel (2 * co) / (a + b)."""
 
     def test_hoher_score_bei_starker_kooperation(self) -> None:
-        """(2*396) / (400+400) = 0.99 — DE/FR-aehnliches Szenario."""
+        """(2*396) / (400+400) = 0.99 — DE/FR-ähnliches Szenario."""
         score = _bipartite_jaccard(co_projects=396, projects_a=400, projects_b=400)
         assert math.isclose(score, 0.99, rel_tol=1e-9)
 
     def test_niedriger_score_bei_geringer_kooperation(self) -> None:
-        """(2*10) / (100+100) = 0.1 — nur 10 % der Aktivitaet gemeinsam."""
+        """(2*10) / (100+100) = 0.1 — nur 10 % der Aktivität gemeinsam."""
         score = _bipartite_jaccard(co_projects=10, projects_a=100, projects_b=100)
         assert math.isclose(score, 0.1, rel_tol=1e-9)
 
     def test_perfekte_kooperation_gibt_eins(self) -> None:
-        """co == a == b -> Score = 1.0 (voellig deckungsgleich)."""
+        """co == a == b -> Score = 1.0 (völlig deckungsgleich)."""
         score = _bipartite_jaccard(co_projects=50, projects_a=50, projects_b=50)
         assert math.isclose(score, 1.0, rel_tol=1e-9)
 
     def test_asymmetrische_groessen(self) -> None:
-        """Grosses Land + kleines Land: (2*5) / (1000+5) ~ 0.00995."""
+        """Großes Land + kleines Land: (2*5) / (1000+5) ~ 0.00995."""
         score = _bipartite_jaccard(co_projects=5, projects_a=1000, projects_b=5)
         assert math.isclose(score, 10.0 / 1005.0, rel_tol=1e-9)
 
@@ -51,22 +51,22 @@ class TestBipartiteJaccardFormula:
 
 
 class TestBipartiteJaccardEdgeCases:
-    """Defensive Branches: leere Zaehler/Nenner sollen nicht crashen."""
+    """Defensive Branches: leere Zähler/Nenner sollen nicht crashen."""
 
     def test_null_coprojects_gibt_null_score(self) -> None:
-        """0 co-projects -> 0 score, unabhaengig von Totals."""
+        """0 co-projects -> 0 score, unabhängig von Totals."""
         assert _bipartite_jaccard(co_projects=0, projects_a=100, projects_b=100) == 0.0
 
     def test_negativer_coprojects_gibt_null(self) -> None:
-        """Defensiv: negative Werte fuehren zu 0 (keine Exception)."""
+        """Defensiv: negative Werte führen zu 0 (keine Exception)."""
         assert _bipartite_jaccard(co_projects=-5, projects_a=100, projects_b=100) == 0.0
 
     def test_nenner_null_gibt_null_score(self) -> None:
-        """Wenn beide Laender-Totals 0 sind, Rueckgabe 0.0 statt ZeroDivisionError."""
+        """Wenn beide Länder-Totals 0 sind, Rückgabe 0.0 statt ZeroDivisionError."""
         assert _bipartite_jaccard(co_projects=5, projects_a=0, projects_b=0) == 0.0
 
     def test_negativer_nenner_gibt_null(self) -> None:
-        """Defensive Pruefung auf <= 0 auch bei absurden Eingaben."""
+        """Defensive Prüfung auf <= 0 auch bei absurden Eingaben."""
         assert _bipartite_jaccard(co_projects=5, projects_a=-10, projects_b=5) == 0.0
 
     def test_score_ist_in_null_bis_eins(self) -> None:
@@ -100,7 +100,7 @@ class TestBipartiteJaccardProperties:
         ],
     )
     def test_parametrische_werte(self, co: int, a: int, b: int, expected: float) -> None:
-        """Tabellarische Gegenprobe fuer typische Input-Kombinationen."""
+        """Tabellarische Gegenprobe für typische Input-Kombinationen."""
         assert math.isclose(
             _bipartite_jaccard(co_projects=co, projects_a=a, projects_b=b),
             expected,
@@ -117,7 +117,7 @@ class TestCooperationPairsHaveNonzeroScore:
     """Verifiziert, dass realistische Repository-Outputs Nicht-Null-Scores erzeugen."""
 
     def test_pairs_have_nonzero_score(self) -> None:
-        """Simuliert typischen Repository-Output und prueft, dass jeder Pair
+        """Simuliert typischen Repository-Output und prüft, dass jeder Pair
         mit co_project_count > 0 auch einen cooperation_score > 0 bekommt."""
         collab_pairs = [
             {

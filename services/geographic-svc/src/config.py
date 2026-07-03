@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Geographic-Service.
+"""Konfiguration für den Geographic-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 Alle Konfigurationsparameter sind zentral hier definiert.
 """
 

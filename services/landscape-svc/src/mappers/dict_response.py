@@ -1,6 +1,6 @@
 """Mapper: LandscapeResult -> dict-basierte Response.
 
-Fallback-Format fuer Tests und Entwicklung ohne generierte gRPC-Stubs.
+Fallback-Format für Tests und Entwicklung ohne generierte gRPC-Stubs.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ def landscape_result_to_dict(
 ) -> dict[str, Any]:
     """Mappt ein LandscapeResult auf ein Response-dict.
 
-    Nuetzlich fuer Unit-Tests und lokale Entwicklung ohne Protobuf-Stubs.
+    Nützlich für Unit-Tests und lokale Entwicklung ohne Protobuf-Stubs.
     """
     return {
         "time_series": [

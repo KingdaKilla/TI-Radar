@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Research-Impact-Service.
+"""Konfiguration für den Research-Impact-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Service-Konfiguration — geladen aus Umgebungsvariablen."""
 
-    # --- PostgreSQL (fuer zukuenftige lokale Paper-Daten) ---
+    # --- PostgreSQL (für zukünftige lokale Paper-Daten) ---
     database_url: str = "postgresql://ti_radar:ti_radar@localhost:5432/ti_radar"
     db_min_connections: int = 2
     db_max_connections: int = 10

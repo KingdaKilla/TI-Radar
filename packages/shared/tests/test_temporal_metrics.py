@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.temporal_metrics — Akteur-Dynamik, Technologie-Breite."""
+"""Tests für shared.domain.temporal_metrics — Akteur-Dynamik, Technologie-Breite."""
 
 from __future__ import annotations
 

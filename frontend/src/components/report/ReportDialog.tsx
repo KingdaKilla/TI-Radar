@@ -3,7 +3,7 @@
 /* ──────────────────────────────────────────────
  * TI-Radar v3 -- Report-Dialog
  * Modal zur Auswahl von Format und Use Cases
- * fuer den kombinierten Report-Export
+ * für den kombinierten Report-Export
  * ────────────────────────────────────────────── */
 
 import { useState, useCallback, useEffect } from "react";
@@ -140,7 +140,7 @@ export default function ReportDialog({
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
-            aria-label="Dialog schliessen"
+            aria-label="Dialog schließen"
           >
             <X className="h-5 w-5" />
           </button>

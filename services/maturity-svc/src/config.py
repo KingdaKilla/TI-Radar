@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Maturity-Service.
+"""Konfiguration für den Maturity-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 Alle Konfigurationsparameter sind zentral hier definiert.
 """
 

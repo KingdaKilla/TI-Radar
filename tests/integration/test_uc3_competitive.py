@@ -1,6 +1,6 @@
-"""Integrations-Tests fuer UC3 CompetitiveRepository gegen PostgreSQL Testcontainer.
+"""Integrations-Tests für UC3 CompetitiveRepository gegen PostgreSQL Testcontainer.
 
-Prueft das korrekte Verhalten des Wettbewerbs-Repositories:
+Prüft das korrekte Verhalten des Wettbewerbs-Repositories:
 - Top-Patent-Anmelder via LATERAL unnest auf applicant_names
 - Top-CORDIS-Organisationen per JOIN
 - Co-Patent-Anmelder-Paare (gemeinsame Patente)
@@ -11,9 +11,9 @@ Prueft das korrekte Verhalten des Wettbewerbs-Repositories:
 Die Fixtures 'db_pool' und 'populated_db' kommen aus conftest.py.
 
 Hinweis zum Schema: patent_schema.patents.applicant_names ist ein TEXT-Feld
-(Legacy-Spalte gemaess 002_schema.sql), nicht ein Array. Die Co-Patent-Query
-im Repository prueft array_length(applicant_names, 1) >= 2, was bei TEXT-Werten
-0 ergibt. Der Test prueft daher Robustheit gegenueber leerer Co-Anmelder-Liste.
+(Legacy-Spalte gemäß 002_schema.sql), nicht ein Array. Die Co-Patent-Query
+im Repository prüft array_length(applicant_names, 1) >= 2, was bei TEXT-Werten
+0 ergibt. Der Test prüft daher Robustheit gegenüber leerer Co-Anmelder-Liste.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ CompetitiveRepository = _mod.CompetitiveRepository
 
 @pytest_asyncio.fixture(scope="module")
 async def repo(populated_db):
-    """Erstellt ein CompetitiveRepository gegen den befuellten Testcontainer."""
+    """Erstellt ein CompetitiveRepository gegen den befüllten Testcontainer."""
     return CompetitiveRepository(pool=populated_db)
 
 
@@ -57,7 +57,7 @@ async def repo(populated_db):
 
 
 class TestTopPatentApplicants:
-    """Tests fuer CompetitiveRepository.top_patent_applicants()."""
+    """Tests für CompetitiveRepository.top_patent_applicants()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_anmelder_fuer_quantum_gefunden(self, repo):
@@ -65,7 +65,7 @@ class TestTopPatentApplicants:
         ergebnisse = await repo.top_patent_applicants("quantum computing")
         assert isinstance(ergebnisse, list)
         # applicant_names ist TEXT (nicht Array) — daher abhängig von LATERAL-Verhalten
-        # Leere Liste ist toleriert, falls das Feld kein unnest-faehiges Array ist
+        # Leere Liste ist toleriert, falls das Feld kein unnest-fähiges Array ist
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_struktur_wenn_nicht_leer(self, repo):
@@ -100,12 +100,12 @@ class TestTopPatentApplicants:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_jahresbereich_filter(self, repo):
-        """start_year und end_year beschraenken die Patent-Auswahl."""
+        """start_year und end_year beschränken die Patent-Auswahl."""
         ergebnisse_gesamt = await repo.top_patent_applicants("quantum computing")
         ergebnisse_2022 = await repo.top_patent_applicants(
             "quantum computing", start_year=2022, end_year=2022
         )
-        # Einschraenkung auf ein Jahr liefert gleich viele oder weniger Anmelder
+        # Einschränkung auf ein Jahr liefert gleich viele oder weniger Anmelder
         gesamt_count = sum(e["count"] for e in ergebnisse_gesamt)
         count_2022 = sum(e["count"] for e in ergebnisse_2022)
         assert count_2022 <= gesamt_count
@@ -117,7 +117,7 @@ class TestTopPatentApplicants:
 
 
 class TestTopCordisOrganizations:
-    """Tests fuer CompetitiveRepository.top_cordis_organizations()."""
+    """Tests für CompetitiveRepository.top_cordis_organizations()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_organisationen_fuer_quantum_gefunden(self, repo):
@@ -165,7 +165,7 @@ class TestTopCordisOrganizations:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_laenderinformation_vorhanden(self, repo):
-        """Organisationen haben gueltigen 2-Buchstaben-Laendercode."""
+        """Organisationen haben gültigen 2-Buchstaben-Ländercode."""
         ergebnisse = await repo.top_cordis_organizations("quantum computing")
         for eintrag in ergebnisse:
             if eintrag["country"] is not None:
@@ -178,7 +178,7 @@ class TestTopCordisOrganizations:
 
 
 class TestCoProjectParticipants:
-    """Tests fuer CompetitiveRepository.co_project_participants()."""
+    """Tests für CompetitiveRepository.co_project_participants()."""
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_co_paare_gefunden(self, repo):
@@ -227,11 +227,11 @@ class TestCoProjectParticipants:
 
 
 class TestCoPatentApplicants:
-    """Tests fuer CompetitiveRepository.co_patent_applicants().
+    """Tests für CompetitiveRepository.co_patent_applicants().
 
     Hinweis: applicant_names ist als TEXT-Feld im Schema definiert
     (Legacy-Spalte), nicht als TEXT[]. Die LATERAL unnest-Query gibt
-    daher 0 Ergebnisse zurueck. Der Test prueft Robustheit.
+    daher 0 Ergebnisse zurück. Der Test prüft Robustheit.
     """
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -262,7 +262,7 @@ class TestCoPatentApplicants:
 
 
 class TestHhiBerechnung:
-    """Prueft HHI-Index-Berechnung auf Basis echter DB-Ergebnisse.
+    """Prüft HHI-Index-Berechnung auf Basis echter DB-Ergebnisse.
 
     Der HHI wird nicht im Repository berechnet, sondern im Service-Layer
     (shared.domain.metrics.hhi_index). Dieser Test stellt sicher, dass
@@ -271,15 +271,15 @@ class TestHhiBerechnung:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_hhi_aus_cordis_organisationen(self, repo):
-        """HHI-Index aus CORDIS-Organisationen ist im gueltigen Bereich [0, 10000]."""
+        """HHI-Index aus CORDIS-Organisationen ist im gültigen Bereich [0, 10000]."""
         organisationen = await repo.top_cordis_organizations("quantum computing")
 
         if not organisationen:
-            pytest.skip("Keine Organisationen gefunden — HHI-Test uebersprungen")
+            pytest.skip("Keine Organisationen gefunden — HHI-Test übersprungen")
 
         gesamt = sum(org["count"] for org in organisationen)
         if gesamt == 0:
-            pytest.skip("Gesamtcount ist 0 — HHI-Test uebersprungen")
+            pytest.skip("Gesamtcount ist 0 — HHI-Test übersprungen")
 
         marktanteile = [org["count"] / gesamt for org in organisationen]
         hhi = hhi_index(marktanteile)
@@ -302,7 +302,7 @@ class TestHhiBerechnung:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_hhi_konzentrationslevel_bestimmbar(self, repo):
-        """Aus dem HHI laesst sich ein Konzentrationslevel bestimmen."""
+        """Aus dem HHI lässt sich ein Konzentrationslevel bestimmen."""
         organisationen = await repo.top_cordis_organizations("quantum computing")
         if not organisationen:
             pytest.skip("Keine Organisationen gefunden")

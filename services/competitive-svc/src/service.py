@@ -1,13 +1,13 @@
 """UC3 CompetitiveServicer — gRPC-Implementierung der Wettbewerbs-Analyse.
 
-Empfaengt AnalysisRequest, ermittelt Top-Akteure aus Patent-Anmeldern
+Empfängt AnalysisRequest, ermittelt Top-Akteure aus Patent-Anmeldern
 und CORDIS-Organisationen, berechnet HHI-Konzentration und baut
-Netzwerk-Graph fuer Co-Patenting/Co-Partizipation.
+Netzwerk-Graph für Co-Patenting/Co-Partizipation.
 
 Entity Resolution (TODO 6.4):
-- Optional: Nutzt entity.unified_actors fuer deduplizierte Akteur-Namen.
-- Graceful Degradation: Faellt auf Raw-Namen zurueck wenn entity-Tabellen
-  nicht verfuegbar oder leer sind.
+- Optional: Nutzt entity.unified_actors für deduplizierte Akteur-Namen.
+- Graceful Degradation: Fällt auf Raw-Namen zurück wenn entity-Tabellen
+  nicht verfügbar oder leer sind.
 - Steuerbar via Settings.use_entity_resolution (Default: True).
 
 Migration von MVP v1.0:
@@ -57,14 +57,14 @@ logger = structlog.get_logger(__name__)
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc3_competitive_pb2_grpc is not None:
         return uc3_competitive_pb2_grpc.CompetitiveServiceServicer  # type: ignore[return-value]
     return object
 
 
 class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC3 Competitive Intelligence.
+    """gRPC-Servicer für UC3 Competitive Intelligence.
 
     Koordiniert parallele Abfragen:
     1. Patent-Anmelder (PostgreSQL, tsvector-Suche)
@@ -138,7 +138,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
 
         # --- Entity Resolution: Unified Actors (optional, TODO 6.4) ---
         # Wenn aktiviert, zuerst deduplizierte Akteure abfragen.
-        # Graceful Fallback: Bei leerer Antwort auf Raw-Queries zurueckfallen.
+        # Graceful Fallback: Bei leerer Antwort auf Raw-Queries zurückfallen.
         unified_actors_used = False
         unified_actor_list: list[dict[str, Any]] = []
 
@@ -167,7 +167,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
                     })
             except Exception as exc:
                 logger.warning(
-                    "entity_resolution_uebersprungen",
+                    "entity_resolution_übersprungen",
                     error=str(exc),
                 )
                 warnings.append({
@@ -178,7 +178,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
 
         # --- Fallback: Raw-Queries (Patent-Anmelder + CORDIS-Organisationen) ---
         if not unified_actors_used:
-            # Parallele Abfragen fuer Patent-Anmelder und CORDIS-Organisationen
+            # Parallele Abfragen für Patent-Anmelder und CORDIS-Organisationen
             tasks = [
                 asyncio.create_task(
                     self._repo.top_patent_applicants(
@@ -235,7 +235,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
                             "record_count": sum(int(o["count"]) for o in result),
                         })
 
-        # --- Akteure zusammenfuehren ---
+        # --- Akteure zusammenführen ---
         actor_counts: dict[str, int] = {}
 
         if unified_actors_used:
@@ -341,7 +341,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
         patent_actor_set: set[str] = set(patent_actors.keys())
         cordis_actor_set: set[str] = set(cordis_actors.keys())
 
-        # Parallele Abfrage fuer Kanten
+        # Parallele Abfrage für Kanten
         tasks = [
             asyncio.create_task(
                 self._repo.co_patent_applicants(
@@ -600,7 +600,7 @@ class CompetitiveServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request oder keinen Daten."""
+        """Leere Response bei ungültigem Request oder keinen Daten."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             hhi=0.0, level_en="Low", top_actors=[],

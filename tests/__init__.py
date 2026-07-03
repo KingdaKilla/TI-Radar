@@ -1,1 +1,1 @@
-# Tests-Paket fuer TI-Radar v2
+# Tests-Paket für TI-Radar v2

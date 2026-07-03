@@ -1,12 +1,12 @@
-"""UC1 AnalyzeLandscape Use Case — transportunabhaengige Geschaeftslogik.
+"""UC1 AnalyzeLandscape Use Case — transportunabhängige Geschäftslogik.
 
-Enthaelt die gesamte Orchestrierung der Landscape-Analyse:
+Enthält die gesamte Orchestrierung der Landscape-Analyse:
 - Parallele Datenabfragen (Repository + OpenAIRE)
 - CAGR-Berechnungen
-- Zeitreihen- und Laender-Zusammenfuehrung
+- Zeitreihen- und Länder-Zusammenführung
 - Datenquellen-Dokumentation
 
-Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ logger = structlog.get_logger(__name__)
 class LandscapeResult:
     """Ergebnis einer Landscape-Analyse (UC1).
 
-    Mutable waehrend der Konstruktion (NOT frozen), da Felder
-    schrittweise aus parallelen Queries befuellt werden.
+    Mutable während der Konstruktion (NOT frozen), da Felder
+    schrittweise aus parallelen Queries befüllt werden.
     """
 
     time_series: list[dict[str, Any]] = field(default_factory=list)
@@ -57,9 +57,9 @@ class LandscapeResult:
     cagr_funding: float = 0.0
     periods: int = 0
 
-    # MAJ-7/MAJ-8: Letztes vollstaendig abgeschlossenes Kalenderjahr.
-    # Frontend nutzt es als ReferenceArea-Cutoff fuer den Hinweis
-    # "Daten ggf. unvollstaendig". Quelle: ``last_complete_year()``.
+    # MAJ-7/MAJ-8: Letztes vollständig abgeschlossenes Kalenderjahr.
+    # Frontend nutzt es als ReferenceArea-Cutoff für den Hinweis
+    # "Daten ggf. unvollständig". Quelle: ``last_complete_year()``.
     data_complete_year: int = 0
 
     data_sources: list[dict[str, Any]] = field(default_factory=list)
@@ -75,12 +75,12 @@ class LandscapeResult:
 class AnalyzeLandscape:
     """Orchestriert die UC1 Landscape-Analyse.
 
-    Transportunabhaengig: nimmt primitive Parameter, gibt LandscapeResult zurueck.
-    Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+    Transportunabhängig: nimmt primitive Parameter, gibt LandscapeResult zurück.
+    Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
 
     Args:
         repo: LandscapeRepository (oder beliebiges Objekt mit denselben async-Methoden).
-        openaire: OpenAIREAdapter (oder None, wenn keine Publikationsdaten gewuenscht).
+        openaire: OpenAIREAdapter (oder None, wenn keine Publikationsdaten gewünscht).
     """
 
     def __init__(self, *, repo: Any, openaire: Any | None = None) -> None:
@@ -95,14 +95,14 @@ class AnalyzeLandscape:
         european_only: bool = False,
         top_n: int = 20,
     ) -> LandscapeResult:
-        """Landscape-Analyse ausfuehren.
+        """Landscape-Analyse ausführen.
 
         Args:
-            technology: Suchbegriff fuer Volltextsuche.
+            technology: Suchbegriff für Volltextsuche.
             start_year: Erstes Jahr (inklusiv).
             end_year: Letztes Jahr (inklusiv).
-            european_only: Nur EU/EEA-Laender beruecksichtigen.
-            top_n: Maximale Anzahl Laender/CPC-Codes im Ergebnis.
+            european_only: Nur EU/EEA-Länder berücksichtigen.
+            top_n: Maximale Anzahl Länder/CPC-Codes im Ergebnis.
 
         Returns:
             LandscapeResult mit allen berechneten Metriken.
@@ -110,17 +110,17 @@ class AnalyzeLandscape:
         t0 = time.monotonic()
         result = LandscapeResult()
 
-        # MAJ-7/MAJ-8: Datenvollstaendigkeits-Cutoff aus shared-Helper.
-        # Wenn der User ein Endjahr nach dem letzten vollstaendigen Jahr
+        # MAJ-7/MAJ-8: Datenvollständigkeits-Cutoff aus shared-Helper.
+        # Wenn der User ein Endjahr nach dem letzten vollständigen Jahr
         # anfragt, wird CAGR bis dorthin gerechnet, aber das Frontend
         # bekommt einen Hinweis (Warning + ``data_complete_year``-Feld).
         data_complete_year = last_complete_year()
         if end_year > data_complete_year:
             result.warnings.append({
                 "message": (
-                    f"Endjahr {end_year} > letztes vollstaendiges Jahr "
-                    f"{data_complete_year} — CAGR wird auf vollstaendige "
-                    "Jahre beschraenkt; Trend ggf. unvollstaendig."
+                    f"Endjahr {end_year} > letztes vollständiges Jahr "
+                    f"{data_complete_year} — CAGR wird auf vollständige "
+                    "Jahre beschränkt; Trend ggf. unvollständig."
                 ),
                 "severity": "MEDIUM",
                 "code": "DATA_INCOMPLETE_RECENT_YEARS",
@@ -181,7 +181,7 @@ class AnalyzeLandscape:
             name="top_cpc",
         ))
 
-        # Foerderung pro Jahr
+        # Förderung pro Jahr
         tasks.append(asyncio.create_task(
             self._repo.funding_by_year(
                 technology, start_year=start_year, end_year=end_year,
@@ -206,7 +206,7 @@ class AnalyzeLandscape:
                 name="publication_years",
             ))
 
-        # --- Alle Tasks ausfuehren ---
+        # --- Alle Tasks ausführen ---
         if tasks:
             results = await asyncio.gather(*tasks, return_exceptions=True)
             for task, task_result in zip(tasks, results, strict=False):
@@ -246,7 +246,7 @@ class AnalyzeLandscape:
         total_projects = sum(y.count for y in project_years)
         # CRIT-1: Header-Publikationen MUSS aus CORDIS_LINKED-Scope kommen —
         # identisch zur Query in publication-svc.publication_summary().
-        # OpenAIRE liefert nur die Trendkurve fuer die Zeitreihe.
+        # OpenAIRE liefert nur die Trendkurve für die Zeitreihe.
         total_publications = total_publications_cordis
         openaire_publications = _sum_counts(publication_years)
 
@@ -279,12 +279,12 @@ class AnalyzeLandscape:
                 "record_count": openaire_publications,
             })
 
-        # --- Zeitreihen zusammenfuehren ---
+        # --- Zeitreihen zusammenführen ---
         time_series = merge_time_series(
             patent_years, project_years, publication_years, start_year, end_year,
         )
 
-        # --- Laender zusammenfuehren ---
+        # --- Länder zusammenführen ---
         top_countries = merge_country_data(
             patent_countries, project_countries, limit=top_n,
         )
@@ -300,7 +300,7 @@ class AnalyzeLandscape:
             funding_by_year, start_year, end_year, data_complete_year=data_complete_year,
         )
 
-        # --- Distinct Countries zaehlen ---
+        # --- Distinct Countries zählen ---
         active_countries = len({str(c["country"]) for c in top_countries})
 
         # --- Verarbeitungszeit ---
@@ -316,7 +316,7 @@ class AnalyzeLandscape:
             dauer_ms=processing_time_ms,
         )
 
-        # --- Result befuellen ---
+        # --- Result befüllen ---
         result.time_series = time_series
         result.funding_by_year = funding_by_year
         result.top_countries = top_countries
@@ -343,9 +343,9 @@ class AnalyzeLandscape:
 # ---------------------------------------------------------------------------
 
 def _sum_counts(items: list) -> int:
-    """Summe der count-Werte — unterstuetzt sowohl dict als auch Attribut-Zugriff.
+    """Summe der count-Werte — unterstützt sowohl dict als auch Attribut-Zugriff.
 
-    OpenAIRE gibt list[dict] zurueck, Repository gibt list[YearCount] zurueck.
+    OpenAIRE gibt list[dict] zurück, Repository gibt list[YearCount] zurück.
     """
     if not items:
         return 0
@@ -355,7 +355,7 @@ def _sum_counts(items: list) -> int:
 
 
 def _get(item: Any, key: str) -> Any:
-    """Attribut- oder dict-Zugriff (duck typing fuer OpenAIRE-Dicts vs. typed results)."""
+    """Attribut- oder dict-Zugriff (duck typing für OpenAIRE-Dicts vs. typed results)."""
     return getattr(item, key) if hasattr(item, key) else item[key]
 
 
@@ -364,14 +364,14 @@ def _safe_cagr(
     periods: int,
     data_complete_year: int | None = None,
 ) -> float:
-    """CAGR sicher berechnen — gibt 0.0 bei unzureichenden Daten zurueck.
+    """CAGR sicher berechnen — gibt 0.0 bei unzureichenden Daten zurück.
 
     Nimmt den ersten und letzten Datenpunkt (nicht den Zeitraum-Anfang/Ende),
-    um CAGR nur ueber tatsaechlich vorhandene Daten zu berechnen.
-    Unterstuetzt sowohl dict- als auch Attribut-basierte Eintraege.
+    um CAGR nur über tatsächlich vorhandene Daten zu berechnen.
+    Unterstützt sowohl dict- als auch Attribut-basierte Einträge.
 
-    Daten nach data_complete_year werden ignoriert, da unvollstaendige
-    Jahrgaenge die CAGR-Berechnung nach unten verzerren wuerden. Wenn
+    Daten nach data_complete_year werden ignoriert, da unvollständige
+    Jahrgänge die CAGR-Berechnung nach unten verzerren würden. Wenn
     nicht angegeben, wird ``last_complete_year()`` verwendet (Bug
     MAJ-7/MAJ-8 — kein Hardcoding mehr).
     """
@@ -381,7 +381,7 @@ def _safe_cagr(
     if data_complete_year is None:
         data_complete_year = last_complete_year()
 
-    # Nur vollstaendige Jahre beruecksichtigen
+    # Nur vollständige Jahre berücksichtigen
     filtered = [x for x in yearly_data if _get(x, "year") <= data_complete_year]
     if not filtered:
         return 0.0
@@ -403,10 +403,10 @@ def _compute_funding_cagr(
     end_year: int,
     data_complete_year: int | None = None,
 ) -> float:
-    """CAGR fuer Foerdervolumen berechnen.
+    """CAGR für Fördervolumen berechnen.
 
-    Ueberspringt Jahre ohne Foerderung am Anfang/Ende.
-    Daten nach data_complete_year werden ignoriert (unvollstaendig). Wenn
+    Überspringt Jahre ohne Förderung am Anfang/Ende.
+    Daten nach data_complete_year werden ignoriert (unvollständig). Wenn
     nicht angegeben, wird ``last_complete_year()`` verwendet (Bug
     MAJ-7/MAJ-8).
     """

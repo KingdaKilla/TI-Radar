@@ -66,7 +66,7 @@ export function useSuggestionPool() {
   return useQuery<string[], Error>({
     queryKey: radarKeys.pool,
     queryFn: getSuggestionPool,
-    staleTime: 60 * 60 * 1000, // 1 Stunde - Pool aendert sich selten
+    staleTime: 60 * 60 * 1000, // 1 Stunde - Pool ändert sich selten
     gcTime: 24 * 60 * 60 * 1000,
     retry: 1,
   });

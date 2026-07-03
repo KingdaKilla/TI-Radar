@@ -1,11 +1,11 @@
-"""Excel-Exporter fuer TI-Radar Analyseergebnisse.
+"""Excel-Exporter für TI-Radar Analyseergebnisse.
 
 Erstellt ein openpyxl-Workbook mit einem Tabellenblatt pro Use-Case.
 Header-Zeilen erhalten Formatierung (fett, hellblauer Hintergrund),
 Geldwerte werden mit Zahlenformat versehen.
 
 Verwendet dieselben UC-Spaltendefinitionen wie der CSV-Exporter
-fuer konsistente Datenstruktur ueber alle Export-Formate.
+für konsistente Datenstruktur über alle Export-Formate.
 """
 
 from __future__ import annotations
@@ -35,10 +35,10 @@ HEADER_FONT = Font(bold=True, size=11, color="FFFFFF")
 HEADER_FILL = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
 HEADER_ALIGNMENT = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-# Leicht abgesetztes Blau fuer Zusammenfassungszeilen
+# Leicht abgesetztes Blau für Zusammenfassungszeilen
 SUMMARY_FILL = PatternFill(start_color="D6E4F0", end_color="D6E4F0", fill_type="solid")
 
-# Zahlenformat fuer Geldwerte (Euro)
+# Zahlenformat für Geldwerte (Euro)
 MONEY_FORMAT = '#,##0.00 "EUR"'
 PERCENT_FORMAT = "0.00%"
 NUMBER_FORMAT = "#,##0"
@@ -60,7 +60,7 @@ async def export_excel(data: dict[str, Any], use_cases: list[str]) -> bytes:
     Erzeugt pro Use-Case ein separates Tabellenblatt mit:
     - Formatierter Header-Zeile (fett, hellblau)
     - Automatisch angepasste Spaltenbreiten
-    - Zahlenformatierung fuer Geld- und Prozentwerte
+    - Zahlenformatierung für Geld- und Prozentwerte
     - Zusammenfassungszeile am Ende (falls sinnvoll)
 
     Args:
@@ -72,12 +72,12 @@ async def export_excel(data: dict[str, Any], use_cases: list[str]) -> bytes:
     """
     wb = Workbook()
 
-    # Standard-Tabellenblatt entfernen (wird durch UC-Blaetter ersetzt)
+    # Standard-Tabellenblatt entfernen (wird durch UC-Blätter ersetzt)
     default_sheet = wb.active
     if default_sheet is not None:
         wb.remove(default_sheet)
 
-    # Uebersichtsblatt erstellen
+    # Übersichtsblatt erstellen
     _create_overview_sheet(wb, data, use_cases)
 
     sheets_created = 0
@@ -103,10 +103,10 @@ async def export_excel(data: dict[str, Any], use_cases: list[str]) -> bytes:
             _create_generic_sheet(wb, uc_name, panel_data, "")
             sheets_created += 1
 
-    # Falls keine Blaetter erstellt wurden, Hinweis-Blatt hinzufuegen
+    # Falls keine Blätter erstellt wurden, Hinweis-Blatt hinzufügen
     if sheets_created == 0:
         ws = wb.create_sheet("Keine Daten")
-        ws.append(["Keine Daten fuer die angeforderten Use-Cases vorhanden."])
+        ws.append(["Keine Daten für die angeforderten Use-Cases vorhanden."])
 
     logger.info("excel_generiert", sheets=sheets_created, use_cases=use_cases)
 
@@ -118,7 +118,7 @@ async def export_excel(data: dict[str, Any], use_cases: list[str]) -> bytes:
 
 
 # ---------------------------------------------------------------------------
-# Uebersichtsblatt
+# Übersichtsblatt
 # ---------------------------------------------------------------------------
 
 
@@ -127,8 +127,8 @@ def _create_overview_sheet(
     data: dict[str, Any],
     use_cases: list[str],
 ) -> None:
-    """Erstellt ein Uebersichtsblatt mit Metadaten zur Analyse."""
-    ws = wb.create_sheet("Uebersicht", 0)
+    """Erstellt ein Übersichtsblatt mit Metadaten zur Analyse."""
+    ws = wb.create_sheet("Übersicht", 0)
 
     # Titel
     ws.append(["TI-Radar Export"])
@@ -203,7 +203,7 @@ def _num(val: Any, default: float = 0) -> float:
 
 
 def _extract_key_metrics(data: dict[str, Any]) -> list[list[Any]]:
-    """Extrahiert die wichtigsten Kennzahlen pro UC fuer das Uebersichtsblatt."""
+    """Extrahiert die wichtigsten Kennzahlen pro UC für das Übersichtsblatt."""
     rows: list[list[Any]] = []
 
     landscape = data.get("landscape") or {}
@@ -230,12 +230,12 @@ def _extract_key_metrics(data: dict[str, Any]) -> list[list[Any]]:
     funding = data.get("funding") or {}
     if funding:
         total = _num(funding.get("total_funding_eur"))
-        rows.append(["Foerderungsanalyse", "Foerdervolumen (EUR)", f"{total:,.0f}"])
-        rows.append(["Foerderungsanalyse", "Projekte", funding.get("project_count", 0)])
+        rows.append(["Förderungsanalyse", "Fördervolumen (EUR)", f"{total:,.0f}"])
+        rows.append(["Förderungsanalyse", "Projekte", funding.get("project_count", 0)])
 
     geo = data.get("geographic") or {}
     if geo:
-        rows.append(["Geographische Verteilung", "Laender", geo.get("total_countries", 0)])
+        rows.append(["Geographische Verteilung", "Länder", geo.get("total_countries", 0)])
         rows.append(["Geographische Verteilung", "Cross-Border-Anteil", f"{_num(geo.get('cross_border_share'))*100:.1f}%"])
 
     ri = data.get("research_impact") or {}
@@ -276,15 +276,15 @@ def _create_uc_sheet(
     columns: list[str],
     rows: list[list[Any]],
 ) -> None:
-    """Erstellt ein Tabellenblatt fuer einen spezifischen Use-Case.
+    """Erstellt ein Tabellenblatt für einen spezifischen Use-Case.
 
     Features:
-    - Formatierte Header-Zeile (fett, blauer Hintergrund, weisse Schrift)
+    - Formatierte Header-Zeile (fett, blauer Hintergrund, weiße Schrift)
     - Spaltenbreiten automatisch an Inhalt angepasst
-    - Zahlenformate fuer Geld- und Prozentwerte
+    - Zahlenformate für Geld- und Prozentwerte
     - Autofilter auf der Header-Zeile
     """
-    # Blattnamen auf max. 31 Zeichen kuerzen (Excel-Limit)
+    # Blattnamen auf max. 31 Zeichen kürzen (Excel-Limit)
     sheet_name = display_name[:31]
     ws = wb.create_sheet(sheet_name)
 
@@ -338,20 +338,20 @@ def _create_generic_sheet(
     panel_data: dict[str, Any],
     data_key: str,
 ) -> None:
-    """Erstellt ein generisches Tabellenblatt fuer UCs ohne spezifische Definition.
+    """Erstellt ein generisches Tabellenblatt für UCs ohne spezifische Definition.
 
     Versucht die Daten als Tabelle darzustellen. Fallback auf Key-Value-Format.
     """
     sheet_name = display_name[:31]
     ws = wb.create_sheet(sheet_name)
 
-    # Daten unter dem angegebenen Schluessel suchen
+    # Daten unter dem angegebenen Schlüssel suchen
     items = panel_data.get(data_key, []) if data_key else []
     if not items and isinstance(panel_data.get("data"), dict):
         items = panel_data["data"].get(data_key, []) if data_key else []
 
     if isinstance(items, list) and items and isinstance(items[0], dict):
-        # Tabellenformat: Spaltenkoepfe aus erstem Eintrag
+        # Tabellenformat: Spaltenköpfe aus erstem Eintrag
         columns = list(items[0].keys())
 
         # Header schreiben
@@ -383,7 +383,7 @@ def _create_generic_sheet(
 
     else:
         # Key-Value-Format
-        columns = ["Schluessel", "Wert"]
+        columns = ["Schlüssel", "Wert"]
         ws.append(columns)
         for col_idx in range(1, 3):
             cell = ws.cell(row=1, column=col_idx)
@@ -437,13 +437,13 @@ def _apply_number_formats(ws: Any, columns: list[str]) -> None:
 def _auto_column_widths(ws: Any, columns: list[str]) -> None:
     """Passt Spaltenbreiten automatisch an den Inhalt an.
 
-    Beruecksichtigt sowohl Header-Laenge als auch den laengsten Wert
-    in den ersten 100 Zeilen (Performance-Limit bei grossen Datensaetzen).
+    Berücksichtigt sowohl Header-Länge als auch den längsten Wert
+    in den ersten 100 Zeilen (Performance-Limit bei großen Datensätzen).
     """
     for col_idx, col_name in enumerate(columns, start=1):
         col_letter = get_column_letter(col_idx)
 
-        # Mindestbreite: Header-Laenge + Padding
+        # Mindestbreite: Header-Länge + Padding
         max_width = len(col_name) + 4
 
         # Maximale Breite aus den ersten 100 Datenzeilen

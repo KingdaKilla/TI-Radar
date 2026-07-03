@@ -1,4 +1,4 @@
-"""Unit-Test fuer AP3 — Orchestrator injiziert Akteurs-Scope-Label.
+"""Unit-Test für AP3 — Orchestrator injiziert Akteurs-Scope-Label.
 
 Der Orchestrator konvertiert die Protobuf-Responses der UC-Services via
 ``MessageToDict`` ins Dict. Damit das Frontend UC8/UC9/UC11 als

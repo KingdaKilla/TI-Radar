@@ -1,11 +1,11 @@
 """Typisierte Domain-Ergebnisobjekte.
 
-Slotted, frozen Dataclasses fuer Abfrageergebnisse.
-Vorteile gegenueber dict[str, Any]:
+Slotted, frozen Dataclasses für Abfrageergebnisse.
+Vorteile gegenüber dict[str, Any]:
 - ~40% weniger Speicher (kein __dict__ pro Instanz)
 - Schnellerer Attributzugriff (C-Level Slot Lookup)
-- Statische Typpruefung moeglich
-- frozen=True garantiert Unveraenderlichkeit
+- Statische Typprüfung möglich
+- frozen=True garantiert Unveränderlichkeit
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ class YearCount:
 
 @dataclass(slots=True, frozen=True)
 class CountryCount:
-    """Anzahl pro Land (ISO-2 Laendercode)."""
+    """Anzahl pro Land (ISO-2 Ländercode)."""
     country: str
     count: int
 
@@ -36,7 +36,7 @@ class CpcCount:
 
 @dataclass(slots=True, frozen=True)
 class FundingYear:
-    """Foerdervolumen pro Jahr."""
+    """Fördervolumen pro Jahr."""
     year: int
     funding: float
     count: int
@@ -44,7 +44,7 @@ class FundingYear:
 
 @dataclass(slots=True, frozen=True)
 class TimeSeriesEntry:
-    """Zusammengefuehrter Zeitreihenpunkt (Patent + Projekt + Publikation)."""
+    """Zusammengeführter Zeitreihenpunkt (Patent + Projekt + Publikation)."""
     year: int
     patents: int = 0
     projects: int = 0
@@ -54,7 +54,7 @@ class TimeSeriesEntry:
 
 @dataclass(slots=True, frozen=True)
 class ActorScore:
-    """Akteur mit Aktivitaets-Scores."""
+    """Akteur mit Aktivitäts-Scores."""
     name: str
     country_code: str
     patent_count: int

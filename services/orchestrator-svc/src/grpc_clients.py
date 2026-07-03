@@ -1,12 +1,12 @@
-"""Async gRPC Channel-Pool-Manager fuer die 12 UC-Services.
+"""Async gRPC Channel-Pool-Manager für die 12 UC-Services.
 
 Verwaltet eine gRPC-Channel-Verbindung pro UC-Service mit:
 - Lazy Connection (Channel wird erst beim ersten Aufruf erzeugt)
 - Health-Monitoring via gRPC Channel-Connectivity-States
-- Graceful Shutdown (alle Channels bei Anwendungsende schliessen)
-- Konfigurierbare maximale Nachrichtengroesse
+- Graceful Shutdown (alle Channels bei Anwendungsende schließen)
+- Konfigurierbare maximale Nachrichtengröße
 
-Die Channels werden waehrend der FastAPI-Lifespan geoeffnet und
+Die Channels werden während der FastAPI-Lifespan geöffnet und
 am Ende wieder geschlossen. Jeder Channel ist thread-safe und kann
 von mehreren Coroutines gleichzeitig genutzt werden.
 """
@@ -50,7 +50,7 @@ try:
         uc_c_publications_pb2_grpc,
     )
 except ImportError:
-    # Stubs noch nicht generiert — werden nach proto-Kompilierung verfuegbar
+    # Stubs noch nicht generiert — werden nach proto-Kompilierung verfügbar
     uc1_landscape_pb2_grpc = None  # type: ignore[assignment]
     uc2_maturity_pb2_grpc = None  # type: ignore[assignment]
     uc3_competitive_pb2_grpc = None  # type: ignore[assignment]
@@ -138,10 +138,10 @@ class GrpcChannelManager:
     # -----------------------------------------------------------------
 
     async def get_stub(self, uc_name: str) -> Any | None:
-        """Gibt den gRPC-Stub fuer den angegebenen UC-Service zurueck.
+        """Gibt den gRPC-Stub für den angegebenen UC-Service zurück.
 
         Erstellt Channel + Stub lazy beim ersten Zugriff. Gibt None
-        zurueck, wenn die Stubs noch nicht generiert sind.
+        zurück, wenn die Stubs noch nicht generiert sind.
         """
         if uc_name in self._stubs:
             return self._stubs[uc_name]
@@ -156,13 +156,13 @@ class GrpcChannelManager:
                 logger.error("unbekannter_uc_service", uc=uc_name)
                 return None
 
-            # Stub-Registry pruefen
+            # Stub-Registry prüfen
             registry_entry = UC_STUB_REGISTRY.get(uc_name)
             if registry_entry is None or registry_entry[0] is None:
                 logger.warning(
-                    "grpc_stubs_nicht_verfuegbar",
+                    "grpc_stubs_nicht_verfügbar",
                     uc=uc_name,
-                    hint="Proto-Kompilierung ausfuehren: make proto-gen",
+                    hint="Proto-Kompilierung ausführen: make proto-gen",
                 )
                 return None
 
@@ -190,7 +190,7 @@ class GrpcChannelManager:
         request: Any,
         timeout: float | None = None,
     ) -> Any:
-        """Fuehrt den gRPC-RPC-Aufruf fuer einen UC-Service aus.
+        """Führt den gRPC-RPC-Aufruf für einen UC-Service aus.
 
         Args:
             uc_name: Name des UC-Service (z.B. "landscape").
@@ -203,13 +203,13 @@ class GrpcChannelManager:
         Raises:
             grpc.RpcError: Bei gRPC-Fehlern.
             asyncio.TimeoutError: Bei Timeout.
-            RuntimeError: Wenn Stubs nicht verfuegbar sind.
+            RuntimeError: Wenn Stubs nicht verfügbar sind.
         """
         stub = await self.get_stub(uc_name)
         if stub is None:
             raise RuntimeError(
-                f"gRPC-Stub fuer '{uc_name}' nicht verfuegbar. "
-                f"Proto-Kompilierung ausfuehren."
+                f"gRPC-Stub für '{uc_name}' nicht verfügbar. "
+                f"Proto-Kompilierung ausführen."
             )
 
         # RPC-Methodenname aus Registry holen
@@ -227,11 +227,11 @@ class GrpcChannelManager:
         return response
 
     # -----------------------------------------------------------------
-    # Health-Check: Channel-Konnektivitaet pruefen
+    # Health-Check: Channel-Konnektivität prüfen
     # -----------------------------------------------------------------
 
     async def check_health(self, uc_name: str) -> tuple[bool, int, str]:
-        """Prueft die Konnektivitaet eines UC-Service-Channels.
+        """Prüft die Konnektivität eines UC-Service-Channels.
 
         Returns:
             Tuple (healthy, latency_ms, error_message).
@@ -250,7 +250,7 @@ class GrpcChannelManager:
 
             channel = self._channels[uc_name]
 
-            # Konnektivitaet mit kurzem Timeout pruefen
+            # Konnektivität mit kurzem Timeout prüfen
             try:
                 await asyncio.wait_for(
                     channel.channel_ready(),
@@ -267,7 +267,7 @@ class GrpcChannelManager:
             return False, latency_ms, f"{type(exc).__name__}: {exc}"
 
     async def check_all_health(self) -> dict[str, tuple[bool, int, str]]:
-        """Prueft alle UC-Services parallel auf Konnektivitaet."""
+        """Prüft alle UC-Services parallel auf Konnektivität."""
         tasks = {
             uc_name: self.check_health(uc_name)
             for uc_name in self._uc_configs
@@ -288,7 +288,7 @@ class GrpcChannelManager:
     # -----------------------------------------------------------------
 
     async def close(self) -> None:
-        """Schliesst alle gRPC-Channels graceful."""
+        """Schließt alle gRPC-Channels graceful."""
         for uc_name, channel in self._channels.items():
             try:
                 await channel.close()
@@ -313,6 +313,6 @@ class GrpcChannelManager:
         return list(self._uc_configs.keys())
 
     def get_timeout(self, uc_name: str) -> float:
-        """Gibt den konfigurierten Timeout fuer einen UC-Service zurueck."""
+        """Gibt den konfigurierten Timeout für einen UC-Service zurück."""
         config = self._uc_configs.get(uc_name)
         return config.timeout if config else 10.0

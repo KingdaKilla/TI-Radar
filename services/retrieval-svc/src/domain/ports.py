@@ -1,4 +1,4 @@
-"""Port-Interfaces fuer Retrieval-Service (Hexagonal Architecture)."""
+"""Port-Interfaces für Retrieval-Service (Hexagonal Architecture)."""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -18,7 +18,7 @@ class RetrievedDoc:
 
 
 class VectorSearchPort(ABC):
-    """Abstraktes Interface fuer Vektor-/Hybrid-Suche."""
+    """Abstraktes Interface für Vektor-/Hybrid-Suche."""
 
     @abstractmethod
     async def search(
@@ -29,11 +29,11 @@ class VectorSearchPort(ABC):
         top_k: int,
         threshold: float,
     ) -> list[RetrievedDoc]:
-        """Fuehrt Hybrid-Search (Keyword + Vektor) durch."""
+        """Führt Hybrid-Search (Keyword + Vektor) durch."""
 
 
 class SparseSearchPort(ABC):
-    """Abstraktes Interface fuer Sparse/BM25-Suche."""
+    """Abstraktes Interface für Sparse/BM25-Suche."""
 
     @abstractmethod
     async def search(
@@ -42,22 +42,22 @@ class SparseSearchPort(ABC):
         sources: list[str],
         top_k: int,
     ) -> list[RetrievedDoc]:
-        """Fuehrt BM25/Full-Text-Suche durch.
+        """Führt BM25/Full-Text-Suche durch.
 
-        Gibt RetrievedDoc mit ts_rank als similarity_score zurueck.
+        Gibt RetrievedDoc mit ts_rank als similarity_score zurück.
         """
 
 
 class QueryEmbeddingPort(ABC):
-    """Abstraktes Interface fuer Query-Embedding."""
+    """Abstraktes Interface für Query-Embedding."""
 
     @abstractmethod
     async def embed_query(self, text: str) -> list[float]:
-        """Erzeugt Embedding fuer eine einzelne Query."""
+        """Erzeugt Embedding für eine einzelne Query."""
 
 
 class RerankingPort(ABC):
-    """Abstraktes Interface fuer Reranking von Retrieval-Ergebnissen."""
+    """Abstraktes Interface für Reranking von Retrieval-Ergebnissen."""
 
     @abstractmethod
     async def rerank(
@@ -66,4 +66,4 @@ class RerankingPort(ABC):
         documents: list[RetrievedDoc],
         top_k: int,
     ) -> list[RetrievedDoc]:
-        """Rerankt Dokumente nach Relevanz zur Query. Gibt top_k zurueck."""
+        """Rerankt Dokumente nach Relevanz zur Query. Gibt top_k zurück."""

@@ -1,4 +1,4 @@
-"""Tests fuer `_ensure_schema()`: keine ueberfluessigen DDL-Aufrufe wenn
+"""Tests für `_ensure_schema()`: keine überflüssigen DDL-Aufrufe wenn
 Schema und Tabellen bereits existieren (verhindert PostgreSQL-ERROR-Spam
 im DB-Log durch CREATE-Versuche ohne Owner-Rechte).
 """
@@ -62,7 +62,7 @@ class FakePoolAcquire:
 
 
 def _count_create_statements(executed: list[str]) -> dict[str, int]:
-    """Zaehlt, wie oft welche Art von CREATE im Log auftaucht."""
+    """Zählt, wie oft welche Art von CREATE im Log auftaucht."""
     return {
         "schema": sum(1 for s in executed if s.upper().startswith("CREATE SCHEMA")),
         "table": sum(1 for s in executed if s.upper().startswith("CREATE TABLE")),

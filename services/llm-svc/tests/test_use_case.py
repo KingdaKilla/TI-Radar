@@ -1,11 +1,11 @@
-"""Tests fuer die extrahierten Use Cases in use_case.py.
+"""Tests für die extrahierten Use Cases in use_case.py.
 
-Prueft:
+Prüft:
 - AnalyzePanel: Delegiert an LLMProviderPort, validiert Eingaben
 - AnalyzePanelWithContext: Baut Kontext in Prompt ein
 - ChatWithContext: Baut Messages korrekt, verarbeitet Quellen
-- truncate_data: Kuerzt lange Daten, behaelt kurze Daten bei
-- extract_key_findings: Extrahiert max 5 Saetze > 15 Zeichen
+- truncate_data: Kürzt lange Daten, behält kurze Daten bei
+- extract_key_findings: Extrahiert max 5 Sätze > 15 Zeichen
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from src.use_case import (
 
 
 class MockLLMProvider(LLMProviderPort):
-    """Test-Double fuer LLMProviderPort."""
+    """Test-Double für LLMProviderPort."""
 
     def __init__(
         self,
@@ -107,7 +107,7 @@ class TestAnalyzePanel:
         assert "100" in user_prompt
 
     async def test_invalid_technology_returns_empty(self) -> None:
-        """Leere Technologie gibt sofort leeres Ergebnis zurueck."""
+        """Leere Technologie gibt sofort leeres Ergebnis zurück."""
         mock = MockLLMProvider()
         uc = AnalyzePanel(mock)
 
@@ -124,7 +124,7 @@ class TestAnalyzePanel:
         assert len(mock.generate_calls) == 0
 
     async def test_whitespace_technology_returns_empty(self) -> None:
-        """Nur-Whitespace-Technologie gibt sofort leeres Ergebnis zurueck."""
+        """Nur-Whitespace-Technologie gibt sofort leeres Ergebnis zurück."""
         mock = MockLLMProvider()
         uc = AnalyzePanel(mock)
 
@@ -138,7 +138,7 @@ class TestAnalyzePanel:
         assert len(mock.generate_calls) == 0
 
     async def test_unknown_uc_key_returns_empty(self) -> None:
-        """Unbekannter UC-Key gibt leeres Ergebnis zurueck ohne LLM-Aufruf."""
+        """Unbekannter UC-Key gibt leeres Ergebnis zurück ohne LLM-Aufruf."""
         mock = MockLLMProvider()
         uc = AnalyzePanel(mock)
 
@@ -153,7 +153,7 @@ class TestAnalyzePanel:
         assert len(mock.generate_calls) == 0
 
     async def test_llm_error_returns_empty(self) -> None:
-        """LLM-Fehler fuehrt zu leerer Analyse (Graceful Degradation)."""
+        """LLM-Fehler führt zu leerer Analyse (Graceful Degradation)."""
         uc = AnalyzePanel(FailingLLMProvider())
 
         result = await uc.execute(
@@ -202,7 +202,7 @@ class TestAnalyzePanel:
 
 
 class TestAnalyzePanelWithContext:
-    """RAG-gestuetzte Panel-Analyse Use Case Tests."""
+    """RAG-gestützte Panel-Analyse Use Case Tests."""
 
     async def test_context_in_prompt(self) -> None:
         """Kontext-Dokumente werden in den Prompt eingebaut."""
@@ -234,7 +234,7 @@ class TestAnalyzePanelWithContext:
         assert "42" in user_prompt
 
     async def test_empty_context(self) -> None:
-        """Leere Dokumentliste fuehrt nicht zu Fehler."""
+        """Leere Dokumentliste führt nicht zu Fehler."""
         mock = MockLLMProvider(generate_text="Analyse ohne Kontext.")
         uc = AnalyzePanelWithContext(mock)
 
@@ -249,7 +249,7 @@ class TestAnalyzePanelWithContext:
         assert len(mock.generate_calls) == 1
 
     async def test_error_graceful_degradation(self) -> None:
-        """Fehler beim LLM-Aufruf gibt leere Analyse zurueck."""
+        """Fehler beim LLM-Aufruf gibt leere Analyse zurück."""
         uc = AnalyzePanelWithContext(FailingLLMProvider())
 
         result = await uc.execute(
@@ -303,7 +303,7 @@ class TestChatWithContext:
         assert len(mock.chat_calls) == 1
         system_prompt, messages = mock.chat_calls[0]
 
-        # System-Prompt enthaelt Technologie
+        # System-Prompt enthält Technologie
         assert "Quantum Computing" in system_prompt
 
         # History (1) + aktuelle Nachricht (1) = 2
@@ -314,7 +314,7 @@ class TestChatWithContext:
         assert "Welche Patente gibt es?" in messages[1]["content"]
 
     async def test_chat_error_returns_fallback(self) -> None:
-        """Fehler beim LLM-Aufruf gibt Fehlernachricht zurueck."""
+        """Fehler beim LLM-Aufruf gibt Fehlernachricht zurück."""
         uc = ChatWithContext(FailingLLMProvider())
 
         result = await uc.execute(
@@ -328,7 +328,7 @@ class TestChatWithContext:
         assert result.model_used == "none"
 
     async def test_no_provider_returns_fallback(self) -> None:
-        """Null-Provider (leere Antwort) gibt Konfigurationsnachricht zurueck."""
+        """Null-Provider (leere Antwort) gibt Konfigurationsnachricht zurück."""
         mock = MockLLMProvider(chat_text="", chat_model="")
         uc = ChatWithContext(mock)
 
@@ -391,23 +391,23 @@ class TestTruncateData:
     """Modul-Level truncate_data Funktion Tests."""
 
     def test_short_text_unchanged(self) -> None:
-        """Kurzer Text bleibt unveraendert."""
+        """Kurzer Text bleibt unverändert."""
         short = '{"key": "value"}'
         assert truncate_data(short) == short
 
     def test_long_text_truncated(self) -> None:
-        """Langer Text wird gekuerzt mit Hinweis."""
+        """Langer Text wird gekürzt mit Hinweis."""
         long_text = "x" * 10000
         result = truncate_data(long_text, max_chars=100)
         assert len(result) <= 100 + len("\n... [gekürzt]")
         assert "gekürzt" in result
 
     def test_long_json_list_truncated(self) -> None:
-        """Grosse JSON-Liste wird auf max_items gekuerzt."""
-        # Erstelle eine Liste mit 50 langen Strings, die max_chars ueberschreitet
+        """Große JSON-Liste wird auf max_items gekürzt."""
+        # Erstelle eine Liste mit 50 langen Strings, die max_chars überschreitet
         data = {"items": [f"item_{i}_" + "x" * 100 for i in range(50)]}
         long_json = json.dumps(data)
-        # max_chars muss kleiner sein als long_json, aber gross genug fuer 20 items
+        # max_chars muss kleiner sein als long_json, aber groß genug für 20 items
         result = truncate_data(long_json, max_chars=4000)
         parsed = json.loads(result)
         # Letztes Element ist der Truncation-Hinweis
@@ -416,7 +416,7 @@ class TestTruncateData:
         assert len(parsed["items"]) <= 21
 
     def test_exact_limit_unchanged(self) -> None:
-        """Text genau am Limit bleibt unveraendert."""
+        """Text genau am Limit bleibt unverändert."""
         text = "a" * 8000
         assert truncate_data(text) == text
 
@@ -436,7 +436,7 @@ class TestExtractKeyFindings:
     """Modul-Level extract_key_findings Funktion Tests."""
 
     def test_extracts_sentences(self) -> None:
-        """Extrahiert Saetze als Key Findings."""
+        """Extrahiert Sätze als Key Findings."""
         text = "Erste Erkenntnis ist wichtig. Zweite Erkenntnis auch. Dritte ebenso relevant."
         findings = extract_key_findings(text)
         assert len(findings) == 3
@@ -448,8 +448,8 @@ class TestExtractKeyFindings:
         assert len(findings) == 5
 
     def test_filters_short_sentences(self) -> None:
-        """Saetze <= 15 Zeichen werden herausgefiltert."""
-        text = "Kurz. Dies ist ein langer genug Satz fuer Key Findings. Auch kurz."
+        """Sätze <= 15 Zeichen werden herausgefiltert."""
+        text = "Kurz. Dies ist ein langer genug Satz für Key Findings. Auch kurz."
         findings = extract_key_findings(text)
         # Nur der lange Satz sollte durchkommen
         assert len(findings) == 1

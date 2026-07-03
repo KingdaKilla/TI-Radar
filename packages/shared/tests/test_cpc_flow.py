@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.cpc_flow — CPC Co-Klassifikation und Jaccard-Index."""
+"""Tests für shared.domain.cpc_flow — CPC Co-Klassifikation und Jaccard-Index."""
 
 from __future__ import annotations
 

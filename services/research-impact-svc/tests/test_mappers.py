@@ -1,7 +1,7 @@
-"""Unit-Tests fuer research-impact-svc dict_response Mapper.
+"""Unit-Tests für research-impact-svc dict_response Mapper.
 
 Testet die Konvertierung von ResearchImpactResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 """
 
 from __future__ import annotations
@@ -217,7 +217,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Nullwerte."""
+    """Testet Randfälle: leere Listen, Nullwerte."""
 
     def test_empty_lists(self):
         result = _make_result(

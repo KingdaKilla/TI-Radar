@@ -1,6 +1,6 @@
 """UC8 TemporalServicer — gRPC-Implementierung der Temporal-Analyse.
 
-Empfaengt AnalysisRequest, fuehrt parallele Abfragen gegen PostgreSQL
+Empfängt AnalysisRequest, führt parallele Abfragen gegen PostgreSQL
 durch und berechnet Akteur-Persistenz, Programmevolution und Technologiebreite.
 
 Migration von MVP v1.0:
@@ -36,7 +36,7 @@ except ImportError:
     uc8_temporal_pb2_grpc = None  # type: ignore[assignment]
 
 # --- Shared Domain: Akteurs-Scope (Bug CRIT-3 / AP3) ---
-# UC8 zaehlt Patent-Anmelder + CORDIS-Organisationen, die im Zeitfenster
+# UC8 zählt Patent-Anmelder + CORDIS-Organisationen, die im Zeitfenster
 # aktiv waren. Scope = ACTIVE_IN_WINDOW.
 from shared.domain.actor_definitions import ActorScope, canonical_actor_label
 from shared.domain.year_completeness import last_complete_year
@@ -71,14 +71,14 @@ logger = structlog.get_logger(__name__)
 
 
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc8_temporal_pb2_grpc is not None:
         return uc8_temporal_pb2_grpc.TemporalServiceServicer  # type: ignore[return-value]
     return object
 
 
 class TemporalServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC8 Temporal Dynamics.
+    """gRPC-Servicer für UC8 Temporal Dynamics.
 
     Koordiniert parallele Abfragen:
     1. Patent-Akteure pro Jahr (PostgreSQL)
@@ -173,8 +173,8 @@ class TemporalServicer(_get_base_class()):  # type: ignore[misc]
             name="funding_instruments",
         ))
 
-        # Bug M-002 / C2.1: separate DISTINCT-Projekt-Zaehlung, damit
-        # record_count fuer die CORDIS-Datenquelle nicht aus
+        # Bug M-002 / C2.1: separate DISTINCT-Projekt-Zählung, damit
+        # record_count für die CORDIS-Datenquelle nicht aus
         # len(cordis_actors_raw) (Row-Count einer GROUP BY year,name)
         # berechnet wird.  Siehe repository.count_distinct_cordis_projects.
         tasks.append(asyncio.create_task(
@@ -215,7 +215,7 @@ class TemporalServicer(_get_base_class()):  # type: ignore[misc]
             elif name == "cordis_project_count":
                 cordis_project_count = int(cast(int, result))
 
-        # --- Akteure zusammenfuehren ---
+        # --- Akteure zusammenführen ---
         actors_by_year: dict[int, dict[str, int]] = {}
         for row in patent_actors_raw:
             year = int(row["year"])
@@ -409,14 +409,14 @@ class TemporalServicer(_get_base_class()):  # type: ignore[misc]
     def _build_dict_response(self, **kwargs: Any) -> dict[str, Any]:
         """Fallback-Response als dict.
 
-        Enthaelt das kanonische Akteurs-Scope-Label (``actor_scope_label``)
+        Enthält das kanonische Akteurs-Scope-Label (``actor_scope_label``)
         damit das Frontend klar zwischen UC8 (aktiv im Zeitfenster), UC9
         (Cluster-Mitglieder) und UC11 (klassifizierte Organisationen)
         unterscheiden kann. Siehe Bug CRIT-3 / AP3.
 
-        Enthaelt zusaetzlich ``data_complete_year`` (Bug MAJ-7/MAJ-8) —
+        Enthält zusätzlich ``data_complete_year`` (Bug MAJ-7/MAJ-8) —
         damit das Frontend den ReferenceArea-Hinweis "Daten ggf.
-        unvollstaendig" rendern kann, wenn die Akteurs-Timeline ueber das
+        unvollständig" rendern kann, wenn die Akteurs-Timeline über das
         letzte abgeschlossene Jahr hinaus geht.
         """
         return {
@@ -438,7 +438,7 @@ class TemporalServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             entrant_persistence=[], actor_timeline=[], programme_evo=[],

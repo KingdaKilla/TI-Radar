@@ -1,18 +1,18 @@
-"""PatentGrantRepository — PostgreSQL-Datenbankzugriff fuer UC12.
+"""PatentGrantRepository — PostgreSQL-Datenbankzugriff für UC12.
 
-Abfragen fuer Patent-Erteilungsraten basierend auf EPO Kind-Codes.
-Nutzt patent_schema fuer Anmelde- und Erteilungsdaten.
+Abfragen für Patent-Erteilungsraten basierend auf EPO Kind-Codes.
+Nutzt patent_schema für Anmelde- und Erteilungsdaten.
 
 Bug CRIT-4 (Konsistenz-Fix): Kind-Code-Listen werden aus der zentralen
 Shared-Definition ``shared.domain.patent_definitions`` bezogen. Damit sind
-``total_applications`` und ``total_grants`` bit-fuer-bit mit dem
-ALL_PATENTS-Scope des Header-Zaehlers (UC1) abgeglichen:
+``total_applications`` und ``total_grants`` bit-für-bit mit dem
+ALL_PATENTS-Scope des Header-Zählers (UC1) abgeglichen:
 
     header.total_patents  ==  ALL_PATENTS-Scope (kein Kind-Filter)
     total_applications    ==  APPLICATIONS_ONLY (kind IN A*)
     total_grants          ==  GRANTS_ONLY       (kind IN B*)
 
-Plausibilitaet: ``header.total_patents >= total_applications + total_grants``.
+Plausibilität: ``header.total_patents >= total_applications + total_grants``.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ from shared.domain.patent_definitions import (
 
 logger = structlog.get_logger(__name__)
 
-# Sortierte Tupel fuer stabile SQL-Reihenfolge (einfacher zu reviewen).
+# Sortierte Tupel für stabile SQL-Reihenfolge (einfacher zu reviewen).
 _APPLICATION_CODES_TUPLE: tuple[str, ...] = tuple(sorted(APPLICATION_KIND_CODES))
 _GRANT_CODES_TUPLE: tuple[str, ...] = tuple(sorted(GRANT_KIND_CODES))
 
@@ -45,7 +45,7 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 def _sql_in_list(codes: tuple[str, ...]) -> str:
     """Rendert ein Tupel aus Kind-Codes als SQL-IN-Liste.
 
-    Beispiel: ``('A1','A2','A3')``. Nur fuer vertrauenswuerdige Konstanten
+    Beispiel: ``('A1','A2','A3')``. Nur für vertrauenswürdige Konstanten
     verwenden (die Konstanten kommen aus ``shared.domain.patent_definitions``
     und werden nicht aus User-Input gespeist).
     """
@@ -57,7 +57,7 @@ _GRANTS_SQL_IN = _sql_in_list(_GRANT_CODES_TUPLE)
 
 
 class PatentGrantRepository:
-    """Async PostgreSQL-Zugriff fuer UC12 Patent-Grant-Analysen.
+    """Async PostgreSQL-Zugriff für UC12 Patent-Grant-Analysen.
 
     Alle Kind-Code-Filter werden aus
     ``shared.domain.patent_definitions.APPLICATION_KIND_CODES`` /
@@ -74,7 +74,7 @@ class PatentGrantRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Verteilung der Kind-Codes fuer eine Technologie."""
+        """Verteilung der Kind-Codes für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -289,7 +289,7 @@ class PatentGrantRepository:
     ) -> dict[str, float]:
         """Durchschnittliche Zeit von Anmeldung (filing_date) bis Erteilung (publication_date).
 
-        Berechnet nur fuer erteilte Patente (kind IN ('B', 'B1', 'B2', 'B3'))
+        Berechnet nur für erteilte Patente (kind IN ('B', 'B1', 'B2', 'B3'))
         bei denen sowohl filing_date als auch publication_date vorhanden sind.
         """
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
@@ -337,7 +337,7 @@ class PatentGrantRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> dict[str, int]:
-        """Zaehlt alle drei kanonischen Patent-Scopes in einer einzigen Query.
+        """Zählt alle drei kanonischen Patent-Scopes in einer einzigen Query.
 
         Returns:
             Ein Dict mit den Keys:
@@ -345,7 +345,7 @@ class PatentGrantRepository:
               - ``PatentScope.APPLICATIONS_ONLY.value``  → kind IN A*
               - ``PatentScope.GRANTS_ONLY.value``        → kind IN B*
 
-        Die Plausibilitaetsregel
+        Die Plausibilitätsregel
         ``ALL_PATENTS >= APPLICATIONS_ONLY + GRANTS_ONLY`` gilt auf der
         Datenbankebene automatisch, da alle drei Aggregationen auf
         denselben Zeilen laufen.

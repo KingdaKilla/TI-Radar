@@ -1,4 +1,4 @@
-"""Tests fuer Port-Interfaces — ABC-Compliance."""
+"""Tests für Port-Interfaces — ABC-Compliance."""
 import pytest
 from shared.domain.ports import PatentQueryPort, ProjectQueryPort, PublicationQueryPort
 

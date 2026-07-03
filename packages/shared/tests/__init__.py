@@ -1,1 +1,1 @@
-"""Unit-Tests fuer shared domain — deterministische Metriken und Hilfsfunktionen."""
+"""Unit-Tests für shared domain — deterministische Metriken und Hilfsfunktionen."""

@@ -1,15 +1,15 @@
-"""OpenAIRE Search API Adapter fuer Publikationsdaten.
+"""OpenAIRE Search API Adapter für Publikationsdaten.
 
 Migriert von v1.0 mit folgenden Verbesserungen:
 - Rate-Limit-Handling (HTTP 429) mit exponentiellem Backoff
 - Graceful Degradation: leere Liste bei Fehlern, Warning-Log
-- Modul-Level Token-Cache fuer parallele Year-Requests
+- Modul-Level Token-Cache für parallele Year-Requests
 - DB-Caching: Ergebnisse werden in research_schema.openaire_cache
   persistiert und bei erneutem Aufruf wiederverwendet (TTL 7 Tage).
-  Bei API-Fehler werden auch abgelaufene (stale) Cache-Eintraege
-  als Fallback zurueckgegeben.
+  Bei API-Fehler werden auch abgelaufene (stale) Cache-Einträge
+  als Fallback zurückgegeben.
 
-Der Adapter zaehlt Publikationen pro Jahr ueber parallele
+Der Adapter zählt Publikationen pro Jahr über parallele
 Requests gegen die OpenAIRE Search API. Der Gesamtcount
 kommt aus dem JSON-Header-Feld, nicht aus den Ergebnissen selbst.
 
@@ -47,10 +47,10 @@ _cached_token_exp: float = 0.0
 # Wird gesetzt, sobald der Refresh-Token-Endpunkt einen 4xx-Fehler liefert
 # (abgelaufener oder widerrufener Token). Das ist ein Konfigurationsfehler,
 # kein transientes Problem: die nachfolgenden API-Calls liefern alle 403
-# Forbidden. Wir unterdruecken diese vorhersehbaren Warnings (Log-Spam
+# Forbidden. Wir unterdrücken diese vorhersehbaren Warnings (Log-Spam
 # mit 22+ Zeilen pro Analyse) und senken sie auf `debug`. Die fachliche
-# Behandlung (Fallback auf CORDIS) bleibt unveraendert.
-# Der Flag wird beim naechsten erfolgreichen Token-Refresh zurueckgesetzt.
+# Behandlung (Fallback auf CORDIS) bleibt unverändert.
+# Der Flag wird beim nächsten erfolgreichen Token-Refresh zurückgesetzt.
 _token_invalid: bool = False
 
 _REFRESH_URL = (
@@ -60,7 +60,7 @@ _REFRESH_URL = (
 _TOKEN_MARGIN_S = 60  # Refresh 60s vor Ablauf
 
 # ---------------------------------------------------------------------------
-# Retry-Konfiguration fuer Rate-Limiting (HTTP 429)
+# Retry-Konfiguration für Rate-Limiting (HTTP 429)
 # ---------------------------------------------------------------------------
 _MAX_RETRIES = 3
 _BACKOFF_BASE_S = 1.0  # Exponentielles Backoff: 1s, 2s, 4s
@@ -73,9 +73,9 @@ _CACHE_TTL_DAYS = 7
 
 
 def _reset_token_invalid_flag() -> None:
-    """Setzt das Modul-Level Token-Invalid-Flag zurueck.
+    """Setzt das Modul-Level Token-Invalid-Flag zurück.
 
-    Hauptsaechlich fuer Tests: zwischen Testfaellen muss der Flag-Zustand
+    Hauptsächlich für Tests: zwischen Testfällen muss der Flag-Zustand
     reproduzierbar sein, da `_token_invalid` ein Modul-Level-Singleton ist.
     """
     global _token_invalid  # noqa: PLW0603
@@ -83,13 +83,13 @@ def _reset_token_invalid_flag() -> None:
 
 
 def _normalize_query(query: str) -> str:
-    """Query-Key fuer den Cache normalisieren (lowercase, stripped).
+    """Query-Key für den Cache normalisieren (lowercase, stripped).
 
     Args:
         query: Rohtext-Suchbegriff.
 
     Returns:
-        Normalisierter String fuer eindeutigen Cache-Lookup.
+        Normalisierter String für eindeutigen Cache-Lookup.
     """
     return query.lower().strip()
 
@@ -98,7 +98,7 @@ def _token_expiry(token: str) -> float:
     """JWT-Ablaufzeitpunkt (Unix-Timestamp) aus dem Payload extrahieren.
 
     Dekodiert den Base64-kodierten JWT-Payload und liest das 'exp'-Feld.
-    Gibt 0.0 zurueck bei ungueltigem oder fehlendem Token.
+    Gibt 0.0 zurück bei ungültigem oder fehlendem Token.
 
     Args:
         token: JWT-String (drei Base64-Teile, getrennt durch '.').
@@ -110,7 +110,7 @@ def _token_expiry(token: str) -> float:
         return 0.0
     try:
         parts = token.split(".")
-        # Base64-Padding hinzufuegen (JWT-Payloads haben oft kein Padding)
+        # Base64-Padding hinzufügen (JWT-Payloads haben oft kein Padding)
         payload_b64 = parts[1] + "=" * (4 - len(parts[1]) % 4)
         payload = json.loads(base64.urlsafe_b64decode(payload_b64))
         return float(payload.get("exp", 0))
@@ -119,17 +119,17 @@ def _token_expiry(token: str) -> float:
 
 
 class OpenAIREAdapter:
-    """Async-Adapter fuer die OpenAIRE Search API (Publikationen).
+    """Async-Adapter für die OpenAIRE Search API (Publikationen).
 
-    Zaehlt Publikationen pro Jahr ueber parallele API-Abfragen.
-    Unterstuetzt:
+    Zählt Publikationen pro Jahr über parallele API-Abfragen.
+    Unterstützt:
     - Automatischen Token-Refresh via Refresh-Token
     - Rate-Limit-Handling (HTTP 429) mit exponentiellem Backoff
     - Graceful Degradation: leere Liste bei Gesamtfehler, Warning-Log
     - DB-Caching mit konfigurierbarem TTL und Stale-Fallback
 
     Wird vom LandscapeServicer als optionale externe Datenquelle genutzt.
-    Fehler fuehren nicht zum Abbruch der gesamten Analyse, sondern
+    Fehler führen nicht zum Abbruch der gesamten Analyse, sondern
     werden als Warnings in der Response dokumentiert.
     """
 
@@ -146,13 +146,13 @@ class OpenAIREAdapter:
 
         Args:
             access_token: OpenAIRE JWT Access-Token (optional).
-                Ohne Token wird die oeffentliche API mit niedrigeren
+                Ohne Token wird die öffentliche API mit niedrigeren
                 Rate-Limits genutzt.
-            refresh_token: OpenAIRE Refresh-Token fuer automatische
+            refresh_token: OpenAIRE Refresh-Token für automatische
                 Token-Erneuerung (optional).
-            timeout: HTTP-Timeout in Sekunden fuer einzelne Requests.
-            pool: asyncpg Connection Pool fuer DB-Caching (optional).
-                Ohne Pool wird kein Caching durchgefuehrt.
+            timeout: HTTP-Timeout in Sekunden für einzelne Requests.
+            pool: asyncpg Connection Pool für DB-Caching (optional).
+                Ohne Pool wird kein Caching durchgeführt.
         """
         self._token = access_token
         self._refresh_token = refresh_token
@@ -164,23 +164,23 @@ class OpenAIREAdapter:
     # -----------------------------------------------------------------------
 
     async def _ensure_valid_token(self) -> None:
-        """Access-Token pruefen und bei Bedarf per Refresh-Token erneuern.
+        """Access-Token prüfen und bei Bedarf per Refresh-Token erneuern.
 
         Token-Management-Logik:
-        1. Gecachtes Token aus vorherigem Refresh noch gueltig? -> verwenden
-        2. Aktuelles Token noch gueltig? -> beibehalten
+        1. Gecachtes Token aus vorherigem Refresh noch gültig? -> verwenden
+        2. Aktuelles Token noch gültig? -> beibehalten
         3. Refresh-Token vorhanden? -> neues Access-Token holen
         4. Fallback: altes Token verwenden (ggf. niedrigere Rate-Limits)
         """
         global _cached_token, _cached_token_exp, _token_invalid  # noqa: PLW0603
 
-        # Kein Token und kein Refresh-Token -> oeffentlicher Zugang
+        # Kein Token und kein Refresh-Token -> öffentlicher Zugang
         if not self._token and not self._refresh_token:
             return
 
         now = time.time()
 
-        # 1. Gecachtes Token aus vorherigem Refresh noch gueltig?
+        # 1. Gecachtes Token aus vorherigem Refresh noch gültig?
         if (
             self._refresh_token
             and _cached_token
@@ -189,15 +189,15 @@ class OpenAIREAdapter:
             self._token = _cached_token
             return
 
-        # 2. Aktuelles Token noch gueltig?
+        # 2. Aktuelles Token noch gültig?
         current_exp = _token_expiry(self._token)
         if current_exp - now > _TOKEN_MARGIN_S:
             return
 
         # 3. Refresh-Token vorhanden? -> neues Access-Token holen
         # Wenn Flag bereits gesetzt ist (voriger Refresh schlug mit 4xx fehl),
-        # versuchen wir es dennoch einmal pro Analyse — das Token koennte
-        # zwischenzeitlich erneuert worden sein. Schlaegt es wieder fehl,
+        # versuchen wir es dennoch einmal pro Analyse — das Token könnte
+        # zwischenzeitlich erneuert worden sein. Schlägt es wieder fehl,
         # wird das Flag einfach beibehalten.
         if self._refresh_token:
             try:
@@ -213,7 +213,7 @@ class OpenAIREAdapter:
                     self._token = new_token
                     _cached_token = new_token
                     _cached_token_exp = _token_expiry(new_token)
-                    # Erfolgreicher Refresh -> Flag zuruecksetzen,
+                    # Erfolgreicher Refresh -> Flag zurücksetzen,
                     # Warnings wieder aktivieren.
                     _token_invalid = False
                     logger.info(
@@ -224,7 +224,7 @@ class OpenAIREAdapter:
             except httpx.HTTPStatusError as exc:
                 # 4xx beim Refresh = Konfigurationsfehler (abgelaufener oder
                 # widerrufener Refresh-Token). Einmal klar loggen, dann die
-                # vorhersehbare 403-Kaskade unterdruecken.
+                # vorhersehbare 403-Kaskade unterdrücken.
                 status = exc.response.status_code
                 if 400 <= status < 500 and not _token_invalid:
                     _token_invalid = True
@@ -233,11 +233,11 @@ class OpenAIREAdapter:
                         fehler=str(exc),
                         status=status,
                         hinweis=(
-                            "Refresh-Token ungueltig/abgelaufen — bitte "
+                            "Refresh-Token ungültig/abgelaufen — bitte "
                             "OPENAIRE_REFRESH_TOKEN in .env erneuern "
                             "(siehe docs/DEPLOYMENT.md#openaire-token-erneuern). "
-                            "Folgende 403-Meldungen werden bis zum naechsten "
-                            "erfolgreichen Refresh auf debug-Level unterdrueckt."
+                            "Folgende 403-Meldungen werden bis zum nächsten "
+                            "erfolgreichen Refresh auf debug-Level unterdrückt."
                         ),
                     )
                 else:
@@ -274,11 +274,11 @@ class OpenAIREAdapter:
             query_key: Normalisierter Suchbegriff.
             start_year: Erstes Jahr (inklusiv).
             end_year: Letztes Jahr (inklusiv).
-            allow_stale: Auch abgelaufene Eintraege zurueckgeben (Fallback).
+            allow_stale: Auch abgelaufene Einträge zurückgeben (Fallback).
 
         Returns:
             Liste von Dicts mit 'year' und 'count', oder None bei Cache-Miss.
-            None wird zurueckgegeben wenn kein Pool vorhanden, bei DB-Fehler,
+            None wird zurückgegeben wenn kein Pool vorhanden, bei DB-Fehler,
             oder wenn nicht alle Jahre im Cache vorhanden sind.
         """
         if self._pool is None:
@@ -301,12 +301,12 @@ class OpenAIREAdapter:
             if not rows:
                 return None
 
-            # Vollstaendigkeitspruefung: alle Jahre muessen vorhanden sein
+            # Vollständigkeitsprüfung: alle Jahre müssen vorhanden sein
             expected_years = set(range(start_year, end_year + 1))
             cached_years = {row["year"] for row in rows}
             if not expected_years.issubset(cached_years):
                 logger.debug(
-                    "openaire_cache_unvollstaendig",
+                    "openaire_cache_unvollständig",
                     query_key=query_key,
                     erwartet=len(expected_years),
                     vorhanden=len(cached_years),
@@ -362,18 +362,18 @@ class OpenAIREAdapter:
             logger.warning("openaire_cache_schreibfehler", fehler=str(exc))
 
     # -----------------------------------------------------------------------
-    # Oeffentliche API
+    # Öffentliche API
     # -----------------------------------------------------------------------
 
     async def count_by_year(
         self, query: str, start_year: int, end_year: int,
     ) -> list[dict[str, int]]:
-        """Publikationen pro Jahr zaehlen (mit DB-Cache).
+        """Publikationen pro Jahr zählen (mit DB-Cache).
 
         Ablauf:
-        1. Cache-Lookup: frische Eintraege (stale_after > now()) pruefen
-        2. Cache-Hit: gecachte Ergebnisse direkt zurueckgeben
-        3. Cache-Miss: API-Abfrage durchfuehren, Ergebnisse cachen
+        1. Cache-Lookup: frische Einträge (stale_after > now()) prüfen
+        2. Cache-Hit: gecachte Ergebnisse direkt zurückgeben
+        3. Cache-Miss: API-Abfrage durchführen, Ergebnisse cachen
         4. API-Fehler: stale Cache als Fallback verwenden, sonst leere Liste
 
         Args:
@@ -387,7 +387,7 @@ class OpenAIREAdapter:
         """
         query_key = _normalize_query(query)
 
-        # 1. Cache-Lookup (nur frische Eintraege)
+        # 1. Cache-Lookup (nur frische Einträge)
         cached = await self._read_cache(query_key, start_year, end_year)
         if cached is not None:
             logger.info(
@@ -437,9 +437,9 @@ class OpenAIREAdapter:
         und extrahiert den Gesamt-Count aus dem JSON-Response-Header.
 
         Graceful Degradation: Bei Gesamtfehler (z.B. Token-Refresh
-        fehlgeschlagen, Netzwerkfehler) wird eine leere Liste zurueckgegeben
+        fehlgeschlagen, Netzwerkfehler) wird eine leere Liste zurückgegeben
         und ein Warning geloggt. Einzelne fehlgeschlagene Jahre werden
-        uebersprungen.
+        übersprungen.
 
         Args:
             query: Freitext-Suchbegriff (z.B. 'quantum computing').
@@ -476,10 +476,10 @@ class OpenAIREAdapter:
             )
             return []
 
-        # Bei bekanntem Konfigurationsfehler (Refresh-Token ungueltig) sind
+        # Bei bekanntem Konfigurationsfehler (Refresh-Token ungültig) sind
         # 403-Fehler vorhersehbar — auf debug-Level absenken, um Log-Spam
         # (22+ Zeilen pro Analyse) zu vermeiden. Die fachliche Behandlung
-        # (Fallback auf CORDIS) bleibt unveraendert.
+        # (Fallback auf CORDIS) bleibt unverändert.
         log_jahr_fehler = logger.debug if _token_invalid else logger.warning
         log_teilergebnis = logger.debug if _token_invalid else logger.warning
 
@@ -513,7 +513,7 @@ class OpenAIREAdapter:
     async def _count_single_year(
         self, client: httpx.AsyncClient, query: str, year: int,
     ) -> dict[str, int]:
-        """Publikationen fuer ein einzelnes Jahr zaehlen.
+        """Publikationen für ein einzelnes Jahr zählen.
 
         Implementiert exponentielles Backoff bei HTTP 429 (Rate Limit).
         Maximal _MAX_RETRIES Versuche mit ansteigenden Wartezeiten.
@@ -534,7 +534,7 @@ class OpenAIREAdapter:
 
         Raises:
             httpx.HTTPStatusError: Bei persistenten Server-Fehlern
-                (nach Ausschoepfung aller Retries bei 429).
+                (nach Ausschöpfung aller Retries bei 429).
         """
         params: dict[str, str | int] = {
             "keywords": query,
@@ -584,7 +584,7 @@ class OpenAIREAdapter:
                     if attempt < _MAX_RETRIES:
                         await asyncio.sleep(wait_s)
                         continue
-                    # Letzter Versuch: Exception ausloesen
+                    # Letzter Versuch: Exception auslösen
                     resp.raise_for_status()
 
                 resp.raise_for_status()
@@ -614,8 +614,8 @@ class OpenAIREAdapter:
                     continue
                 raise
 
-        # Sollte nicht erreicht werden, aber fuer Typsicherheit
+        # Sollte nicht erreicht werden, aber für Typsicherheit
         if last_exc is not None:
             raise last_exc
-        msg = f"Unerwarteter Zustand nach {_MAX_RETRIES + 1} Versuchen fuer Jahr {year}"
+        msg = f"Unerwarteter Zustand nach {_MAX_RETRIES + 1} Versuchen für Jahr {year}"
         raise RuntimeError(msg)

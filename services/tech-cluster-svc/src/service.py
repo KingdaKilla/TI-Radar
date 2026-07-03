@@ -1,7 +1,7 @@
 """UC9 TechClusterServicer — gRPC-Implementierung der Cluster-Analyse.
 
-Empfaengt AnalysisRequest, baut Akteur-CPC-Co-Occurrence-Matrix,
-fuehrt Clustering durch und berechnet Dimension-Scores.
+Empfängt AnalysisRequest, baut Akteur-CPC-Co-Occurrence-Matrix,
+führt Clustering durch und berechnet Dimension-Scores.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ from src.config import Settings
 from src.domain.metrics import compute_cluster_coherence
 from src.infrastructure.repository import TechClusterRepository
 
-# UC9 zaehlt Akteure, die via CPC-Co-Occurrence einem Tech-Cluster
+# UC9 zählt Akteure, die via CPC-Co-Occurrence einem Tech-Cluster
 # zugeordnet wurden. Scope = CLUSTER_MEMBER. Siehe Bug CRIT-3 / AP3.
 _UC9_ACTOR_SCOPE = ActorScope.CLUSTER_MEMBER
 
@@ -49,7 +49,7 @@ def _get_base_class() -> type:
 
 
 class TechClusterServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC9 Technology Cluster.
+    """gRPC-Servicer für UC9 Technology Cluster.
 
     Koordiniert:
     1. Akteur-CPC-Matrix (PostgreSQL)
@@ -126,14 +126,14 @@ class TechClusterServicer(_get_base_class()):  # type: ignore[misc]
             elif name == "cpc_year_counts":
                 cpc_year_data = cast(list[dict[str, Any]], result)
 
-        # --- Co-Occurrence-Lookup fuer Coherence-Berechnung ---
+        # --- Co-Occurrence-Lookup für Coherence-Berechnung ---
         cpc_co_map: dict[tuple[str, str], int] = {}
         for entry in co_occurrence_data:
             a, b = str(entry["cpc_a"]), str(entry["cpc_b"])
             key = (min(a, b), max(a, b))
             cpc_co_map[key] = int(entry["co_count"])
 
-        # --- Patent-Counts pro CPC-Section und Jahr fuer CAGR ---
+        # --- Patent-Counts pro CPC-Section und Jahr für CAGR ---
         section_year_counts: dict[str, dict[int, int]] = {}
         for entry in cpc_year_data:
             cpc = str(entry["cpc_code"])
@@ -209,9 +209,9 @@ class TechClusterServicer(_get_base_class()):  # type: ignore[misc]
                          total_actors: int, total_cpc_codes: int, data_sources: list[dict[str, Any]],
                          warnings: list[dict[str, str]], request_id: str, processing_time_ms: int) -> Any:
         if uc9_tech_cluster_pb2 is None or common_pb2 is None:
-            # Dict-Fallback: enthaelt das kanonische Akteurs-Scope-Label
+            # Dict-Fallback: enthält das kanonische Akteurs-Scope-Label
             # (Bug CRIT-3 / AP3) damit das Frontend klar zwischen UC8/UC9/UC11
-            # unterscheiden kann. UC9 zaehlt Cluster-Mitglieder.
+            # unterscheiden kann. UC9 zählt Cluster-Mitglieder.
             return {
                 "clusters": clusters, "actor_cpc_links": actor_cpc_links,
                 "total_actors": total_actors, "total_cpc_codes": total_cpc_codes,

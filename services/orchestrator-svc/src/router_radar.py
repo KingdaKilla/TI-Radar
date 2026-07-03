@@ -1,6 +1,6 @@
 """POST /api/v1/radar — Zentraler Radar-Endpoint.
 
-Empfaengt eine Technologie-Anfrage vom Frontend, erzeugt einen
+Empfängt eine Technologie-Anfrage vom Frontend, erzeugt einen
 Protobuf-AnalysisRequest und verteilt ihn parallel an alle 12
 UC-Services via gRPC. Implementiert:
 
@@ -75,7 +75,7 @@ UC_NAME_TO_ENUM: dict[str, str] = {
     "publication": "UC_C_PUBLICATION",
 }
 
-# Lesbare UC-Bezeichnungen fuer Fehlermeldungen
+# Lesbare UC-Bezeichnungen für Fehlermeldungen
 UC_DISPLAY_NAMES: dict[str, str] = {
     "landscape": "UC1 Landscape",
     "maturity": "UC2 Maturity",
@@ -107,10 +107,10 @@ def _build_analysis_request(
     """Erzeugt einen Protobuf AnalysisRequest aus dem REST-Request.
 
     Falls die Protobuf-Stubs noch nicht generiert sind, wird ein
-    Dummy-Objekt zurueckgegeben (fuer Entwicklung/Testing).
+    Dummy-Objekt zurückgegeben (für Entwicklung/Testing).
     """
     if common_pb2 is None:
-        # Fallback: Dict-basierter Dummy-Request fuer Entwicklungsmodus
+        # Fallback: Dict-basierter Dummy-Request für Entwicklungsmodus
         return {
             "technology": request.technology,
             "time_range": {"start_year": start_year, "end_year": end_year},
@@ -161,7 +161,7 @@ def _proto_to_dict(proto_response: Any) -> dict[str, Any]:
 
 
 def _classify_grpc_error(exc: grpc.RpcError) -> tuple[str, bool]:
-    """Klassifiziert einen gRPC-Fehler fuer die Fehlerberichterstattung.
+    """Klassifiziert einen gRPC-Fehler für die Fehlerberichterstattung.
 
     Returns:
         Tuple (error_code, retryable).
@@ -200,12 +200,12 @@ async def _call_single_uc(
     Returns:
         Tuple (uc_name, panel_data, error, duration_seconds).
         Bei Erfolg: panel_data ist ein Dict, error ist None.
-        Bei Fehler: panel_data ist None, error enthaelt den Fehlerbericht.
+        Bei Fehler: panel_data ist None, error enthält den Fehlerbericht.
     """
     t0 = time.monotonic()
 
     try:
-        # gRPC-Aufruf mit asyncio.wait_for fuer scharfen Timeout
+        # gRPC-Aufruf mit asyncio.wait_for für scharfen Timeout
         response = await asyncio.wait_for(
             channel_manager.call_uc(uc_name, analysis_request, timeout=timeout),
             timeout=timeout,
@@ -274,7 +274,7 @@ async def _call_single_uc(
         return uc_name, None, error, duration
 
     except RuntimeError as exc:
-        # Stubs nicht verfuegbar (Entwicklungsmodus)
+        # Stubs nicht verfügbar (Entwicklungsmodus)
         duration = time.monotonic() - t0
         record_grpc_call(uc_name, "unavailable", duration)
 
@@ -283,12 +283,12 @@ async def _call_single_uc(
             error_code="STUBS_UNAVAILABLE",
             error_message=(
                 f"{UC_DISPLAY_NAMES.get(uc_name, uc_name)}: "
-                f"gRPC-Stubs nicht verfuegbar — {exc}"
+                f"gRPC-Stubs nicht verfügbar — {exc}"
             ),
             retryable=False,
             elapsed_ms=int(duration * 1000),
         )
-        logger.warning("uc_stubs_nicht_verfuegbar", uc=uc_name, error=str(exc))
+        logger.warning("uc_stubs_nicht_verfügbar", uc=uc_name, error=str(exc))
         return uc_name, None, error, duration
 
     except Exception as exc:
@@ -392,11 +392,11 @@ async def analyze_technology(
 ) -> RadarResponse:
     """Technology Radar: Alle 13 UC-Services parallel per gRPC aufrufen.
 
-    Gibt ein komplettes Dashboard-Objekt zurueck mit:
+    Gibt ein komplettes Dashboard-Objekt zurück mit:
     - 12 UC-Panels (Landscape, Maturity, Competitive, Funding, CPC-Flow,
       Geographic, Research-Impact, Temporal, Tech-Cluster, Actor-Type,
       Patent-Grant, EuroSciVoc)
-    - Fehlerliste fuer ausgefallene UCs (Graceful Degradation)
+    - Fehlerliste für ausgefallene UCs (Graceful Degradation)
     - Aggregierte Explainability-Metadaten (Quellen, Methoden, Warnungen)
     - Gesamtverarbeitungszeit und Erfolgsstatistiken
     """
@@ -418,7 +418,7 @@ async def analyze_technology(
     # UC-Auswahl bestimmen (leer = alle 13 UCs)
     all_uc_names = list(UC_NAME_TO_ENUM.keys())
     if request.use_cases:
-        # Nur angeforderte UCs ausfuehren
+        # Nur angeforderte UCs ausführen
         selected = set(request.use_cases)
         uc_names = [name for name in all_uc_names if name in selected]
     else:
@@ -469,7 +469,7 @@ async def analyze_technology(
         else:
             panel_data[uc_name] = {}
 
-    # --- Warnungen fuer degradierte UCs hinzufuegen ---
+    # --- Warnungen für degradierte UCs hinzufügen ---
     explainability = _aggregate_metadata(panel_data)
     for uc_error in uc_errors:
         explainability.warnings.append(WarningItem(

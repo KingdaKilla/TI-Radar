@@ -1,6 +1,6 @@
 """UC-C-spezifische Metriken: Publikations-Impact-Chain.
 
-Reine Funktionen fuer die Berechnung von Publikations-Effizienz-Metriken
+Reine Funktionen für die Berechnung von Publikations-Effizienz-Metriken
 aus CORDIS-Projektdaten. Keine Seiteneffekte, keine I/O.
 """
 
@@ -8,10 +8,10 @@ from __future__ import annotations
 
 
 def compute_pubs_per_million(ec_contribution: float, pub_count: int) -> float:
-    """Publikationen pro Million EUR Foerderung.
+    """Publikationen pro Million EUR Förderung.
 
     Args:
-        ec_contribution: EU-Foerderbeitrag in EUR.
+        ec_contribution: EU-Förderbeitrag in EUR.
         pub_count: Anzahl der Publikationen.
 
     Returns:

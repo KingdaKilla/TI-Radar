@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────
- * TI-Radar v3 -- Frontend Helper: Jahres-Vollstaendigkeit (MAJ-7/MAJ-8)
+ * TI-Radar v3 -- Frontend Helper: Jahres-Vollständigkeit (MAJ-7/MAJ-8)
  *
- * Zentrale Logik fuer den ReferenceArea-Hinweis "Daten ggf. unvollstaendig":
+ * Zentrale Logik für den ReferenceArea-Hinweis "Daten ggf. unvollständig":
  *   - Nimmt einen optionalen ``dataCompleteYear`` (vom Backend) entgegen.
  *   - Nimmt eine Zeitreihe (mit ``year``-Feldern) entgegen.
  *   - Liefert Start/Ende der Highlight-Region oder ``null`` (kein Hinweis).
@@ -18,8 +18,8 @@ export interface IncompleteYearRange {
 }
 
 /**
- * Bestimmt den Bereich der Zeitreihe, der wegen unvollstaendiger Jahre
- * markiert werden soll. Liefert ``null`` wenn kein Hinweis noetig ist
+ * Bestimmt den Bereich der Zeitreihe, der wegen unvollständiger Jahre
+ * markiert werden soll. Liefert ``null`` wenn kein Hinweis nötig ist
  * (z. B. weil ``dataCompleteYear`` fehlt oder die Reihe vor dem Cutoff endet).
  */
 export function incompleteYearRange<T extends { year: number }>(
@@ -33,7 +33,7 @@ export function incompleteYearRange<T extends { year: number }>(
   return { start: dataCompleteYear, end: last };
 }
 
-/** Letztes vollstaendig abgeschlossenes Kalenderjahr (Client-seitiger Fallback). */
+/** Letztes vollständig abgeschlossenes Kalenderjahr (Client-seitiger Fallback). */
 export function lastCompleteYear(today: Date = new Date()): number {
   return today.getFullYear() - 1;
 }

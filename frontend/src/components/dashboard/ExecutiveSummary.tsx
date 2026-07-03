@@ -78,13 +78,13 @@ export default function ExecutiveSummary({ data }: ExecutiveSummaryProps) {
 
       {/* KPI Badges
           AP7 / MAJ-5 + MAJ-6: Phase, Trend, Konzentration und Impact
-          stehen seit dem AP7-Refactor als *getrennte* Eintraege im
+          stehen seit dem AP7-Refactor als *getrennte* Einträge im
           `data.badges`-Array (siehe `buildClusterData` in
           `frontend/src/lib/clusters.ts`).  Damit erscheinen sie hier
           automatisch als vier eigene Pills — keine konkatenierten
-          Phase+Trend-Strings ("Reife + Rueckläufige Entwicklung") und
+          Phase+Trend-Strings ("Reife + Rückläufige Entwicklung") und
           kein hartcodiertes "Wettbewerbsintensiv"-Fallback mehr.
-          INFO-12: Falls fuer einen Badge ein Tooltip-Text in
+          INFO-12: Falls für einen Badge ein Tooltip-Text in
           `badgeTooltips` hinterlegt ist (z. B. h-Index-Schwellen),
           wird neben dem Badge ein InfoTooltip-Icon gerendert. */}
       <div className="mt-5 flex flex-wrap justify-center gap-2">

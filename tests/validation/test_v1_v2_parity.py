@@ -1,7 +1,7 @@
-"""Deterministische Paritaetsvalidierung: v1 (Prototype 5) == v2 (MVP v2).
+"""Deterministische Paritätsvalidierung: v1 (Prototype 5) == v2 (MVP v2).
 
 Stellt sicher, dass die Refaktorierung der shared.domain-Schicht keine
-numerischen Regressionen eingefuehrt hat. Alle Testfaelle verwenden
+numerischen Regressionen eingeführt hat. Alle Testfälle verwenden
 bekannte Eingabedaten mit vorab berechneten Erwartungswerten.
 
 Q.5 — Deterministic Validation (v1 = v2):
@@ -11,10 +11,10 @@ referenzielle Implementierung in 07_Prototypen/prototype_5/src/ti_radar/domain/.
 Berechnungsmethode der Erwartungswerte:
     - CAGR:  ((last / first) ^ (1/n) - 1) * 100  [manuell berechnet]
     - HHI:   sum(s_i^2) * 10000                    [manuell berechnet]
-    - Laender-Merge: Additionsregel + Sortierung    [manuell verfolgt]
+    - Länder-Merge: Additionsregel + Sortierung    [manuell verfolgt]
     - Reifephase: Gao et al. (2013) Schwellwerte    [aus Quelle abgeleitet]
 
-Alle Docstrings und Kommentare in Deutsch gemaess Projektkonventionen.
+Alle Docstrings und Kommentare in Deutsch gemäß Projektkonventionen.
 """
 
 from __future__ import annotations
@@ -36,27 +36,27 @@ from shared.domain.metrics import (
 
 
 # ============================================================================
-# Hilfstypen fuer parametrisierte Testfaelle
+# Hilfstypen für parametrisierte Testfälle
 # ============================================================================
 
 
-# Eingabe-Typ fuer CAGR-Paritaets-Tests
+# Eingabe-Typ für CAGR-Paritäts-Tests
 _CagrFallTyp = tuple[float, float, int, float]
 
-# Eingabe-Typ fuer HHI-Paritaets-Tests
+# Eingabe-Typ für HHI-Paritäts-Tests
 _HhiFallTyp = tuple[list[float], float, str]
 
-# Eingabe-Typ fuer Reifephase-Tests
+# Eingabe-Typ für Reifephase-Tests
 _PhaseFallTyp = tuple[list[int], float | None, float | None, str, str]
 
 
 # ============================================================================
-# CAGR-Paritaet — Vorberechnete Referenzwerte
+# CAGR-Parität — Vorberechnete Referenzwerte
 # ============================================================================
 
 
 class TestCagrParitaet:
-    """CAGR-Paritaet zwischen v1-Formelimplementierung und v2 shared.domain.
+    """CAGR-Parität zwischen v1-Formelimplementierung und v2 shared.domain.
 
     Jeder Testfall: (first_value, last_value, periods, erwarteter_cagr_prozent)
     Erwartungswerte: manuell berechnet via ((last/first)^(1/n) - 1) * 100
@@ -79,7 +79,7 @@ class TestCagrParitaet:
             (300.0, 300.0, 5, 0.0),
             # Verdoppelung in einem Jahr = 100%
             (1.0, 2.0, 1, 100.0),
-            # Foerderdaten (UC4): Projekte 2015-2023
+            # Förderdaten (UC4): Projekte 2015-2023
             # {2015: 20, 2023: 80}: 8 Perioden
             # Berechnung: ((80/20)^(1/8) - 1) * 100 = (4.0^0.125 - 1) * 100
             (20.0, 80.0, 8, (math.pow(4.0, 1.0 / 8.0) - 1.0) * 100.0),
@@ -90,7 +90,7 @@ class TestCagrParitaet:
             "patentzahl_2015_2022",
             "stagnation_5_jahre",
             "verdoppelung_1_jahr",
-            "foerderprojekte_2015_2023",
+            "förderprojekte_2015_2023",
         ],
     )
     def test_cagr_paritaet_v1_v2(
@@ -100,9 +100,9 @@ class TestCagrParitaet:
         periods: int,
         erwartet: float,
     ) -> None:
-        """Paritaetspruefung: v2-Ergebnis stimmt mit manuell berechnetem v1-Wert ueberein.
+        """Paritätsprüfung: v2-Ergebnis stimmt mit manuell berechnetem v1-Wert überein.
 
-        Toleranz: abs=0.01% — entspricht der Praezision der v1-Implementierung,
+        Toleranz: abs=0.01% — entspricht der Präzision der v1-Implementierung,
         die auf 2 Dezimalstellen rundet.
         """
         ergebnis = cagr(first, last, periods)
@@ -134,22 +134,22 @@ class TestCagrParitaet:
         last: float,
         periods: int,
     ) -> None:
-        """Robustheit: Ungueltige Eingaben geben 0.0 zurueck (kein Absturz).
+        """Robustheit: Ungültige Eingaben geben 0.0 zurück (kein Absturz).
 
         Dies entspricht dem Verhalten der v1-Referenzimplementierung, die
-        ungueltige Eingaben mit einem defensiven 0.0-Fallback behandelt.
+        ungültige Eingaben mit einem defensiven 0.0-Fallback behandelt.
         """
         ergebnis = cagr(first, last, periods)
         assert ergebnis == 0.0
 
 
 # ============================================================================
-# HHI-Paritaet — Vorberechnete Referenzwerte mit Konzentrationsklassen
+# HHI-Parität — Vorberechnete Referenzwerte mit Konzentrationsklassen
 # ============================================================================
 
 
 class TestHhiParitaet:
-    """HHI-Paritaet: Akteur-Zaehlungen → HHI-Wert → Konzentrationsklasse.
+    """HHI-Parität: Akteur-Zählungen → HHI-Wert → Konzentrationsklasse.
 
     Simuliert den typischen UC3-Workflow: Akteurdaten aus CORDIS/EPO werden
     zu Marktanteilen normiert, der HHI berechnet und klassifiziert.
@@ -183,7 +183,7 @@ class TestHhiParitaet:
                 (0.40**2 + 0.30**2 + 0.20**2 + 0.10**2) * 10_000,
                 "High",
             ),
-            # --- Annaehernd gleichmaessiger Markt: 4 Akteure je ~25% ---
+            # --- Annähernd gleichmäßiger Markt: 4 Akteure je ~25% ---
             # Anteile: [0.25, 0.25, 0.25, 0.25]
             # HHI = 4 * 0.0625 * 10000 = 2500 → Hoch (exakte Grenze)
             (
@@ -191,7 +191,7 @@ class TestHhiParitaet:
                 2500.0,
                 "High",
             ),
-            # --- Fragmentierter Markt: 10 gleichgrosse Akteure ---
+            # --- Fragmentierter Markt: 10 gleichgroße Akteure ---
             # Anteile: [0.10] * 10
             # HHI = 10 * 0.01 * 10000 = 1000 → Gering
             (
@@ -214,7 +214,7 @@ class TestHhiParitaet:
         erwarteter_hhi: float,
         erwartete_klasse_en: str,
     ) -> None:
-        """Paritaet: Akteur-Zaehlungen → normierte Anteile → HHI → Klasse.
+        """Parität: Akteur-Zählungen → normierte Anteile → HHI → Klasse.
 
         Entspricht dem UC3-Ablauf: Akteurdaten normieren, HHI berechnen,
         Konzentrationsstufe bestimmen.
@@ -226,7 +226,7 @@ class TestHhiParitaet:
         klasse_en, _ = hhi_concentration_level(berechneter_hhi)
 
         assert berechneter_hhi == pytest.approx(erwarteter_hhi, abs=0.1), (
-            f"HHI fuer {akteur_zaehlung}: berechnet={berechneter_hhi:.2f}, "
+            f"HHI für {akteur_zaehlung}: berechnet={berechneter_hhi:.2f}, "
             f"erwartet={erwarteter_hhi:.2f}"
         )
         assert klasse_en == erwartete_klasse_en, (
@@ -257,14 +257,14 @@ class TestHhiParitaet:
 
 
 # ============================================================================
-# Reifephase-Paritaet — Gao et al. (2013) Klassifikation
+# Reifephase-Parität — Gao et al. (2013) Klassifikation
 # ============================================================================
 
 
 class TestReifephaseParitaet:
-    """Paritaet der Reifephasen-Klassifikation fuer konkrete Patentreihen.
+    """Parität der Reifephasen-Klassifikation für konkrete Patentreihen.
 
-    Testet classify_maturity_phase() mit realistischen jaehrlichen Patentserien,
+    Testet classify_maturity_phase() mit realistischen jährlichen Patentserien,
     die typischen Technologielebenszyklen in EU-Patenddaten entsprechen.
     """
 
@@ -272,16 +272,16 @@ class TestReifephaseParitaet:
         ("yearly_counts", "maturity_percent", "r_squared", "erwartete_phase_en"),
         [
             # --- S-Kurve-basiert: Emerging (maturity < 10%) ---
-            # Neue Technologie: nur 5% des Saettigungslevels erreicht
+            # Neue Technologie: nur 5% des Sättigungslevels erreicht
             ([], 5.0, 0.88, "Emerging"),
             # --- S-Kurve-basiert: Growing (10% <= maturity < 50%) ---
-            # Wachsende Technologie: 30% des Saettigungslevels
+            # Wachsende Technologie: 30% des Sättigungslevels
             ([], 30.0, 0.91, "Growing"),
             # --- S-Kurve-basiert: Mature (50% <= maturity < 90%) ---
-            # Reife Technologie: 70% des Saettigungslevels
+            # Reife Technologie: 70% des Sättigungslevels
             ([], 70.0, 0.87, "Mature"),
             # --- S-Kurve-basiert: Saturation (maturity >= 90%) ---
-            # Gesaettigte Technologie: 95% des Saettigungslevels
+            # Gesättigte Technologie: 95% des Sättigungslevels
             ([], 95.0, 0.93, "Saturation"),
             # --- Fallback-Heuristik: Starkes Wachstum → Emerging/Growing ---
             # Patentserie mit exponentiellem Wachstum
@@ -306,9 +306,9 @@ class TestReifephaseParitaet:
         r_squared: float | None,
         erwartete_phase_en: str,
     ) -> None:
-        """Paritaet: Phase-Klassifikation stimmt mit v1-Logik ueberein.
+        """Parität: Phase-Klassifikation stimmt mit v1-Logik überein.
 
-        Die Schwellwerte sind unveraendert zwischen v1 und v2 (Gao et al. 2013).
+        Die Schwellwerte sind unverändert zwischen v1 und v2 (Gao et al. 2013).
         """
         phase_en, _, _ = classify_maturity_phase(
             yearly_counts=yearly_counts,
@@ -316,14 +316,14 @@ class TestReifephaseParitaet:
             r_squared=r_squared,
         )
         assert phase_en == erwartete_phase_en, (
-            f"Phase fuer maturity={maturity_percent}, counts={yearly_counts}: "
+            f"Phase für maturity={maturity_percent}, counts={yearly_counts}: "
             f"erhalten='{phase_en}', erwartet='{erwartete_phase_en}'"
         )
 
     def test_unbekannte_phase_bei_zu_wenig_daten(self):
         """Fallback: Weniger als 3 Datenpunkte ohne maturity_percent → Unbekannt.
 
-        v1 und v2 geben beide "Unknown" zurueck — keine numerische Regression.
+        v1 und v2 geben beide "Unknown" zurück — keine numerische Regression.
         """
         phase_en, phase_de, konfidenz = classify_maturity_phase([10, 20])
         assert phase_en == "Unknown"
@@ -338,14 +338,14 @@ class TestReifephaseParitaet:
 
 
 # ============================================================================
-# YOY-Wachstum-Paritaet
+# YOY-Wachstum-Parität
 # ============================================================================
 
 
 class TestYoyWachstumParitaet:
-    """Jahr-ueber-Jahr-Wachstum: Paritaet zwischen v1 und v2.
+    """Jahr-über-Jahr-Wachstum: Parität zwischen v1 und v2.
 
-    Einfache prozentuale Aenderung: (current - previous) / previous * 100
+    Einfache prozentuale Änderung: (current - previous) / previous * 100
     """
 
     @pytest.mark.parametrize(
@@ -353,7 +353,7 @@ class TestYoyWachstumParitaet:
         [
             # Standard-Wachstum: 110 nach 100 = +10%
             (110, 100, 10.0),
-            # Rueckgang: 80 nach 100 = -20%
+            # Rückgang: 80 nach 100 = -20%
             (80, 100, -20.0),
             # Stagnation: 100 nach 100 = 0%
             (100, 100, 0.0),
@@ -366,7 +366,7 @@ class TestYoyWachstumParitaet:
         ],
         ids=[
             "wachstum_10_prozent",
-            "rueckgang_20_prozent",
+            "rückgang_20_prozent",
             "stagnation_null",
             "verdoppelung",
             "halbierung",
@@ -379,13 +379,13 @@ class TestYoyWachstumParitaet:
         previous: int,
         erwartet: float,
     ) -> None:
-        """Paritaet: yoy_growth() stimmt mit manuell berechnetem Wert ueberein."""
+        """Parität: yoy_growth() stimmt mit manuell berechnetem Wert überein."""
         ergebnis = yoy_growth(current, previous)
         assert ergebnis is not None
         assert ergebnis == pytest.approx(erwartet, abs=0.05)
 
     def test_yoy_vorjahr_null_gibt_none(self):
-        """Spezialfall: Vorjahr=0 gibt None zurueck (kein Teilen durch Null).
+        """Spezialfall: Vorjahr=0 gibt None zurück (kein Teilen durch Null).
 
         Konsistent mit v1-Verhalten: Division durch Null wird durch None signalisiert.
         """
@@ -394,15 +394,15 @@ class TestYoyWachstumParitaet:
 
 
 # ============================================================================
-# Laender-Aggregations-Paritaet
+# Länder-Aggregations-Parität
 # ============================================================================
 
 
 class TestLaenderAggregationParitaet:
-    """Paritaet der merge_country_data-Funktion fuer UC6 (Geografische Analyse).
+    """Parität der merge_country_data-Funktion für UC6 (Geografische Analyse).
 
-    Testet die Zusammenfuehrung von Patent- und CORDIS-Laenderdaten mit
-    vorberechneten Erwartungswerten fuer Summen und Sortierung.
+    Testet die Zusammenführung von Patent- und CORDIS-Länderdaten mit
+    vorberechneten Erwartungswerten für Summen und Sortierung.
     """
 
     def test_einfache_zusammenfuehrung_mit_bekannten_werten(self):
@@ -413,7 +413,7 @@ class TestLaenderAggregationParitaet:
             cordis_countries: DE=30,  IT=20
 
         Erwartete Ausgabe (nach total absteigend sortiert):
-            DE: patents=100, projects=30, total=130  ← groesste total
+            DE: patents=100, projects=30, total=130  ← größte total
             FR: patents=50,  projects=0,  total=50
             IT: patents=0,   projects=20, total=20
         """
@@ -468,7 +468,7 @@ class TestLaenderAggregationParitaet:
                 ["ES", "PL"],
                 [150, 50],
             ),
-            # Fall 3: Ueberlappende + exklusive Laender
+            # Fall 3: Überlappende + exklusive Länder
             (
                 [{"country": "DE", "count": 80}, {"country": "FR", "count": 60}],
                 [{"country": "FR", "count": 90}, {"country": "IT", "count": 40}],
@@ -479,7 +479,7 @@ class TestLaenderAggregationParitaet:
         ids=[
             "nur_patent_daten",
             "nur_cordis_daten",
-            "gemischte_ueberlappung",
+            "gemischte_überlappung",
         ],
     )
     def test_laender_aggregation_sortierung_und_totals(
@@ -489,11 +489,11 @@ class TestLaenderAggregationParitaet:
         erwartete_reihenfolge: list[str],
         erwartete_totals: list[int],
     ) -> None:
-        """Paritaet: Laender-Merge gibt korrekte Reihenfolge und Summen zurueck."""
+        """Parität: Länder-Merge gibt korrekte Reihenfolge und Summen zurück."""
         ergebnis = merge_country_data(patent_laender, cordis_laender)
 
         assert len(ergebnis) == len(erwartete_reihenfolge), (
-            f"Erwartet {len(erwartete_reihenfolge)} Laender, erhalten {len(ergebnis)}"
+            f"Erwartet {len(erwartete_reihenfolge)} Länder, erhalten {len(ergebnis)}"
         )
 
         for rang, (erwartet_land, erwartet_total) in enumerate(
@@ -508,9 +508,9 @@ class TestLaenderAggregationParitaet:
             )
 
     def test_limit_parameter_schneidet_korrekt_ab(self):
-        """limit-Parameter begrenzt Ergebnis auf die top-N Laender.
+        """limit-Parameter begrenzt Ergebnis auf die top-N Länder.
 
-        Gibt immer die N Laender mit dem hoechsten total-Wert zurueck.
+        Gibt immer die N Länder mit dem höchsten total-Wert zurück.
         """
         patent_laender = [
             {"country": "DE", "count": 300},
@@ -523,25 +523,25 @@ class TestLaenderAggregationParitaet:
 
         assert len(ergebnis_alle) == 4
         assert len(ergebnis_top2) == 2
-        # Top-2 muessen DE und FR sein
+        # Top-2 müssen DE und FR sein
         assert ergebnis_top2[0]["country"] == "DE"
         assert ergebnis_top2[1]["country"] == "FR"
 
     def test_leere_eingaben_ergeben_leere_ausgabe(self):
-        """Robustheit: Leere Eingabelisten fuehren zu leerer Ausgabe."""
+        """Robustheit: Leere Eingabelisten führen zu leerer Ausgabe."""
         ergebnis = merge_country_data([], [])
         assert ergebnis == []
 
 
 # ============================================================================
-# Zeitreihen-Merge-Paritaet
+# Zeitreihen-Merge-Parität
 # ============================================================================
 
 
 class TestZeitreihenMergeParitaet:
-    """Paritaet der merge_time_series-Funktion fuer UC1 (Landscape).
+    """Parität der merge_time_series-Funktion für UC1 (Landscape).
 
-    Testet die Zusammenfuehrung von Patent-, Projekt- und Publikations-
+    Testet die Zusammenführung von Patent-, Projekt- und Publikations-
     Zeitreihen mit Wachstumsraten-Berechnung.
     """
 
@@ -566,9 +566,9 @@ class TestZeitreihenMergeParitaet:
         assert ergebnis[1]["patents_growth"] == pytest.approx(50.0)
 
     def test_fehlende_jahre_werden_mit_null_aufgefuellt(self):
-        """Luecken in der Zeitreihe werden mit 0 aufgefuellt.
+        """Lücken in der Zeitreihe werden mit 0 aufgefüllt.
 
-        Wenn kein Eintrag fuer ein Jahr vorhanden ist, wird 0 eingetragen.
+        Wenn kein Eintrag für ein Jahr vorhanden ist, wird 0 eingetragen.
         """
         patent_years = [{"year": 2020, "count": 50}]
         ergebnis = merge_time_series(patent_years, [], [], 2019, 2021)
@@ -584,8 +584,8 @@ class TestZeitreihenMergeParitaet:
     def test_alle_drei_datenquellen_korrekt_zusammengefuehrt(self):
         """Alle drei Quellen (Patente, Projekte, Publikationen) korrekt gemischt.
 
-        Prueft, dass Patent-, Projekt- und Publikationsdaten fuer dasselbe Jahr
-        in einem einzigen Eintrag zusammengefuehrt werden.
+        Prüft, dass Patent-, Projekt- und Publikationsdaten für dasselbe Jahr
+        in einem einzigen Eintrag zusammengeführt werden.
         """
         patent_years = [{"year": 2021, "count": 42}]
         project_years = [{"year": 2021, "count": 15}]
@@ -601,9 +601,9 @@ class TestZeitreihenMergeParitaet:
         assert eintrag["publications"] == 7
 
     def test_jahresbereich_wird_korrekt_eingehalten(self):
-        """Zeitreihe enthaelt genau die Jahre start_year bis end_year.
+        """Zeitreihe enthält genau die Jahre start_year bis end_year.
 
-        Eintrage ausserhalb dieses Bereichs werden ignoriert.
+        Eintrage außerhalb dieses Bereichs werden ignoriert.
         """
         patent_years = [
             {"year": 2018, "count": 5},   # vor start_year → ignorieren

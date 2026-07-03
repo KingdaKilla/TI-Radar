@@ -1,6 +1,6 @@
-"""Conftest fuer temporal-svc Tests.
+"""Conftest für temporal-svc Tests.
 
-Fuegt ``packages/shared`` und den Service-Root zum sys.path hinzu, damit
+Fügt ``packages/shared`` und den Service-Root zum sys.path hinzu, damit
 sowohl ``shared.domain.*`` als auch ``src.*`` direkt importierbar sind.
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 _SERVICE_ROOT = Path(__file__).resolve().parent.parent
 # Projekt-Root: mvp_v3.0_new/
 _PROJECT_ROOT = _SERVICE_ROOT.parent.parent
-# Packages-Root: mvp_v3.0_new/packages/ — enthaelt ``shared`` als Paket.
+# Packages-Root: mvp_v3.0_new/packages/ — enthält ``shared`` als Paket.
 _SHARED_ROOT = _PROJECT_ROOT / "packages"
 
 for p in (_SHARED_ROOT, _SERVICE_ROOT):

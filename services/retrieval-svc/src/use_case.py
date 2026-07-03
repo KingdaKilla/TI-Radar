@@ -1,4 +1,4 @@
-"""Retrieval Use Case — 3-Stufen-Pipeline fuer RAG.
+"""Retrieval Use Case — 3-Stufen-Pipeline für RAG.
 
 Orchestriert den Ablauf:
 1. Query-Embedding erzeugen
@@ -6,7 +6,7 @@ Orchestriert den Ablauf:
 3. RRF-Fusion (k=60) -> Top-N Kandidaten
 4. Cross-Encoder Reranking -> Top-K
 
-Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
 """
 from __future__ import annotations
 
@@ -47,14 +47,14 @@ class RetrievalResult:
 # ---------------------------------------------------------------------------
 
 class RetrieveDocuments:
-    """Orchestriert die 3-stufige Retrieval-Pipeline fuer RAG.
+    """Orchestriert die 3-stufige Retrieval-Pipeline für RAG.
 
     Stufe 1: Dense + Sparse Search parallel
     Stufe 2: RRF-Fusion -> Top-N Kandidaten
     Stufe 3: Cross-Encoder Reranking -> Top-K
 
-    Transportunabhaengig: nimmt primitive Parameter, gibt RetrievalResult zurueck.
-    Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+    Transportunabhängig: nimmt primitive Parameter, gibt RetrievalResult zurück.
+    Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
     """
 
     def __init__(
@@ -86,14 +86,14 @@ class RetrieveDocuments:
         sources: list[str] | None = None,
         threshold: float = 0.3,
     ) -> RetrievalResult:
-        """3-stufige Retrieval-Pipeline ausfuehren.
+        """3-stufige Retrieval-Pipeline ausführen.
 
         Args:
-            technology: Technologie-Suchbegriff fuer Full-Text-Filter
-            query: Freie Suchanfrage fuer Embedding + Sparse Search
-            top_k: Maximale Anzahl zurueckgegebener Dokumente (nach Reranking)
+            technology: Technologie-Suchbegriff für Full-Text-Filter
+            query: Freie Suchanfrage für Embedding + Sparse Search
+            top_k: Maximale Anzahl zurückgegebener Dokumente (nach Reranking)
             sources: Zu durchsuchende Quellen (None = alle)
-            threshold: Minimale Cosine-Similarity fuer Dense Search
+            threshold: Minimale Cosine-Similarity für Dense Search
 
         Returns:
             RetrievalResult mit Dokumenten und Timing-Informationen

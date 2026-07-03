@@ -5,7 +5,7 @@ Orchestriert den Ablauf:
 2. Embeddings via OpenAI API erzeugen
 3. Embeddings in die DB schreiben
 
-Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
 """
 from __future__ import annotations
 
@@ -46,8 +46,8 @@ class EmbedResult:
 class EmbedDocuments:
     """Orchestriert die Batch-Population von Embeddings.
 
-    Transportunabhaengig: nimmt primitive Parameter, gibt EmbedResult zurueck.
-    Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+    Transportunabhängig: nimmt primitive Parameter, gibt EmbedResult zurück.
+    Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
     """
 
     def __init__(
@@ -69,7 +69,7 @@ class EmbedDocuments:
         Args:
             source: "patents", "projects" oder "papers"
             batch_size: Maximale Anzahl Dokumente pro Batch
-            year_from: Optional — nur fuer patents: Filter publication_year >= year_from
+            year_from: Optional — nur für patents: Filter publication_year >= year_from
 
         Returns:
             EmbedResult mit Statistiken zum Batch-Lauf
@@ -132,7 +132,7 @@ class EmbedDocuments:
 
 
 # ---------------------------------------------------------------------------
-# Result Dataclass fuer ChunkAndEmbed
+# Result Dataclass für ChunkAndEmbed
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True, slots=True)
@@ -154,8 +154,8 @@ class ChunkEmbedResult:
 class ChunkAndEmbed:
     """Orchestriert: fetch docs -> chunk -> embed -> store chunks.
 
-    Transportunabhaengig: nimmt primitive Parameter, gibt ChunkEmbedResult zurueck.
-    Keine Abhaengigkeit zu gRPC, Protobuf oder HTTP.
+    Transportunabhängig: nimmt primitive Parameter, gibt ChunkEmbedResult zurück.
+    Keine Abhängigkeit zu gRPC, Protobuf oder HTTP.
     """
 
     def __init__(
@@ -179,7 +179,7 @@ class ChunkAndEmbed:
         Args:
             source: "patents", "projects" oder "papers"
             batch_size: Maximale Anzahl Dokumente pro Batch
-            year_from: Optional — nur fuer patents: Filter publication_year >= year_from
+            year_from: Optional — nur für patents: Filter publication_year >= year_from
 
         Returns:
             ChunkEmbedResult mit Statistiken zum Batch-Lauf

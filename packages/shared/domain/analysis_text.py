@@ -1,4 +1,4 @@
-"""Reine Funktionen fuer deterministische Analyse-Textgenerierung (UC1-UC8).
+"""Reine Funktionen für deterministische Analyse-Textgenerierung (UC1-UC8).
 
 Alle Funktionen sind zustandslos und ohne I/O — testbar und auditierbar.
 Template-basierte deutsche Texte, kein LLM erforderlich.
@@ -57,7 +57,7 @@ def _trend_word(cagr_value: float) -> str:
         return "leichtes Wachstum"
     if cagr_value > -5:
         return "Stagnation"
-    return "einen Rueckgang"
+    return "einen Rückgang"
 
 
 def _hhi_interpretation(hhi: float) -> str:
@@ -75,17 +75,17 @@ def _hhi_interpretation(hhi: float) -> str:
 
 
 def generate_landscape_text(panel: LandscapePanel) -> str:
-    """Analysetext fuer UC1 — Technologie-Landschaft."""
+    """Analysetext für UC1 — Technologie-Landschaft."""
     total = panel.total_patents + panel.total_projects + panel.total_publications
     if total == 0:
         return ""
 
     parts: list[str] = []
 
-    # Gesamtaktivitaeten + Aufschluesselung
+    # Gesamtaktivitäten + Aufschlüsselung
     parts.append(
         f"Die Landschaftsanalyse identifiziert insgesamt {_fmt_int(total)} "
-        f"technologische Aktivitaeten, aufgeteilt in {_fmt_int(panel.total_patents)} Patente, "
+        f"technologische Aktivitäten, aufgeteilt in {_fmt_int(panel.total_patents)} Patente, "
         f"{_fmt_int(panel.total_projects)} EU-Forschungsprojekte und "
         f"{_fmt_int(panel.total_publications)} akademische Publikationen."
     )
@@ -100,36 +100,36 @@ def generate_landscape_text(panel: LandscapePanel) -> str:
     dominant_share = source_map[dominant_source] / total * 100 if total > 0 else 0
     if dominant_share > 60:
         parts.append(
-            f"Mit {_fmt_pct(dominant_share)} dominieren {dominant_source} das Aktivitaetsprofil "
+            f"Mit {_fmt_pct(dominant_share)} dominieren {dominant_source} das Aktivitätsprofil "
             f"deutlich, was auf eine stark {_source_orientation(dominant_source)} "
             f"Technologielandschaft hindeutet."
         )
     else:
         parts.append(
-            f"{dominant_source} bilden mit {_fmt_pct(dominant_share)} die groesste Einzelquelle. "
+            f"{dominant_source} bilden mit {_fmt_pct(dominant_share)} die größte Einzelquelle. "
             f"Die relativ ausgeglichene Verteilung deutet auf ein Technologiefeld hin, das "
             f"sowohl in der industriellen Anwendung als auch in der Forschung aktiv ist."
         )
 
-    # Verhaeltnis Patent/Projekt
+    # Verhältnis Patent/Projekt
     if panel.total_patents > 0 and panel.total_projects > 0:
         ratio = panel.total_patents / panel.total_projects
         if ratio > 5:
             parts.append(
-                f"Das Patent-zu-Projekt-Verhaeltnis von {ratio:.1f}:1 signalisiert, dass "
+                f"Das Patent-zu-Projekt-Verhältnis von {ratio:.1f}:1 signalisiert, dass "
                 f"die Technologie bereits stark kommerzialisiert ist und die industrielle "
-                f"Schutzrechtsstrategie die oeffentliche Forschungsfoerderung ueberwiegt."
+                f"Schutzrechtsstrategie die öffentliche Forschungsförderung überwiegt."
             )
         elif ratio > 2:
             parts.append(
-                f"Mit einem Patent-zu-Projekt-Verhaeltnis von {ratio:.1f}:1 zeigt sich eine "
-                f"gesunde Balance zwischen industrieller Patentierung und oeffentlich "
-                f"gefoerderten Forschungsaktivitaeten."
+                f"Mit einem Patent-zu-Projekt-Verhältnis von {ratio:.1f}:1 zeigt sich eine "
+                f"gesunde Balance zwischen industrieller Patentierung und öffentlich "
+                f"geförderten Forschungsaktivitäten."
             )
         elif ratio < 0.5:
             parts.append(
-                f"Das niedrige Patent-zu-Projekt-Verhaeltnis von {ratio:.1f}:1 deutet darauf hin, "
-                f"dass die Technologie sich noch in einem fruehen, forschungsgetriebenen "
+                f"Das niedrige Patent-zu-Projekt-Verhältnis von {ratio:.1f}:1 deutet darauf hin, "
+                f"dass die Technologie sich noch in einem frühen, forschungsgetriebenen "
                 f"Stadium befindet (Watts & Porter 1997)."
             )
 
@@ -141,8 +141,8 @@ def generate_landscape_text(panel: LandscapePanel) -> str:
         if country_name and total > 0:
             country_share = country_total / total * 100
             parts.append(
-                f"Das fuehrende Land ist {country_name} mit {_fmt_int(country_total)} "
-                f"Aktivitaeten ({_fmt_pct(country_share)} Anteil)."
+                f"Das führende Land ist {country_name} mit {_fmt_int(country_total)} "
+                f"Aktivitäten ({_fmt_pct(country_share)} Anteil)."
             )
             # Zweites Land
             if len(panel.top_countries) > 1:
@@ -153,7 +153,7 @@ def generate_landscape_text(panel: LandscapePanel) -> str:
                     gap = country_total - second_total
                     parts.append(
                         f"Auf Platz zwei folgt {second_name} mit {_fmt_int(second_total)} "
-                        f"Aktivitaeten — ein Abstand von {_fmt_int(gap)} zum Spitzenreiter."
+                        f"Aktivitäten — ein Abstand von {_fmt_int(gap)} zum Spitzenreiter."
                     )
 
     # Patent-Wachstumsrate
@@ -163,7 +163,7 @@ def generate_landscape_text(panel: LandscapePanel) -> str:
         if patents_growth is not None and patents_growth != 0:
             direction = "positiv" if float(patents_growth) > 0 else "negativ"
             parts.append(
-                f"Die Patentwachstumsrate im letzten erfassten Jahr betraegt "
+                f"Die Patentwachstumsrate im letzten erfassten Jahr beträgt "
                 f"{_fmt_pct(float(patents_growth))} und entwickelt sich damit {direction} "
                 f"(Year-over-Year-Methode nach Watts & Porter 1997)."
             )
@@ -185,15 +185,15 @@ def generate_landscape_text(panel: LandscapePanel) -> str:
             parts.append(
                 f"Die Zeitreihe umfasst {len(years)} Jahre "
                 f"({min(years)}\u2013{max(years)}), was eine belastbare "
-                f"Trendanalyse ermoeglicht."
+                f"Trendanalyse ermöglicht."
             )
 
-    # Aktive Laender
+    # Aktive Länder
     if panel.top_countries:
         n_countries = len(panel.top_countries)
         parts.append(
-            f"Insgesamt sind {_fmt_int(n_countries)} Laender im Technologiefeld aktiv, "
-            f"was auf eine breite internationale Forschungsbasis schliessen laesst."
+            f"Insgesamt sind {_fmt_int(n_countries)} Länder im Technologiefeld aktiv, "
+            f"was auf eine breite internationale Forschungsbasis schließen lässt."
         )
 
     return " ".join(parts)
@@ -204,7 +204,7 @@ def _source_orientation(source: str) -> str:
     if source == "Patente":
         return "industriell und anwendungsorientierte"
     if source == "Projekte":
-        return "durch oeffentliche Forschungsfoerderung getriebene"
+        return "durch öffentliche Forschungsförderung getriebene"
     return "akademisch und publikationsgetriebene"
 
 
@@ -214,7 +214,7 @@ def _source_orientation(source: str) -> str:
 
 
 def generate_maturity_text(panel: MaturityPanel) -> str:
-    """Analysetext fuer UC2 — Reifegrad-Analyse (Gao et al. 2013)."""
+    """Analysetext für UC2 — Reifegrad-Analyse (Gao et al. 2013)."""
     if not panel.phase:
         return ""
 
@@ -226,38 +226,38 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
         f"Die Technologie befindet sich in der Phase \"{phase_label}\" "
         f"mit einem Reifegrad von {_fmt_pct(panel.maturity_percent)} "
         f"(Schwellenwerte nach Gao et al. 2013: <10% Aufkommend, "
-        f"10\u201350% Wachsend, 50\u201390% Ausgereift, \u226590% Saettigung)."
+        f"10\u201350% Wachsend, 50\u201390% Ausgereift, \u226590% Sättigung)."
     )
 
     # Phasen-Interpretation
     if panel.maturity_percent < 10:
         parts.append(
-            "In dieser fruehen Entstehungsphase ist die Technologie noch durch "
+            "In dieser frühen Entstehungsphase ist die Technologie noch durch "
             "explorative Forschung und wenige Patentanmeldungen gekennzeichnet. "
             "Das Innovationspotenzial ist hoch, jedoch besteht erhebliche Unsicherheit "
-            "bezueglich der technologischen Tragfaehigkeit."
+            "bezüglich der technologischen Tragfähigkeit."
         )
     elif panel.maturity_percent < 50:
         parts.append(
             "Die Wachstumsphase ist typischerweise durch einen starken Anstieg der "
-            "Patentaktivitaet und zunehmendes kommerzielles Interesse gekennzeichnet. "
+            "Patentaktivität und zunehmendes kommerzielles Interesse gekennzeichnet. "
             "Unternehmen bauen in dieser Phase gezielt Patentportfolios auf, "
             "um Marktpositionen zu sichern."
         )
     elif panel.maturity_percent < 90:
         parts.append(
             "In der Reifephase verlangsamt sich die Innovationsgeschwindigkeit. "
-            "Neue Patente betreffen haeufig inkrementelle Verbesserungen statt "
-            "grundlegender Durchbrueche. Der Markt konsolidiert sich zunehmend."
+            "Neue Patente betreffen häufig inkrementelle Verbesserungen statt "
+            "grundlegender Durchbrüche. Der Markt konsolidiert sich zunehmend."
         )
     else:
         parts.append(
-            "Die Saettigungsphase ist erreicht — das Wachstumspotenzial "
-            "ist weitgehend ausgeschoepft. Neue Patente konzentrieren sich "
+            "Die Sättigungsphase ist erreicht — das Wachstumspotenzial "
+            "ist weitgehend ausgeschöpft. Neue Patente konzentrieren sich "
             "auf Nischenanwendungen oder Kombinationstechnologien."
         )
 
-    # R²-Qualitaet + Modell
+    # R²-Qualität + Modell
     if panel.r_squared > 0:
         if panel.r_squared >= 0.9:
             quality = "exzellente"
@@ -267,12 +267,12 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
         elif panel.r_squared >= 0.7:
             quality = "gute"
             quality_note = (
-                "Die Daten stimmen weitgehend mit dem theoretischen Modell ueberein."
+                "Die Daten stimmen weitgehend mit dem theoretischen Modell überein."
             )
         elif panel.r_squared >= 0.5:
             quality = "akzeptable"
             quality_note = (
-                "Das Modell erklaert die Daten nur teilweise — die Ergebnisse "
+                "Das Modell erklärt die Daten nur teilweise — die Ergebnisse "
                 "sollten mit Vorsicht interpretiert werden."
             )
         else:
@@ -284,13 +284,13 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
         model_info = f" ({panel.fit_model})" if panel.fit_model else ""
         parts.append(
             f"Der S-Curve-Fit{model_info} zeigt eine {quality} "
-            f"Anpassungsguete (R\u00b2 = {panel.r_squared:.3f}). {quality_note}"
+            f"Anpassungsgüte (R\u00b2 = {panel.r_squared:.3f}). {quality_note}"
         )
 
     # CAGR + Trend
     if panel.cagr != 0:
         parts.append(
-            f"Die jaehrliche Wachstumsrate (CAGR) der Patentanmeldungen betraegt "
+            f"Die jährliche Wachstumsrate (CAGR) der Patentanmeldungen beträgt "
             f"{_fmt_pct(panel.cagr)} und zeigt damit {_trend_word(panel.cagr)}."
         )
 
@@ -299,7 +299,7 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
         parts.append(
             f"Der Wendepunkt der S-Kurve liegt bei {panel.inflection_year:.0f} — "
             f"ab diesem Zeitpunkt verlangsamt sich die Wachstumsdynamik. "
-            f"Der Wendepunkt markiert den Uebergang von beschleunigtem zu "
+            f"Der Wendepunkt markiert den Übergang von beschleunigtem zu "
             f"verlangsamtem Wachstum im logistischen Modell."
         )
 
@@ -315,9 +315,9 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
         elif conf_pct >= 50:
             conf_note = "Die Analyse hat eine mittlere Aussagekraft."
         else:
-            conf_note = "Die eingeschraenkte Datenbasis limitiert die Aussagekraft."
+            conf_note = "Die eingeschränkte Datenbasis limitiert die Aussagekraft."
         parts.append(
-            f"Die Konfidenz der Analyse betraegt {_fmt_pct(conf_pct, 0)}, "
+            f"Die Konfidenz der Analyse beträgt {_fmt_pct(conf_pct, 0)}, "
             f"basierend auf {n_years} Jahren Patentdaten mit insgesamt "
             f"{_fmt_int(total_patents)} Patentfamilien. {conf_note}"
         )
@@ -326,17 +326,17 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
     if 0 < panel.maturity_percent < 90:
         remaining = 90.0 - panel.maturity_percent
         parts.append(
-            f"Bis zur Saettigungsgrenze (90%) verbleiben noch "
+            f"Bis zur Sättigungsgrenze (90%) verbleiben noch "
             f"{_fmt_pct(remaining)} Wachstumspotenzial — "
-            f"die Technologie hat damit noch signifikanten Raum fuer "
-            f"weitere Patentaktivitaeten und Marktdurchdringung."
+            f"die Technologie hat damit noch signifikanten Raum für "
+            f"weitere Patentaktivitäten und Marktdurchdringung."
         )
 
     # Methodischer Hinweis
     parts.append(
-        "Die Analyse basiert ausschliesslich auf Patentdaten (OECD 2009) und "
+        "Die Analyse basiert ausschließlich auf Patentdaten (OECD 2009) und "
         "verwendet ein logistisches S-Curve-Modell (Franses 1994). "
-        "Patentfamilien werden dedupliziert, um Mehrfachzaehlungen zu vermeiden."
+        "Patentfamilien werden dedupliziert, um Mehrfachzählungen zu vermeiden."
     )
 
     return " ".join(parts)
@@ -348,7 +348,7 @@ def generate_maturity_text(panel: MaturityPanel) -> str:
 
 
 def generate_competitive_text(panel: CompetitivePanel) -> str:
-    """Analysetext fuer UC3 — Wettbewerbs-Analyse (Garcia-Vega 2006)."""
+    """Analysetext für UC3 — Wettbewerbs-Analyse (Garcia-Vega 2006)."""
     if not panel.top_actors:
         return ""
 
@@ -360,7 +360,7 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
         level_map.get(panel.concentration_level, panel.concentration_level)
         interpretation = _hhi_interpretation(panel.hhi_index)
         parts.append(
-            f"Der Herfindahl-Hirschman-Index (HHI) betraegt {_fmt_int(int(panel.hhi_index))} — "
+            f"Der Herfindahl-Hirschman-Index (HHI) beträgt {_fmt_int(int(panel.hhi_index))} — "
             f"der Markt ist damit {interpretation} "
             f"(DOJ/FTC-Schwellenwerte: <1.500 gering, 1.500\u20132.500 moderat, >2.500 hoch; "
             f"Garcia-Vega 2006 validiert die Anwendung auf Patentdaten)."
@@ -373,7 +373,7 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
     top_count = int(top.get("count", 0))
     if top_name:
         parts.append(
-            f"Der fuehrende Akteur ist {top_name} mit {_fmt_int(top_count)} Aktivitaeten "
+            f"Der führende Akteur ist {top_name} mit {_fmt_int(top_count)} Aktivitäten "
             f"und einem Marktanteil von {_fmt_pct(top_share)}."
         )
         # Zweiter Akteur + Abstand
@@ -385,7 +385,7 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
                 gap = top_share - second_share
                 parts.append(
                     f"Auf Platz zwei folgt {second_name} mit {_fmt_pct(second_share)} "
-                    f"— ein Abstand von {_fmt_pct(gap, 1)} Prozentpunkten zum Marktfuehrer."
+                    f"— ein Abstand von {_fmt_pct(gap, 1)} Prozentpunkten zum Marktführer."
                 )
 
     # Top-3-Anteil + Interpretation
@@ -393,18 +393,18 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
         top3_pct = panel.top_3_share * 100
         if top3_pct > 70:
             interpretation = (
-                "Das Technologiefeld wird von wenigen grossen Akteuren dominiert. "
-                "Fuer neue Marktteilnehmer bestehen hohe Eintrittsbarrieren."
+                "Das Technologiefeld wird von wenigen großen Akteuren dominiert. "
+                "Für neue Marktteilnehmer bestehen hohe Eintrittsbarrieren."
             )
         elif top3_pct > 50:
             interpretation = (
-                "Es besteht eine deutliche Dominanz der drei groessten Akteure, "
-                "jedoch mit verbleibendem Raum fuer spezialisierte Nischenanbieter."
+                "Es besteht eine deutliche Dominanz der drei größten Akteure, "
+                "jedoch mit verbleibendem Raum für spezialisierte Nischenanbieter."
             )
         elif top3_pct > 30:
             interpretation = (
                 "Die moderate Konzentration signalisiert einen wettbewerbsintensiven Markt "
-                "mit Chancen fuer mittlere Akteure."
+                "mit Chancen für mittlere Akteure."
             )
         else:
             interpretation = (
@@ -425,13 +425,13 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
         )
     elif total_actors > 20:
         actor_note = (
-            "Das Akteursfeld ist mittelgross und umfasst sowohl etablierte "
+            "Das Akteursfeld ist mittelgroß und umfasst sowohl etablierte "
             "Unternehmen als auch spezialisierte Forschungseinrichtungen."
         )
     else:
         actor_note = (
             "Die geringe Akteursanzahl deutet auf ein Nischenfeld oder eine "
-            "fruehe Marktphase hin."
+            "frühe Marktphase hin."
         )
     parts.append(
         f"Insgesamt wurden {_fmt_int(total_actors)} Akteure identifiziert. {actor_note}"
@@ -460,7 +460,7 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
         else:
             parts.append(
                 "Die niedrige Netzwerkdichte signalisiert, dass die meisten Akteure "
-                "eher unabhaengig agieren als in Kooperationsverbunden."
+                "eher unabhängig agieren als in Kooperationsverbunden."
             )
 
     return " ".join(parts)
@@ -472,15 +472,15 @@ def generate_competitive_text(panel: CompetitivePanel) -> str:
 
 
 def generate_funding_text(panel: FundingPanel) -> str:
-    """Analysetext fuer UC4 — EU-Foerderungs-Analyse."""
+    """Analysetext für UC4 — EU-Förderungs-Analyse."""
     if panel.total_funding_eur <= 0:
         return ""
 
     parts: list[str] = []
 
-    # Gesamtfoerderung
+    # Gesamtförderung
     parts.append(
-        f"Die EU-Gesamtfoerderung fuer dieses Technologiefeld belaeuft sich auf "
+        f"Die EU-Gesamtförderung für dieses Technologiefeld beläuft sich auf "
         f"{_fmt_eur(panel.total_funding_eur)}."
     )
 
@@ -490,25 +490,25 @@ def generate_funding_text(panel: FundingPanel) -> str:
         if total_projects > 0:
             parts.append(
                 f"Verteilt auf {_fmt_int(total_projects)} Projekte ergibt sich "
-                f"eine durchschnittliche Projektgroesse von "
+                f"eine durchschnittliche Projektgröße von "
                 f"{_fmt_eur(panel.avg_project_size)}."
             )
             if panel.avg_project_size > 5_000_000:
                 parts.append(
-                    "Die ueberdurchschnittlich hohe Projektgroesse deutet auf "
-                    "Grossprojekte hin, die typischerweise als Research & Innovation "
+                    "Die überdurchschnittlich hohe Projektgröße deutet auf "
+                    "Großprojekte hin, die typischerweise als Research & Innovation "
                     "Actions (RIA) oder integrierte Verbundprojekte ausgeschrieben werden."
                 )
             elif panel.avg_project_size > 1_000_000:
                 parts.append(
-                    "Die Projektgroesse liegt im mittleren Bereich fuer "
+                    "Die Projektgröße liegt im mittleren Bereich für "
                     "EU-Rahmenprogramm-Projekte."
                 )
             elif panel.avg_project_size > 0:
                 parts.append(
                     "Die vergleichsweise kleineren Projekte deuten auf "
                     "Coordination & Support Actions (CSA) oder "
-                    "fruehe Machbarkeitsstudien hin."
+                    "frühe Machbarkeitsstudien hin."
                 )
 
     # CAGR + Trend + Zeitraum
@@ -516,15 +516,15 @@ def generate_funding_text(panel: FundingPanel) -> str:
         period_info = f" ({panel.funding_cagr_period})" if panel.funding_cagr_period else ""
         abs_cagr = abs(panel.funding_cagr)
         parts.append(
-            f"Die jaehrliche Wachstumsrate (CAGR) der Foerderung betraegt "
+            f"Die jährliche Wachstumsrate (CAGR) der Förderung beträgt "
             f"{_fmt_pct(panel.funding_cagr)}{period_info} "
             f"und zeigt damit {_trend_word(panel.funding_cagr)}."
         )
         if abs_cagr > 20:
             parts.append(
-                "Diese aussergewoehnlich hohe Wachstumsrate deutet auf ein "
-                "Technologiefeld hin, das zunehmend strategische Prioritaet "
-                "in der EU-Forschungspolitik geniesst."
+                "Diese außergewöhnlich hohe Wachstumsrate deutet auf ein "
+                "Technologiefeld hin, das zunehmend strategische Priorität "
+                "in der EU-Forschungspolitik genießt."
             )
 
     # Dominantes Programm + Kontext
@@ -536,9 +536,9 @@ def generate_funding_text(panel: FundingPanel) -> str:
         if prog_name and panel.total_funding_eur > 0:
             prog_share = prog_funding / panel.total_funding_eur * 100
             parts.append(
-                f"Das dominierende Foerderprogramm ist {prog_name} "
+                f"Das dominierende Förderprogramm ist {prog_name} "
                 f"mit {_fmt_eur(prog_funding)} ({_fmt_pct(prog_share)} "
-                f"der Gesamtfoerderung, {_fmt_int(prog_projects)} Projekte)."
+                f"der Gesamtförderung, {_fmt_int(prog_projects)} Projekte)."
             )
             if len(panel.by_programme) > 1:
                 second_prog = panel.by_programme[1]
@@ -560,7 +560,7 @@ def generate_funding_text(panel: FundingPanel) -> str:
         if top_instruments:
             instr_strs = [f"{name} ({_fmt_int(cnt)} Projekte)" for name, cnt in top_instruments]
             parts.append(
-                f"Die haeufigsten Foerderinstrumente sind: {', '.join(instr_strs)}."
+                f"Die häufigsten Förderinstrumente sind: {', '.join(instr_strs)}."
             )
 
     # Zeitreihen-Trend
@@ -570,15 +570,15 @@ def generate_funding_text(panel: FundingPanel) -> str:
         if first_funding > 0 and last_funding > 0:
             if last_funding > first_funding * 2:
                 parts.append(
-                    "Ueber den Betrachtungszeitraum hat sich die jaehrliche "
-                    "Foerderung mehr als verdoppelt — ein starkes Signal fuer "
+                    "Über den Betrachtungszeitraum hat sich die jährliche "
+                    "Förderung mehr als verdoppelt — ein starkes Signal für "
                     "wachsendes politisches Interesse an dieser Technologie."
                 )
             elif last_funding < first_funding * 0.5:
                 parts.append(
-                    "Die jaehrliche Foerderung hat sich im Betrachtungszeitraum "
+                    "Die jährliche Förderung hat sich im Betrachtungszeitraum "
                     "deutlich reduziert, was auf eine Verschiebung der "
-                    "Forschungsprioritaeten hindeuten koennte."
+                    "Forschungsprioritäten hindeuten könnte."
                 )
 
     return " ".join(parts)
@@ -590,7 +590,7 @@ def generate_funding_text(panel: FundingPanel) -> str:
 
 
 def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
-    """Analysetext fuer UC5 — CPC-Technologiefluss (Jaccard-Index)."""
+    """Analysetext für UC5 — CPC-Technologiefluss (Jaccard-Index)."""
     if not panel.matrix or not panel.labels:
         return ""
 
@@ -610,7 +610,7 @@ def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
         f"unterschiedliche Klassen identifiziert."
     )
 
-    # Staerkste Verbindung
+    # Stärkste Verbindung
     n = len(panel.matrix)
     max_val = 0.0
     max_i = 0
@@ -629,14 +629,14 @@ def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
         name_a = f"{label_a} ({desc_a})" if desc_a else label_a
         name_b = f"{label_b} ({desc_b})" if desc_b else label_b
         parts.append(
-            f"Die staerkste Verflechtung besteht zwischen {name_a} und {name_b} "
+            f"Die stärkste Verflechtung besteht zwischen {name_a} und {name_b} "
             f"mit einem Jaccard-Index von {max_val:.3f}."
         )
         if max_val > 0.5:
             parts.append(
                 "Dieser hohe Jaccard-Wert zeigt, dass beide Klassen "
-                "haeufig gemeinsam in Patenten auftreten und eng verwandte "
-                "Technologiefelder repraesentieren."
+                "häufig gemeinsam in Patenten auftreten und eng verwandte "
+                "Technologiefelder repräsentieren."
             )
         elif max_val > 0.2:
             parts.append(
@@ -644,7 +644,7 @@ def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
                 "aber nicht dominante technologische Verwandtschaft."
             )
 
-    # Schwaechste Verbindung (>0)
+    # Schwächste Verbindung (>0)
     min_val = 1.0
     for i in range(n):
         for j in range(i + 1, n):
@@ -652,7 +652,7 @@ def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
                 min_val = panel.matrix[i][j]
     if 0 < min_val < max_val:
         parts.append(
-            f"Die schwaechste nicht-triviale Verbindung hat einen Jaccard-Index "
+            f"Die schwächste nicht-triviale Verbindung hat einen Jaccard-Index "
             f"von {min_val:.3f} — die Spanne der Verflechtung ist damit "
             f"{'breit' if (max_val - min_val) > 0.2 else 'eng'}."
         )
@@ -669,28 +669,28 @@ def generate_cpc_flow_text(panel: CpcFlowPanel) -> str:
         active_pairs = len(off_diag_values)
         sparsity = (total_pairs - active_pairs) / total_pairs * 100 if total_pairs > 0 else 0
         parts.append(
-            f"Der durchschnittliche Jaccard-Index (nicht-null) betraegt {avg_jaccard:.3f} "
-            f"bei {active_pairs} von {total_pairs} moeglichen Paaren "
+            f"Der durchschnittliche Jaccard-Index (nicht-null) beträgt {avg_jaccard:.3f} "
+            f"bei {active_pairs} von {total_pairs} möglichen Paaren "
             f"({_fmt_pct(sparsity)} der Matrix sind null)."
         )
 
         if avg_jaccard > 0.3:
             parts.append(
                 "Die hohe durchschnittliche Verflechtung deutet auf ein "
-                "breites, interdisziplinaeres Technologiefeld hin, in dem "
-                "Innovationen haeufig Technologiegrenzen ueberschreiten."
+                "breites, interdisziplinäres Technologiefeld hin, in dem "
+                "Innovationen häufig Technologiegrenzen überschreiten."
             )
         elif avg_jaccard > 0.1:
             parts.append(
                 "Die moderate Verflechtung zeigt ein Technologiefeld "
-                "mit erkennbaren Querbezuegen, das jedoch auch klar "
+                "mit erkennbaren Querbezügen, das jedoch auch klar "
                 "abgegrenzte Teilbereiche aufweist."
             )
         else:
             parts.append(
                 "Die geringe Verflechtung deutet auf ein spezialisiertes "
                 "Technologiefeld hin, dessen Teilbereiche weitgehend "
-                "unabhaengig voneinander agieren."
+                "unabhängig voneinander agieren."
             )
 
     return " ".join(parts)
@@ -711,17 +711,17 @@ _EU_COUNTRIES = {
 
 
 def generate_geographic_text(panel: GeographicPanel) -> str:
-    """Analysetext fuer UC6 — Geografische Analyse."""
+    """Analysetext für UC6 — Geografische Analyse."""
     if panel.total_countries == 0:
         return ""
 
     parts: list[str] = []
 
-    # Laender + Staedte + Kontext
+    # Länder + Städte + Kontext
     parts.append(
-        f"Die geografische Analyse zeigt eine Praesenz der Technologie in "
-        f"{_fmt_int(panel.total_countries)} Laendern und "
-        f"{_fmt_int(panel.total_cities)} Staedten."
+        f"Die geografische Analyse zeigt eine Präsenz der Technologie in "
+        f"{_fmt_int(panel.total_countries)} Ländern und "
+        f"{_fmt_int(panel.total_cities)} Städten."
     )
 
     if panel.total_countries > 30:
@@ -731,12 +731,12 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
         )
     elif panel.total_countries > 10:
         parts.append(
-            "Die Technologie ist in einer substanziellen Anzahl von Laendern "
+            "Die Technologie ist in einer substanziellen Anzahl von Ländern "
             "vertreten, was auf internationales Interesse und Relevanz hindeutet."
         )
     else:
         parts.append(
-            "Die Aktivitaet konzentriert sich auf wenige Laender, was auf ein "
+            "Die Aktivität konzentriert sich auf wenige Länder, was auf ein "
             "spezialisiertes Nischenfeld oder regionale Schwerpunkte hindeutet."
         )
 
@@ -744,7 +744,7 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
     if panel.cross_border_share > 0:
         cb_pct = panel.cross_border_share * 100
         parts.append(
-            f"Der Anteil grenzueberschreitender Projekte betraegt "
+            f"Der Anteil grenzüberschreitender Projekte beträgt "
             f"{_fmt_pct(cb_pct)}."
         )
         if cb_pct > 80:
@@ -755,7 +755,7 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
             )
         elif cb_pct > 50:
             parts.append(
-                "Der ueberwiegende Anteil grenzueberschreitender Projekte "
+                "Der überwiegende Anteil grenzüberschreitender Projekte "
                 "zeigt, dass internationale Zusammenarbeit in diesem Feld "
                 "die Norm ist."
             )
@@ -769,8 +769,8 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
         if country_name and all_total > 0:
             top_share = country_total / all_total * 100
             parts.append(
-                f"Das fuehrende Land ist {country_name} mit {_fmt_int(country_total)} "
-                f"Aktivitaeten ({_fmt_pct(top_share)} Anteil)."
+                f"Das führende Land ist {country_name} mit {_fmt_int(country_total)} "
+                f"Aktivitäten ({_fmt_pct(top_share)} Anteil)."
             )
             # Zweites + drittes Land
             if len(panel.country_distribution) > 2:
@@ -778,7 +778,7 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
                 third = str(panel.country_distribution[2].get("country", ""))
                 if second and third:
                     parts.append(
-                        f"Es folgen {second} und {third} auf den Plaetzen zwei und drei."
+                        f"Es folgen {second} und {third} auf den Plätzen zwei und drei."
                     )
 
     # Top-Kooperationspaar
@@ -789,7 +789,7 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
         pair_count = int(top_pair.get("count", 0))
         if pair_a and pair_b:
             parts.append(
-                f"Die staerkste Kooperationsachse verlaeuft zwischen "
+                f"Die stärkste Kooperationsachse verläuft zwischen "
                 f"{pair_a} und {pair_b} mit {_fmt_int(pair_count)} gemeinsamen Projekten."
             )
             # Zweites Kooperationspaar
@@ -816,9 +816,9 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
             parts.append(
                 f"In den Top-10 dominieren EU-/EWR-Staaten "
                 f"({eu_count} von {len(top_10)}). "
-                f"Dies spiegelt den europaeischen Fokus der Datenquellen "
-                f"(EPO, CORDIS) wider und ist kein Indikator fuer eine rein "
-                f"europaeische Technologieentwicklung."
+                f"Dies spiegelt den europäischen Fokus der Datenquellen "
+                f"(EPO, CORDIS) wider und ist kein Indikator für eine rein "
+                f"europäische Technologieentwicklung."
             )
         elif eu_count > 0:
             parts.append(
@@ -827,14 +827,14 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
                 f"international diversifiziertes Technologiefeld."
             )
 
-    # Top-Staedte
+    # Top-Städte
     if panel.city_distribution and len(panel.city_distribution) >= 2:
         top_city = str(panel.city_distribution[0].get("city", ""))
         top_city_count = int(panel.city_distribution[0].get("count", 0))
         if top_city:
             parts.append(
-                f"Auf Stadtebene fuehrt {top_city} mit "
-                f"{_fmt_int(top_city_count)} Aktivitaeten."
+                f"Auf Stadtebene führt {top_city} mit "
+                f"{_fmt_int(top_city_count)} Aktivitäten."
             )
 
     return " ".join(parts)
@@ -846,7 +846,7 @@ def generate_geographic_text(panel: GeographicPanel) -> str:
 
 
 def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
-    """Analysetext fuer UC7 — Forschungsimpact (Banks 2006, Valenzuela et al. 2015)."""
+    """Analysetext für UC7 — Forschungsimpact (Banks 2006, Valenzuela et al. 2015)."""
     if panel.total_papers == 0:
         return ""
 
@@ -854,13 +854,13 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
 
     # h-Index + Einordnung
     parts.append(
-        f"Der h-Index des Technologiefeldes betraegt {panel.h_index} "
+        f"Der h-Index des Technologiefeldes beträgt {panel.h_index} "
         f"(Topic-Level-Adaption nach Banks 2006)."
     )
     if panel.h_index >= 50:
         parts.append(
             "Dieser sehr hohe h-Index signalisiert ein etabliertes Forschungsgebiet "
-            "mit grosser akademischer Wirkung und zahlreichen hochzitierten Arbeiten."
+            "mit großer akademischer Wirkung und zahlreichen hochzitierten Arbeiten."
         )
     elif panel.h_index >= 20:
         parts.append(
@@ -891,22 +891,22 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
         if top_citations > panel.avg_citations * 10:
             parts.append(
                 "Die Zitationsverteilung ist stark rechtsschief — wenige "
-                "hochzitierte Arbeiten ueberragen den Durchschnitt deutlich. "
-                "Dies ist typisch fuer wissenschaftliche Felder (Lotka-Verteilung)."
+                "hochzitierte Arbeiten überragen den Durchschnitt deutlich. "
+                "Dies ist typisch für wissenschaftliche Felder (Lotka-Verteilung)."
             )
 
     # Influential Ratio
     if panel.influential_ratio > 0:
         infl_pct = panel.influential_ratio * 100
         parts.append(
-            f"Der Anteil einflussreicher Zitationen betraegt "
+            f"Der Anteil einflussreicher Zitationen beträgt "
             f"{_fmt_pct(infl_pct)} "
             f"(Valenzuela et al. 2015 — experimentelle Metrik)."
         )
         if infl_pct > 10:
             parts.append(
-                "Der ueberdurchschnittlich hohe Anteil einflussreicher Zitationen "
-                "deutet darauf hin, dass Arbeiten in diesem Feld haeufig als "
+                "Der überdurchschnittlich hohe Anteil einflussreicher Zitationen "
+                "deutet darauf hin, dass Arbeiten in diesem Feld häufig als "
                 "methodische oder konzeptionelle Grundlage weiterverwendet werden."
             )
 
@@ -931,7 +931,7 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
         venue_count = int(top_venue.get("count", 0))
         if venue_name:
             parts.append(
-                f"Die fuehrende Publikationsquelle ist \"{venue_name}\" "
+                f"Die führende Publikationsquelle ist \"{venue_name}\" "
                 f"mit {_fmt_int(venue_count)} Papers."
             )
             if len(panel.top_venues) > 1:
@@ -961,13 +961,13 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
         if first_year_cit > 0 and last_year_cit > first_year_cit * 2:
             parts.append(
                 "Der Zitationstrend zeigt eine deutlich steigende Tendenz — "
-                "das akademische Interesse an dieser Technologie waechst "
-                "ueber den Betrachtungszeitraum signifikant."
+                "das akademische Interesse an dieser Technologie wächst "
+                "über den Betrachtungszeitraum signifikant."
             )
         elif first_year_cit > 0 and last_year_cit < first_year_cit * 0.5:
             parts.append(
-                "Der Zitationstrend ist ruecklaeufig, was auf abnehmendes "
-                "akademisches Interesse hindeuten koennte."
+                "Der Zitationstrend ist rückläufig, was auf abnehmendes "
+                "akademisches Interesse hindeuten könnte."
             )
 
     # Sampling-Hinweis
@@ -975,7 +975,7 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
         parts.append(
             "Methodischer Hinweis: Die Analyse basiert auf den Top-200 "
             "relevantesten Papers der Semantic Scholar Academic Graph API. "
-            "Der h-Index ist daher eine Approximation und kein vollstaendiger "
+            "Der h-Index ist daher eine Approximation und kein vollständiger "
             "Korpus-h-Index (Banks 2006)."
         )
 
@@ -988,7 +988,7 @@ def generate_research_impact_text(panel: ResearchImpactPanel) -> str:
 
 
 def generate_temporal_text(panel: TemporalPanel) -> str:
-    """Analysetext fuer UC8 — Temporale Dynamik (Malerba & Orsenigo 1999)."""
+    """Analysetext für UC8 — Temporale Dynamik (Malerba & Orsenigo 1999)."""
     if not panel.entrant_persistence_trend:
         return ""
 
@@ -997,24 +997,24 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
     # New Entrant Rate + Einordnung
     ner_pct = panel.new_entrant_rate * 100
     parts.append(
-        f"Die aktuelle Neueintrittrate betraegt {_fmt_pct(ner_pct)} "
+        f"Die aktuelle Neueintrittrate beträgt {_fmt_pct(ner_pct)} "
         f"(Malerba & Orsenigo 1999)."
     )
     if ner_pct > 50:
         parts.append(
-            "Mehr als die Haelfte der Akteure im letzten Jahr sind Neulinge — "
+            "Mehr als die Hälfte der Akteure im letzten Jahr sind Neulinge — "
             "das Technologiefeld ist hoch dynamisch mit starker Fluktuation "
             "und niedrigen Eintrittsbarrieren."
         )
     elif ner_pct > 30:
         parts.append(
             "Die hohe Neueintrittrate signalisiert ein wachsendes Feld, "
-            "in dem regelmaessig neue Akteure hinzukommen."
+            "in dem regelmäßig neue Akteure hinzukommen."
         )
     elif ner_pct > 10:
         parts.append(
             "Die moderate Neueintrittrate deutet auf ein reifendes Feld hin, "
-            "in dem der Zugang fuer neue Akteure zwar moeglich, aber "
+            "in dem der Zugang für neue Akteure zwar möglich, aber "
             "zunehmend anspruchsvoll ist."
         )
     elif ner_pct > 0:
@@ -1031,7 +1031,7 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
     if pr_pct > 70:
         parts.append(
             "Die hohe Verbleibrate zeigt, dass Akteure langfristig im Feld "
-            "aktiv bleiben — ein Zeichen fuer nachhaltiges Engagement "
+            "aktiv bleiben — ein Zeichen für nachhaltiges Engagement "
             "und stabile Marktpositionen."
         )
     elif pr_pct > 40:
@@ -1050,19 +1050,19 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
         parts.append(
             "Die Kombination aus hoher Neueintrittrate und niedriger Verbleibrate "
             "entspricht dem \"Schumpeter Mark I\"-Muster (creative destruction), "
-            "typisch fuer innovative, aber instabile Technologiefelder."
+            "typisch für innovative, aber instabile Technologiefelder."
         )
     elif ner_pct < 20 and pr_pct > 60:
         parts.append(
             "Die Kombination aus niedriger Neueintrittrate und hoher Verbleibrate "
             "entspricht dem \"Schumpeter Mark II\"-Muster (creative accumulation), "
-            "typisch fuer oligopolistische, technologisch reife Maerkte."
+            "typisch für oligopolistische, technologisch reife Märkte."
         )
 
     # Dominantes Programm
     if panel.dominant_programme:
         parts.append(
-            f"Das dominierende Foerderinstrument ist {panel.dominant_programme}."
+            f"Das dominierende Förderinstrument ist {panel.dominant_programme}."
         )
 
     # Top-Akteur + Detail
@@ -1074,7 +1074,7 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
         if name:
             parts.append(
                 f"Der aktivste Akteur ist {name} mit {_fmt_int(total_count)} "
-                f"Aktivitaeten ueber {years_active} aktive Jahre."
+                f"Aktivitäten über {years_active} aktive Jahre."
             )
             if len(panel.actor_timeline) > 1:
                 second = panel.actor_timeline[1]
@@ -1098,7 +1098,7 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
                 parts.append(
                     f"Die Technologie-Breite hat sich von {first_sub} auf "
                     f"{last_sub} CPC-Subklassen ausgeweitet (+{_fmt_pct(change_pct, 0)}). "
-                    f"Das Feld wird technologisch diverser und erschliesst "
+                    f"Das Feld wird technologisch diverser und erschließt "
                     f"zunehmend angrenzende Technologiebereiche "
                     f"(Leydesdorff et al. 2015)."
                 )
@@ -1120,23 +1120,23 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
         if first_sec > 0 and last_sec > 0 and last_sec != first_sec:
             parts.append(
                 f"Auf CPC-Sektionsebene (A\u2013H) hat sich die Breite "
-                f"von {first_sec} auf {last_sec} Sektionen veraendert."
+                f"von {first_sec} auf {last_sec} Sektionen verändert."
             )
 
-    # Entrant/Persistence Trend ueber Zeit
+    # Entrant/Persistence Trend über Zeit
     if len(panel.entrant_persistence_trend) >= 3:
         first_ner = float(panel.entrant_persistence_trend[0].get("new_entrant_rate", 0)) * 100
         last_ner = float(panel.entrant_persistence_trend[-1].get("new_entrant_rate", 0)) * 100
         if first_ner > 0 and last_ner > 0:
             if last_ner < first_ner * 0.5:
                 parts.append(
-                    "Die Neueintrittrate ist ueber den Betrachtungszeitraum deutlich "
+                    "Die Neueintrittrate ist über den Betrachtungszeitraum deutlich "
                     "gesunken, was auf eine zunehmende Markkonsolidierung hindeutet."
                 )
             elif last_ner > first_ner * 1.5:
                 parts.append(
-                    "Die Neueintrittrate ist ueber den Betrachtungszeitraum deutlich "
-                    "gestiegen — ein Zeichen fuer wachsendes Interesse neuer Akteure."
+                    "Die Neueintrittrate ist über den Betrachtungszeitraum deutlich "
+                    "gestiegen — ein Zeichen für wachsendes Interesse neuer Akteure."
                 )
 
     return " ".join(parts)
@@ -1148,7 +1148,7 @@ def generate_temporal_text(panel: TemporalPanel) -> str:
 
 
 def generate_tech_cluster_text(panel: TechClusterPanel) -> str:
-    """Analysetext fuer UC9 — Internationaler Vergleich (EU vs. Global).
+    """Analysetext für UC9 — Internationaler Vergleich (EU vs. Global).
 
     Referenzen: Porter & Cunningham (2005) Tech Mining,
     Frietsch & Schmoch (2010) Transnational patent activity.
@@ -1169,7 +1169,7 @@ def generate_tech_cluster_text(panel: TechClusterPanel) -> str:
     # EU-Anteil Akteure
     eu_act_pct = panel.eu_actor_share * 100
     parts.append(
-        f"Bei den Akteuren entfallen {_fmt_pct(eu_act_pct)} auf europaeische "
+        f"Bei den Akteuren entfallen {_fmt_pct(eu_act_pct)} auf europäische "
         f"Einrichtungen ({_fmt_int(panel.eu_actors)} von "
         f"{_fmt_int(panel.global_actors)} Akteuren)."
     )
@@ -1186,24 +1186,24 @@ def generate_tech_cluster_text(panel: TechClusterPanel) -> str:
         )
     else:
         parts.append(
-            "Das Technologiefeld wird ueberwiegend von aussereuropaeischen "
-            "Akteuren gepraegt."
+            "Das Technologiefeld wird überwiegend von außereuropäischen "
+            "Akteuren geprägt."
         )
 
     # Top-EU-Akteur
     if panel.eu_top_actors:
         top = panel.eu_top_actors[0]
         parts.append(
-            f"Der fuehrende europaeische Akteur ist {top.get('name', '')} "
-            f"mit {_fmt_int(int(top.get('count', 0)))} Aktivitaeten."
+            f"Der führende europäische Akteur ist {top.get('name', '')} "
+            f"mit {_fmt_int(int(top.get('count', 0)))} Aktivitäten."
         )
 
     # Top-Globaler-Akteur
     if panel.global_top_actors:
         top_g = panel.global_top_actors[0]
         parts.append(
-            f"Global fuehrt {top_g.get('name', '')} "
-            f"mit {_fmt_int(int(top_g.get('count', 0)))} Aktivitaeten "
+            f"Global führt {top_g.get('name', '')} "
+            f"mit {_fmt_int(int(top_g.get('count', 0)))} Aktivitäten "
             f"(Frietsch & Schmoch 2010)."
         )
 

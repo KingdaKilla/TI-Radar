@@ -1,4 +1,4 @@
-"""Konfiguration fuer den EuroSciVoc-Service."""
+"""Konfiguration für den EuroSciVoc-Service."""
 
 from __future__ import annotations
 

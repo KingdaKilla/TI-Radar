@@ -1,7 +1,7 @@
-"""Unit-Tests fuer patent-grant-svc dict_response Mapper.
+"""Unit-Tests für patent-grant-svc dict_response Mapper.
 
 Testet die Konvertierung von PatentGrantResult in ein dict-basiertes
-Response-Format fuer REST/JSON-Auslieferung.
+Response-Format für REST/JSON-Auslieferung.
 
 Besonderer Fokus: Feld-Renaming (kind_codes -> kind_code_distribution,
 country_rates -> country_grant_rates, cpc_rates -> cpc_grant_rates).
@@ -91,7 +91,7 @@ class TestDictResponseMapper:
 # ---------------------------------------------------------------------------
 
 class TestFieldRenaming:
-    """Testet korrekte Umbenennung der Felder fuer die API-Response.
+    """Testet korrekte Umbenennung der Felder für die API-Response.
 
     - kind_codes -> kind_code_distribution
     - country_rates -> country_grant_rates
@@ -210,7 +210,7 @@ class TestMetadata:
 # ---------------------------------------------------------------------------
 
 class TestEdgeCases:
-    """Testet Randfaelle: leere Listen, Default-Result."""
+    """Testet Randfälle: leere Listen, Default-Result."""
 
     def test_empty_lists(self):
         result = _make_result(

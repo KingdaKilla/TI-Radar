@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────
  * TI-Radar v3.6.7 -- API Proxy: /api/suggestions/pool
  * Liefert die komplette kuratierte Technologie-Whitelist
- * fuer die Frontend-Validierung der Technologie-Eingabe.
+ * für die Frontend-Validierung der Technologie-Eingabe.
  * ────────────────────────────────────────────── */
 
 import { NextResponse } from "next/server";

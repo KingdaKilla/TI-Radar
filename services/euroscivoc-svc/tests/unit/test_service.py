@@ -1,7 +1,7 @@
-"""Unit-Tests fuer EuroSciVocServicer (AP4 · CRIT-2).
+"""Unit-Tests für EuroSciVocServicer (AP4 · CRIT-2).
 
 Testet die Service-Ebene mit einem gemockten Repository:
-- Shannon-Index wird nur ueber FIELD-Level-Kategorien berechnet.
+- Shannon-Index wird nur über FIELD-Level-Kategorien berechnet.
 - Bei 1 Projekt mit 3 Sub-Disziplinen unter 1 Feld muss active_fields = 1
   UND shannon_index = 0 sein.
 """
@@ -22,7 +22,7 @@ from src.service import EuroSciVocServicer
 
 
 class _FakeRepo:
-    """Stellt deterministische Antworten fuer die 5 Repository-Queries bereit."""
+    """Stellt deterministische Antworten für die 5 Repository-Queries bereit."""
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class _FakeRepo:
         self._links = links or []
         self._total_mapped = total_mapped
         self._total_projects = total_projects
-        # Aufzeichnung der kwargs fuer Konsistenz-Asserts (MIN-10).
+        # Aufzeichnung der kwargs für Konsistenz-Asserts (MIN-10).
         self.total_mapped_calls: list[dict[str, Any]] = []
         self.total_projects_calls: list[dict[str, Any]] = []
         self.discipline_distribution_calls: list[dict[str, Any]] = []
@@ -88,7 +88,7 @@ def _build_request(technology: str) -> SimpleNamespace:
 
 
 class TestShannonBasedOnFieldLevelOnly:
-    """Shannon-Index darf nur ueber FIELD-Level-Kategorien berechnet werden,
+    """Shannon-Index darf nur über FIELD-Level-Kategorien berechnet werden,
     damit er konsistent mit `active_fields` ist.
     """
 
@@ -144,7 +144,7 @@ class TestShannonBasedOnFieldLevelOnly:
 
     @pytest.mark.asyncio
     async def test_level_1_is_treated_as_field(self) -> None:
-        """Level '1' ist synonym zu 'FIELD' (manche Datensaetze nutzen numerische Level)."""
+        """Level '1' ist synonym zu 'FIELD' (manche Datensätze nutzen numerische Level)."""
         disciplines = [
             {"id": "f1", "label": "natural sciences", "level": "1", "parent_id": "", "project_count": 3, "share": 1.0},
             {"id": "s1", "label": "chemistry", "level": "2", "parent_id": "f1", "project_count": 3, "share": 1.0},
@@ -161,19 +161,19 @@ class TestShannonBasedOnFieldLevelOnly:
 
 class TestTotalProjectsIsDistinctCount:
     """MIN-10: `total_mapped_publications` muss die Anzahl *distinkter* Projekte
-    sein und darf nicht versehentlich ueber Felder summiert werden.
+    sein und darf nicht versehentlich über Felder summiert werden.
 
-    Live-Beobachtung: UC10 zeigte 387 Projekte, waehrend der Header (selbe Tech,
-    selbes Zeitfenster) nur 307 zaehlte. Ursache war die Aggregation per Feld
-    (Doppelzaehlung von Projekten mit mehreren EuroSciVoc-Tags) plus eine
+    Live-Beobachtung: UC10 zeigte 387 Projekte, während der Header (selbe Tech,
+    selbes Zeitfenster) nur 307 zählte. Ursache war die Aggregation per Feld
+    (Doppelzählung von Projekten mit mehreren EuroSciVoc-Tags) plus eine
     fehlende Zeitfenster-Filterung in `total_mapped_projects()`.
     """
 
     @pytest.mark.asyncio
     async def test_total_mapped_publications_equals_distinct_project_count(self) -> None:
         """10 Projekte, 2 Felder, jedes Projekt in beiden Feldern -> total = 10, nicht 20."""
-        # Disziplin-Verteilung: 2 Felder, jedes mit 10 Projekten (Doppelzaehlung).
-        # Wuerde man `SUM(project_count GROUP BY field)` rechnen, kaeme 20 raus.
+        # Disziplin-Verteilung: 2 Felder, jedes mit 10 Projekten (Doppelzählung).
+        # Würde man `SUM(project_count GROUP BY field)` rechnen, käme 20 raus.
         disciplines = [
             {"id": "f1", "label": "natural sciences", "level": "FIELD", "parent_id": "", "project_count": 10, "share": 0.5},
             {"id": "f2", "label": "engineering", "level": "FIELD", "parent_id": "", "project_count": 10, "share": 0.5},
@@ -186,9 +186,9 @@ class TestTotalProjectsIsDistinctCount:
 
         assert response["total_mapped_publications"] == 10, (
             "total_mapped_publications muss COUNT(DISTINCT project) sein, "
-            f"nicht SUM-ueber-Felder. Wert war {response['total_mapped_publications']}."
+            f"nicht SUM-über-Felder. Wert war {response['total_mapped_publications']}."
         )
-        # Sanity: Summe ueber Felder waere 20 — darf NICHT der Wert sein.
+        # Sanity: Summe über Felder wäre 20 — darf NICHT der Wert sein.
         sum_over_fields = sum(int(d["project_count"]) for d in disciplines)
         assert response["total_mapped_publications"] != sum_over_fields
 

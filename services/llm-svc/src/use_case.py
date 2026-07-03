@@ -1,12 +1,12 @@
-"""LLM Use Cases — Business Logic fuer Panel-Analyse, RAG-Analyse und Chat.
+"""LLM Use Cases — Business Logic für Panel-Analyse, RAG-Analyse und Chat.
 
-Enthaelt die drei Kern-Use-Cases des LLM-Service:
+Enthält die drei Kern-Use-Cases des LLM-Service:
 - AnalyzePanel: Panel-Daten analysieren (ohne RAG-Kontext)
-- AnalyzePanelWithContext: RAG-gestuetzte Panel-Analyse mit Kontext-Dokumenten
+- AnalyzePanelWithContext: RAG-gestützte Panel-Analyse mit Kontext-Dokumenten
 - ChatWithContext: Interaktiver Chat mit RAG-Kontext und Historie
 
 Sowie Modul-Level-Hilfsfunktionen:
-- truncate_data: Panel-Daten auf maximale Zeichenzahl kuerzen
+- truncate_data: Panel-Daten auf maximale Zeichenzahl kürzen
 - extract_key_findings: Kernaussagen aus Analysetext extrahieren
 """
 
@@ -41,7 +41,7 @@ logger = structlog.get_logger(__name__)
 class AnalyzePanel:
     """Panel-Daten analysieren (ohne RAG-Kontext).
 
-    Waehlt das passende Prompt-Template fuer den UC-Key, ruft das LLM auf
+    Wählt das passende Prompt-Template für den UC-Key, ruft das LLM auf
     und extrahiert Kernaussagen aus der Analyse.
     """
 
@@ -59,14 +59,14 @@ class AnalyzePanel:
         language: str | None = None,
         llm_override: LLMProviderPort | None = None,
     ) -> AnalysisResult:
-        """Panel-Analyse ausfuehren.
+        """Panel-Analyse ausführen.
 
         Args:
             technology: Technologie-Suchbegriff.
-            use_case_key: UC-Schluessel (z.B. 'landscape', 'maturity').
+            use_case_key: UC-Schlüssel (z.B. 'landscape', 'maturity').
             panel_data_json: Serialisierte Panel-Daten als JSON-String.
             language: Sprache der Analyse (default: 'de').
-            llm_override: Optionaler LLM-Provider-Override fuer diesen Request.
+            llm_override: Optionaler LLM-Provider-Override für diesen Request.
 
         Returns:
             AnalysisResult mit Analysetext, Modell, Findings und Konfidenz.
@@ -110,7 +110,7 @@ class AnalyzePanel:
         user_prompt: str,
         llm: LLMProviderPort | None = None,
     ) -> tuple[str, str, list[str], float]:
-        """LLM aufrufen und Ergebnis mit Findings zurueckgeben."""
+        """LLM aufrufen und Ergebnis mit Findings zurückgeben."""
         llm = llm or self._llm
         try:
             text, model = await llm.generate(SYSTEM_PROMPT, user_prompt)
@@ -123,18 +123,18 @@ class AnalyzePanel:
 
 
 # ---------------------------------------------------------------------------
-# Use Case: RAG-gestuetzte Panel-Analyse
+# Use Case: RAG-gestützte Panel-Analyse
 # ---------------------------------------------------------------------------
 
 
 class AnalyzePanelWithContext:
-    """RAG-gestuetzte Panel-Analyse mit Kontext-Dokumenten.
+    """RAG-gestützte Panel-Analyse mit Kontext-Dokumenten.
 
-    Erhaelt zusaetzlich zu den Panel-Daten eine Liste von Kontext-Dokumenten,
+    Erhält zusätzlich zu den Panel-Daten eine Liste von Kontext-Dokumenten,
     die als Quellen in den Prompt eingebaut werden.
 
     Optional: Faithfulness-Guards (Task 16, Asai et al. 2023, Yan et al. 2024).
-    Wenn ein FaithfulnessPort uebergeben wird:
+    Wenn ein FaithfulnessPort übergeben wird:
     - Vor Generierung: Context-Sufficiency-Check (CRAG)
     - Nach Generierung: Faithfulness-Self-Check -> dynamische Konfidenz
     """
@@ -160,14 +160,14 @@ class AnalyzePanelWithContext:
         context_documents: list[Any],
         llm_override: LLMProviderPort | None = None,
     ) -> AnalysisResult:
-        """RAG-Analyse ausfuehren.
+        """RAG-Analyse ausführen.
 
         Args:
             technology: Technologie-Suchbegriff.
-            use_case_key: UC-Schluessel.
+            use_case_key: UC-Schlüssel.
             panel_data_json: Serialisierte Panel-Daten als JSON-String.
             context_documents: Liste von RetrievedDocument-Objekten.
-            llm_override: Optionaler LLM-Provider-Override fuer diesen Request.
+            llm_override: Optionaler LLM-Provider-Override für diesen Request.
 
         Returns:
             AnalysisResult mit quellenbasierter Analyse.
@@ -229,7 +229,7 @@ class AnalyzePanelWithContext:
         )
 
     def _meets_threshold(self, sufficiency: str) -> bool:
-        """Prueft ob die Sufficiency das konfigurierte Threshold erreicht.
+        """Prüft ob die Sufficiency das konfigurierte Threshold erreicht.
 
         Threshold-Hierarchie: INSUFFICIENT(0) < PARTIAL(1) < SUFFICIENT(2).
         - threshold="PARTIAL": akzeptiert PARTIAL und SUFFICIENT
@@ -279,8 +279,8 @@ class ChatWithContext:
             history: Bisheriger Chat-Verlauf (Protobuf ChatMessage-Objekte).
             language: Sprache der Antwort (default: 'de').
             panel_context_json: Serialisierte Panel-Daten (JSON) der
-                aktuell angezeigten Analyse. Leer wenn nicht verfuegbar.
-            llm_override: Optionaler LLM-Provider-Override fuer diesen Request.
+                aktuell angezeigten Analyse. Leer wenn nicht verfügbar.
+            llm_override: Optionaler LLM-Provider-Override für diesen Request.
 
         Returns:
             ChatResult mit Antwort, Quellen, Findings und Modell.
@@ -350,9 +350,9 @@ class ChatWithContext:
 
 
 def truncate_data(panel_data_json: str, max_chars: int = 16000) -> str:
-    """Panel-Daten auf maximale Zeichenzahl kuerzen.
+    """Panel-Daten auf maximale Zeichenzahl kürzen.
 
-    Verhindert, dass zu grosse Payloads das Token-Limit ueberschreiten.
+    Verhindert, dass zu große Payloads das Token-Limit überschreiten.
     Versucht die JSON-Struktur zu erhalten.
 
     Args:
@@ -360,7 +360,7 @@ def truncate_data(panel_data_json: str, max_chars: int = 16000) -> str:
         max_chars: Maximale Zeichenanzahl (default: 8000).
 
     Returns:
-        Gekuerzter oder unveraenderter JSON-String.
+        Gekürzter oder unveränderter JSON-String.
     """
     if len(panel_data_json) <= max_chars:
         return panel_data_json
@@ -381,14 +381,14 @@ def truncate_data(panel_data_json: str, max_chars: int = 16000) -> str:
 def extract_key_findings(text: str) -> list[str]:
     """Kernaussagen aus dem Analysetext extrahieren (max 5).
 
-    Splittet den Text an Satzenden und gibt die laengeren Saetze
-    als Stichpunkte zurueck.
+    Splittet den Text an Satzenden und gibt die längeren Sätze
+    als Stichpunkte zurück.
 
     Args:
         text: Analysetext oder Chat-Antwort.
 
     Returns:
-        Liste von maximal 5 Kernaussagen (Saetze > 15 Zeichen).
+        Liste von maximal 5 Kernaussagen (Sätze > 15 Zeichen).
     """
     sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     findings = [s.strip() for s in sentences if s.strip() and len(s.strip()) > 15]
@@ -396,10 +396,10 @@ def extract_key_findings(text: str) -> list[str]:
 
 
 def _truncate_nested(data: Any, max_items: int = 20) -> Any:
-    """Verschachtelte Datenstrukturen kuerzen (Listen auf max_items).
+    """Verschachtelte Datenstrukturen kürzen (Listen auf max_items).
 
-    Behaelt die Struktur bei, kuerzt aber grosse Listen um
-    das Token-Limit nicht zu ueberschreiten.
+    Behält die Struktur bei, kürzt aber große Listen um
+    das Token-Limit nicht zu überschreiten.
     """
     if isinstance(data, dict):
         return {k: _truncate_nested(v, max_items) for k, v in data.items()}

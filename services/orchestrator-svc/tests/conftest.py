@@ -1,6 +1,6 @@
-"""Conftest fuer orchestrator-svc Tests.
+"""Conftest für orchestrator-svc Tests.
 
-Fuegt ``packages/`` und den Service-Root auf sys.path, damit
+Fügt ``packages/`` und den Service-Root auf sys.path, damit
 ``shared.domain.*`` und ``src.*`` importierbar sind.
 """
 

@@ -1,13 +1,13 @@
 """EPO Open Patent Services (OPS) REST API Adapter.
 
-Async-Adapter fuer die EPO OPS API mit folgenden Funktionen:
+Async-Adapter für die EPO OPS API mit folgenden Funktionen:
 - OAuth 2.0 Client Credentials Flow (consumer_key + consumer_secret)
 - DB-Caching in patent_schema.epo_ops_cache mit 7-Tage-TTL
 - Rate-Limiting via Semaphore + Mindestabstand zwischen Requests
 - Exponentielles Backoff (1s, 2s, 4s) bei HTTP 429 / Timeout
 - Stale-Cache-Fallback bei API-Fehlern
 - Upsert in patent_schema.patents mit ON CONFLICT DO UPDATE
-  (API-Daten ueberschreiben Bulk-Daten, da aktueller)
+  (API-Daten überschreiben Bulk-Daten, da aktueller)
 
 API-Dokumentation: https://developers.epo.org/ops-v3-2/apis
 """
@@ -31,7 +31,7 @@ logger = structlog.get_logger(__name__)
 # Modul-Level Token-Cache
 # ---------------------------------------------------------------------------
 # EPO OPS Token (Client Credentials) hat typischerweise 20 Min Laufzeit.
-# Modul-Level-Cache vermeidet unnoetige Token-Requests bei parallelen Aufrufen.
+# Modul-Level-Cache vermeidet unnötige Token-Requests bei parallelen Aufrufen.
 
 _cached_token: str = ""
 _cached_token_exp: float = 0.0
@@ -47,7 +47,7 @@ _SEARCH_URL = (
 )
 
 # ---------------------------------------------------------------------------
-# Retry-Konfiguration fuer Rate-Limiting (HTTP 429) und Timeouts
+# Retry-Konfiguration für Rate-Limiting (HTTP 429) und Timeouts
 # ---------------------------------------------------------------------------
 _MAX_RETRIES = 3
 _BACKOFF_BASE_S = 1.0   # Exponentielles Backoff: 1s, 2s, 4s
@@ -65,28 +65,28 @@ _PAGE_SIZE = 100  # EPO OPS Maximum pro Request
 
 
 def _normalize_technology(technology: str) -> str:
-    """Technologie-Key fuer den Cache normalisieren (lowercase, stripped).
+    """Technologie-Key für den Cache normalisieren (lowercase, stripped).
 
     Args:
         technology: Roher Suchbegriff.
 
     Returns:
-        Normalisierter String fuer eindeutigen Cache-Lookup.
+        Normalisierter String für eindeutigen Cache-Lookup.
     """
     return technology.lower().strip()
 
 
 class EpoOpsAdapter:
-    """Async-Adapter fuer die EPO Open Patent Services REST API.
+    """Async-Adapter für die EPO Open Patent Services REST API.
 
     Sucht Patente per CQL-Query und persistiert Ergebnisse sowohl
     im Cache (7 Tage TTL) als auch in patent_schema.patents via Upsert.
 
-    Unterstuetzt:
+    Unterstützt:
     - OAuth 2.0 Client Credentials (consumer_key + consumer_secret)
     - Rate-Limiting (Semaphore + Mindestabstand)
     - Exponentielles Backoff bei HTTP 429 und Timeout-Fehlern
-    - DB-Caching mit Stale-Fallback bei API-Ausfaellen
+    - DB-Caching mit Stale-Fallback bei API-Ausfällen
     - Graceful Degradation: leere Liste bei totalem Fehler
 
     Wird vom Import-Service als optionale Echtzeit-Datenquelle genutzt.
@@ -105,19 +105,19 @@ class EpoOpsAdapter:
         Args:
             consumer_key: EPO OPS Consumer Key (API-Zugang).
             consumer_secret: EPO OPS Consumer Secret (API-Zugang).
-            timeout: HTTP-Timeout in Sekunden fuer einzelne Requests.
+            timeout: HTTP-Timeout in Sekunden für einzelne Requests.
             rate_limit_rpm: Maximale Requests pro Minute (EPO Limit).
-                Steuert sowohl die Semaphore-Groesse als auch den
+                Steuert sowohl die Semaphore-Größe als auch den
                 Mindestabstand zwischen aufeinanderfolgenden Requests.
-            pool: asyncpg Connection Pool fuer DB-Caching und Upsert.
-                Ohne Pool wird kein Caching/Upsert durchgefuehrt.
+            pool: asyncpg Connection Pool für DB-Caching und Upsert.
+                Ohne Pool wird kein Caching/Upsert durchgeführt.
         """
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
         self._timeout = timeout
         self._pool = pool
 
-        # Rate-Limiting: Semaphore fuer maximale Parallelitaet
+        # Rate-Limiting: Semaphore für maximale Parallelität
         max_concurrent = max(1, rate_limit_rpm // 20)
         self._semaphore = asyncio.Semaphore(max_concurrent)
 
@@ -141,7 +141,7 @@ class EpoOpsAdapter:
         Antwort: {"access_token": "...", "expires_in": 1200, ...}
 
         Returns:
-            Gueltiges Bearer-Token als String.
+            Gültiges Bearer-Token als String.
 
         Raises:
             httpx.HTTPStatusError: Bei Auth-Fehlern (401, 403).
@@ -151,7 +151,7 @@ class EpoOpsAdapter:
 
         now = time.time()
 
-        # Gecachtes Token noch gueltig?
+        # Gecachtes Token noch gültig?
         if _cached_token and _cached_token_exp - now > _TOKEN_MARGIN_S:
             return _cached_token
 
@@ -192,7 +192,7 @@ class EpoOpsAdapter:
         """Mindestabstand zwischen aufeinanderfolgenden Requests einhalten.
 
         Verwendet einen Lock, um Thread-sicheren Zugriff auf den
-        Zeitstempel des letzten Requests zu gewaehrleisten.
+        Zeitstempel des letzten Requests zu gewährleisten.
         """
         async with self._rate_lock:
             now = time.monotonic()
@@ -218,9 +218,9 @@ class EpoOpsAdapter:
 
         Args:
             technology: Normalisierter Suchbegriff.
-            start_year: Erstes Jahr (inklusiv), None fuer unbegrenzt.
-            end_year: Letztes Jahr (inklusiv), None fuer unbegrenzt.
-            allow_stale: Auch abgelaufene Eintraege zurueckgeben (Fallback).
+            start_year: Erstes Jahr (inklusiv), None für unbegrenzt.
+            end_year: Letztes Jahr (inklusiv), None für unbegrenzt.
+            allow_stale: Auch abgelaufene Einträge zurückgeben (Fallback).
 
         Returns:
             Liste von Patent-Dicts, oder None bei Cache-Miss.
@@ -275,8 +275,8 @@ class EpoOpsAdapter:
 
         Args:
             technology: Normalisierter Suchbegriff.
-            start_year: Erstes Jahr (inklusiv), None fuer unbegrenzt.
-            end_year: Letztes Jahr (inklusiv), None fuer unbegrenzt.
+            start_year: Erstes Jahr (inklusiv), None für unbegrenzt.
+            end_year: Letztes Jahr (inklusiv), None für unbegrenzt.
             patents: Liste von Patent-Dicts als JSON zu persistieren.
         """
         if self._pool is None:
@@ -310,11 +310,11 @@ class EpoOpsAdapter:
     # -----------------------------------------------------------------------
 
     async def _upsert_patents(self, patents: list[dict]) -> None:
-        """Patente in patent_schema.patents per Upsert einfuegen/aktualisieren.
+        """Patente in patent_schema.patents per Upsert einfügen/aktualisieren.
 
         WICHTIG: Verwendet ON CONFLICT (publication_number, publication_year)
         DO UPDATE SET ... — NICHT DO NOTHING. API-Daten sind aktueller als
-        Bulk-Importe und muessen bestehende Zeilen ueberschreiben.
+        Bulk-Importe und müssen bestehende Zeilen überschreiben.
 
         Args:
             patents: Liste von Patent-Dicts mit den Feldern:
@@ -375,15 +375,15 @@ class EpoOpsAdapter:
         """Patente von der EPO OPS API abrufen (ohne Cache).
 
         Baut eine CQL-Query aus Technologie und optionalem Zeitraum,
-        paginiert ueber Range-Header und parst die Ergebnisse.
+        paginiert über Range-Header und parst die Ergebnisse.
 
         Implementiert exponentielles Backoff bei HTTP 429 und Timeouts.
 
         Args:
-            technology: Suchbegriff fuer die Titelsuche (CQL ti=...).
+            technology: Suchbegriff für die Titelsuche (CQL ti=...).
             start_year: Erstes Publikationsjahr (inklusiv, optional).
             end_year: Letztes Publikationsjahr (inklusiv, optional).
-            max_results: Maximale Anzahl zurueckgegebener Patente.
+            max_results: Maximale Anzahl zurückgegebener Patente.
 
         Returns:
             Liste von Patent-Dicts oder None bei totalem Fehler.
@@ -413,7 +413,7 @@ class EpoOpsAdapter:
 
         async with httpx.AsyncClient(timeout=self._timeout) as client:
             while len(all_patents) < max_results:
-                # Seitengroesse berechnen (letzte Seite kann kleiner sein)
+                # Seitengröße berechnen (letzte Seite kann kleiner sein)
                 remaining = max_results - len(all_patents)
                 page_size = min(_PAGE_SIZE, remaining)
                 range_end = offset + page_size - 1
@@ -461,7 +461,7 @@ class EpoOpsAdapter:
 
         Args:
             client: Wiederverwendeter httpx.AsyncClient.
-            token: Gueltiges Bearer-Token.
+            token: Gültiges Bearer-Token.
             cql_query: CQL-Suchausdruck.
             range_start: Erster Ergebnis-Index (1-basiert).
             range_end: Letzter Ergebnis-Index (inklusiv).
@@ -499,7 +499,7 @@ class EpoOpsAdapter:
                         versuch=attempt + 1,
                     )
 
-                    # 404 = keine Ergebnisse fuer diese Query
+                    # 404 = keine Ergebnisse für diese Query
                     if resp.status_code == 404:
                         return []
 
@@ -577,7 +577,7 @@ class EpoOpsAdapter:
         ops:world-patent-data > ops:biblio-search > ops:search-result
         > ops:publication-reference (Array)
 
-        Jede publication-reference enthaelt:
+        Jede publication-reference enthält:
         - document-id mit country, doc-number, kind
         - (Optional) exchange-documents mit Titel und CPC-Codes
 
@@ -722,7 +722,7 @@ class EpoOpsAdapter:
         }
 
     # -----------------------------------------------------------------------
-    # Oeffentliche API
+    # Öffentliche API
     # -----------------------------------------------------------------------
 
     async def search_patents(
@@ -736,17 +736,17 @@ class EpoOpsAdapter:
         """Patente zu einer Technologie suchen (mit DB-Cache + Upsert).
 
         Ablauf:
-        1. Cache-Lookup: frische Eintraege (stale_after > NOW()) pruefen
-        2. Cache-Hit: gecachte Ergebnisse direkt zurueckgeben
-        3. Cache-Miss: API-Abfrage durchfuehren, in Cache + patents-Tabelle schreiben
+        1. Cache-Lookup: frische Einträge (stale_after > NOW()) prüfen
+        2. Cache-Hit: gecachte Ergebnisse direkt zurückgeben
+        3. Cache-Miss: API-Abfrage durchführen, in Cache + patents-Tabelle schreiben
         4. API-Fehler: stale Cache als Fallback verwenden, sonst leere Liste
 
         Args:
-            technology: Suchbegriff fuer die Patent-Titelsuche
+            technology: Suchbegriff für die Patent-Titelsuche
                 (z.B. 'quantum computing', 'machine learning').
             start_year: Erstes Publikationsjahr (inklusiv, optional).
             end_year: Letztes Publikationsjahr (inklusiv, optional).
-            max_results: Maximale Anzahl zurueckgegebener Patente.
+            max_results: Maximale Anzahl zurückgegebener Patente.
                 Default 100, Maximum wird durch EPO API begrenzt.
 
         Returns:
@@ -757,7 +757,7 @@ class EpoOpsAdapter:
         """
         tech_key = _normalize_technology(technology)
 
-        # 1. Cache-Lookup (nur frische Eintraege)
+        # 1. Cache-Lookup (nur frische Einträge)
         cached = await self._read_cache(tech_key, start_year, end_year)
         if cached is not None:
             logger.info(
@@ -818,7 +818,7 @@ def _extract_text(value: Any) -> str:
     """Text aus einem EPO OPS JSON-Wert extrahieren.
 
     EPO OPS gibt Werte manchmal als {"$": "text"} statt als
-    einfachen String zurueck. Diese Funktion normalisiert beides.
+    einfachen String zurück. Diese Funktion normalisiert beides.
 
     Args:
         value: String, Dict mit "$"-Key, oder anderer Typ.

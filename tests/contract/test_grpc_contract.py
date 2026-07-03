@@ -1,19 +1,19 @@
-"""gRPC Contract-Tests fuer UC-Services.
+"""gRPC Contract-Tests für UC-Services.
 
-Prueft, dass die gRPC-Responses der UC-Services dem Proto-Schema entsprechen:
+Prüft, dass die gRPC-Responses der UC-Services dem Proto-Schema entsprechen:
 - AnalysisRequest-Felder korrekt gesetzt (common_pb2)
-- LandscapeResponse-Struktur gueltig (uc1_landscape_pb2)
+- LandscapeResponse-Struktur gültig (uc1_landscape_pb2)
 - Protobuf-Deserialisierung ohne Fehler
 - Fehlende optionale Felder haben Protobuf-Standardwerte
-- TimeRange-Einschraenkung wird korrekt uebertragen
+- TimeRange-Einschränkung wird korrekt übertragen
 - Request-ID-Propagation (Distributed Tracing)
 
 Teststrategie:
   Provider-Tests: UC-Service-Response entspricht Proto-Definition.
-  Die UC-Services werden gemockt (kein laufender gRPC-Server noetig).
+  Die UC-Services werden gemockt (kein laufender gRPC-Server nötig).
   Validierung erfolgt durch Serialisierung/Deserialisierung der Protobuf-Nachrichten.
 
-Alle Tests koennen ohne laufende Infrastruktur ausgefuehrt werden.
+Alle Tests können ohne laufende Infrastruktur ausgeführt werden.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 
 # ---------------------------------------------------------------------------
-# Protobuf-Import (tolerant gegenueber fehlenden Stubs)
+# Protobuf-Import (tolerant gegenüber fehlenden Stubs)
 # ---------------------------------------------------------------------------
 
 try:
@@ -54,7 +54,7 @@ except ImportError:
     MessageToDict = None  # type: ignore[assignment]
     ParseDict = None  # type: ignore[assignment]
 
-# Dekorator zum Ueberspringen wenn Protobuf nicht verfuegbar
+# Dekorator zum Überspringen wenn Protobuf nicht verfügbar
 requires_protobuf = pytest.mark.skipif(
     not PROTOBUF_VERFUEGBAR,
     reason="google-protobuf nicht installiert oder Stubs nicht vorhanden",
@@ -68,7 +68,7 @@ requires_protobuf = pytest.mark.skipif(
 
 @pytest.fixture
 def standard_request():
-    """Erstellt einen Standard-AnalysisRequest fuer Tests.
+    """Erstellt einen Standard-AnalysisRequest für Tests.
 
     Entspricht dem Aufruf im Orchestrator (router_radar.py _build_analysis_request).
 
@@ -116,7 +116,7 @@ def eu_filtered_request():
 
 
 class TestAnalysisRequestProto:
-    """Prueft die Serialisierung und Deserialisierung von AnalysisRequest."""
+    """Prüft die Serialisierung und Deserialisierung von AnalysisRequest."""
 
     @requires_protobuf
     def test_standard_request_serialisierbar(self, standard_request):
@@ -141,7 +141,7 @@ class TestAnalysisRequestProto:
 
     @requires_protobuf
     def test_eu_filter_roundtrip(self, eu_filtered_request):
-        """european_only=True und cpc_codes werden korrekt uebertragen."""
+        """european_only=True und cpc_codes werden korrekt übertragen."""
         serialisiert = eu_filtered_request.SerializeToString()
 
         deserialisiert = common_pb2.AnalysisRequest()
@@ -154,7 +154,7 @@ class TestAnalysisRequestProto:
 
     @requires_protobuf
     def test_request_id_propagation(self, standard_request):
-        """Request-ID wird unveraendert uebertragen (Distributed Tracing)."""
+        """Request-ID wird unverändert übertragen (Distributed Tracing)."""
         assert standard_request.request_id == "contract-test-001"
 
     @requires_protobuf
@@ -183,7 +183,7 @@ class TestAnalysisRequestProto:
 
 
 class TestLandscapeResponseSchema:
-    """Prueft die Struktur von LandscapeResponse gemaess uc1_landscape.proto."""
+    """Prüft die Struktur von LandscapeResponse gemäß uc1_landscape.proto."""
 
     @requires_protobuf
     def test_leere_response_hat_standardwerte(self):
@@ -231,7 +231,7 @@ class TestLandscapeResponseSchema:
 
     @requires_protobuf
     def test_cagr_values_felder(self):
-        """CagrValues hat alle fuenf Proto-Felder."""
+        """CagrValues hat alle fünf Proto-Felder."""
         cagr = uc1_landscape_pb2.CagrValues(
             patent_cagr=0.125,
             project_cagr=0.083,
@@ -244,7 +244,7 @@ class TestLandscapeResponseSchema:
 
     @requires_protobuf
     def test_vollstaendige_response_roundtrip(self):
-        """Vollstaendige LandscapeResponse kann serialisiert und deserialisiert werden."""
+        """Vollständige LandscapeResponse kann serialisiert und deserialisiert werden."""
         # Zeitreihe aufbauen
         eintrag = uc1_landscape_pb2.LandscapeTimeSeriesEntry(
             year=2022,
@@ -324,11 +324,11 @@ class TestLandscapeResponseSchema:
 
 
 class TestCommonProtoTypes:
-    """Prueft gemeinsame Typen aus common.proto."""
+    """Prüft gemeinsame Typen aus common.proto."""
 
     @requires_protobuf
     def test_time_range_grenzen(self):
-        """TimeRange unterstuetzt start_year und end_year als int32."""
+        """TimeRange unterstützt start_year und end_year als int32."""
         time_range = common_pb2.TimeRange(start_year=2000, end_year=2030)
         assert time_range.start_year == 2000
         assert time_range.end_year == 2030
@@ -378,9 +378,9 @@ class TestCommonProtoTypes:
 
     @requires_protobuf
     def test_warning_in_metadata(self):
-        """Warnings koennen in ResponseMetadata eingebettet werden."""
+        """Warnings können in ResponseMetadata eingebettet werden."""
         warning = common_pb2.Warning(
-            message="Datenmenge gering — Ergebnisse unvollstaendig",
+            message="Datenmenge gering — Ergebnisse unvollständig",
             severity=common_pb2.MEDIUM,
             code="SPARSE_DATA",
         )
@@ -411,7 +411,7 @@ class TestCommonProtoTypes:
 
 
 class TestRequestBuildingContract:
-    """Prueft die Erstellung von AnalysisRequests durch den Orchestrator.
+    """Prüft die Erstellung von AnalysisRequests durch den Orchestrator.
 
     Entspricht der Funktion _build_analysis_request() in router_radar.py.
     """
@@ -453,7 +453,7 @@ class TestRequestBuildingContract:
 
     @requires_protobuf
     def test_top_n_parameter(self):
-        """top_n wird als int32 korrekt gesetzt und uebertragen."""
+        """top_n wird als int32 korrekt gesetzt und übertragen."""
         request = common_pb2.AnalysisRequest(
             technology="test",
             top_n=50,
@@ -466,10 +466,10 @@ class TestRequestBuildingContract:
 
     @requires_protobuf
     def test_request_ohne_optionale_felder(self):
-        """AnalysisRequest mit nur Pflichtfeld technology ist gueltig."""
+        """AnalysisRequest mit nur Pflichtfeld technology ist gültig."""
         request = common_pb2.AnalysisRequest(technology="minimal test")
 
-        # Standardwerte fuer optionale Felder
+        # Standardwerte für optionale Felder
         assert request.time_range.start_year == 0  # Protobuf default: 0
         assert request.time_range.end_year == 0
         assert request.european_only is False

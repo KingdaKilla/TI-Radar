@@ -1,7 +1,7 @@
-"""EuroSciVocRepository — PostgreSQL-Datenbankzugriff fuer UC10.
+"""EuroSciVocRepository — PostgreSQL-Datenbankzugriff für UC10.
 
-Abfragen fuer EuroSciVoc-Taxonomie-Klassifikationen aus CORDIS-Projekten.
-CORDIS-Projekte koennen EuroSciVoc-Tags enthalten, die wissenschaftliche
+Abfragen für EuroSciVoc-Taxonomie-Klassifikationen aus CORDIS-Projekten.
+CORDIS-Projekte können EuroSciVoc-Tags enthalten, die wissenschaftliche
 Disziplinen nach dem OECD Frascati Manual kodieren.
 
 Tabellenstruktur:
@@ -20,13 +20,13 @@ logger = structlog.get_logger(__name__)
 
 # Minimaler Relevanz-Score, ab dem ein Projekt-Match als fachlich relevant gilt.
 # Filtert Token-Split-Matches (z. B. "battery law" bei Suche nach
-# "solid state battery") heraus und verhindert so irrefuehrende
+# "solid state battery") heraus und verhindert so irreführende
 # Disziplin-Zuordnungen wie "law" -> "Solid State Battery" (AP4 / CRIT-2).
 TS_RANK_MIN_SCORE = 0.05
 
 # Bug v3.4.9/T: Wenn der strenge Threshold zu wenige Projekte matcht, wird
 # die Query mit einem gelockerten Threshold wiederholt. Bisher kam bei
-# "Quantum Computing" nur 1 Disziplin-Balken ("law") zurueck, weil der
+# "Quantum Computing" nur 1 Disziplin-Balken ("law") zurück, weil der
 # 0.05-Threshold nur 12 Nebentreffer lieferte. Der Fallback wird nur
 # aktiv wenn die strikte Query < MIN_PROJECTS_STRICT liefert.
 MIN_PROJECTS_STRICT = 20
@@ -34,7 +34,7 @@ TS_RANK_MIN_SCORE_RELAXED = 0.005
 
 
 class EuroSciVocRepository:
-    """Async PostgreSQL-Zugriff fuer UC10 EuroSciVoc-Analysen."""
+    """Async PostgreSQL-Zugriff für UC10 EuroSciVoc-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -115,8 +115,8 @@ class EuroSciVocRepository:
         # Statt "count / total_projects" (vorher), was bei Multi-Disziplin-Zuordnung
         # Σshare > 1 ergab (z. B. AI: 1.38, Blockchain: 2.27). Der neue Nenner
         # summiert pro Level (FIELD/SUBFIELD/TOPIC), damit jede Hierarchie-Ebene
-        # unabhaengig auf Σ=1.0 normalisiert. Ein Projekt mit Tags in 3 FIELDs
-        # zaehlt dadurch wie erwartet als "ein Drittel pro Feld".
+        # unabhängig auf Σ=1.0 normalisiert. Ein Projekt mit Tags in 3 FIELDs
+        # zählt dadurch wie erwartet als "ein Drittel pro Feld".
         sql = f"""
             WITH counts AS (
                 SELECT esv.id AS id,
@@ -286,7 +286,7 @@ class EuroSciVocRepository:
         MIN-10: Verwendet `COUNT(DISTINCT pe.project_id)` und denselben
         `ts_rank_cd`-Threshold + Jahres-Scope wie `discipline_distribution`,
         damit `total_mapped_publications` (UC10) konsistent zum Header (UC1)
-        ist und keine Mehrfach-Tag-Doppelzaehlung entsteht.
+        ist und keine Mehrfach-Tag-Doppelzählung entsteht.
         """
         conditions = [
             "p.search_vector @@ plainto_tsquery('english', $1)",
@@ -321,7 +321,7 @@ class EuroSciVocRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> int:
-        """Gesamtanzahl aller Projekte fuer eine Technologie im Zeitfenster.
+        """Gesamtanzahl aller Projekte für eine Technologie im Zeitfenster.
 
         MIN-10: Optionaler Jahres-Scope, damit `mapping_coverage` (UC10)
         denselben Nenner verwendet wie der Header.

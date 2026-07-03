@@ -1,7 +1,7 @@
 """UC6 GeographicServicer — gRPC-Implementierung der Geographic-Analyse.
 
-Empfaengt AnalysisRequest, fuehrt parallele Abfragen gegen PostgreSQL
-durch und baut die GeographicResponse mit Laenderverteilung,
+Empfängt AnalysisRequest, führt parallele Abfragen gegen PostgreSQL
+durch und baut die GeographicResponse mit Länderverteilung,
 Stadtverteilung, Kooperationspaaren und Cross-Border-Anteil.
 
 Migration von MVP v1.0:
@@ -51,7 +51,7 @@ logger = structlog.get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Helper: Bipartiter-Jaccard-Score fuer Kooperationspaare
+# Helper: Bipartiter-Jaccard-Score für Kooperationspaare
 # ---------------------------------------------------------------------------
 def _bipartite_jaccard(
     *,
@@ -59,13 +59,13 @@ def _bipartite_jaccard(
     projects_a: int,
     projects_b: int,
 ) -> float:
-    """Bipartiter-Jaccard-Score fuer Laenderkooperation.
+    """Bipartiter-Jaccard-Score für Länderkooperation.
 
     Formel: (2 * co_projects) / (projects_a + projects_b)
 
-    Normalisiert die absolute Kooperationshaeufigkeit auf die Aktivitaet der
-    beteiligten Laender. Das verhindert, dass grosse Laender (DE/FR/ES) allein
-    durch Masse hohe Scores bekommen. Rueckgabe in [0, 1].
+    Normalisiert die absolute Kooperationshäufigkeit auf die Aktivität der
+    beteiligten Länder. Das verhindert, dass große Länder (DE/FR/ES) allein
+    durch Masse hohe Scores bekommen. Rückgabe in [0, 1].
 
     Fallback auf 0.0, wenn entweder co_projects == 0 oder die Summe der
     Einzel-Totals 0 ist (defensive Division-by-Zero-Vermeidung).
@@ -83,7 +83,7 @@ def _bipartite_jaccard(
         )
         return 0.0
     score = (2.0 * co_projects) / float(denominator)
-    # Clamping: durch Rundungsfehler knapp > 1 theoretisch moeglich
+    # Clamping: durch Rundungsfehler knapp > 1 theoretisch möglich
     return min(1.0, max(0.0, score))
 
 
@@ -91,18 +91,18 @@ def _bipartite_jaccard(
 # Helper: Basis-Klasse ermitteln (gRPC Servicer oder object)
 # ---------------------------------------------------------------------------
 def _get_base_class() -> type:
-    """Gibt die gRPC-Servicer-Basisklasse zurueck, oder object als Fallback."""
+    """Gibt die gRPC-Servicer-Basisklasse zurück, oder object als Fallback."""
     if uc6_geographic_pb2_grpc is not None:
         return uc6_geographic_pb2_grpc.GeographicServiceServicer  # type: ignore[return-value]
     return object
 
 
 class GeographicServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC6 Geographic Analysis.
+    """gRPC-Servicer für UC6 Geographic Analysis.
 
     Koordiniert parallele Abfragen:
-    1. Patent-Laenderverteilung (PostgreSQL)
-    2. CORDIS-Laenderverteilung (PostgreSQL)
+    1. Patent-Länderverteilung (PostgreSQL)
+    2. CORDIS-Länderverteilung (PostgreSQL)
     3. Stadt-Verteilung (PostgreSQL)
     4. Kooperationspaare (PostgreSQL)
     5. Cross-Border-Anteil (PostgreSQL)
@@ -213,7 +213,7 @@ class GeographicServicer(_get_base_class()):  # type: ignore[misc]
             name="cross_border",
         ))
 
-        # --- Alle Tasks ausfuehren ---
+        # --- Alle Tasks ausführen ---
         if tasks:
             results = await asyncio.gather(*tasks, return_exceptions=True)
             for task, result in zip(tasks, results, strict=False):
@@ -238,7 +238,7 @@ class GeographicServicer(_get_base_class()):  # type: ignore[misc]
                 elif name == "cross_border":
                     cross_border = cast(dict[str, int | float], result)
 
-        # --- Laender zusammenfuehren ---
+        # --- Länder zusammenführen ---
         country_dist = merge_country_data(patent_countries, cordis_countries, limit=top_n)
 
         # --- Datenquellen ---
@@ -412,7 +412,7 @@ class GeographicServicer(_get_base_class()):  # type: ignore[misc]
         processing_time_ms: int,
     ) -> dict[str, Any]:
         """Fallback-Response als dict (wenn gRPC-Stubs nicht generiert)."""
-        # cooperation_score fuer Dict-Pfad ebenfalls befuellen, damit das
+        # cooperation_score für Dict-Pfad ebenfalls befüllen, damit das
         # Verhalten mit und ohne generierte Protobuf-Stubs identisch ist.
         enriched_pairs = [
             {
@@ -442,7 +442,7 @@ class GeographicServicer(_get_base_class()):  # type: ignore[misc]
         }
 
     def _build_empty_response(self, request_id: str, t0: float) -> Any:
-        """Leere Response bei ungueltigem Request."""
+        """Leere Response bei ungültigem Request."""
         processing_time_ms = int((time.monotonic() - t0) * 1000)
         return self._build_response(
             country_dist=[],

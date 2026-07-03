@@ -1,4 +1,4 @@
-"""Tests fuer UC7 Publikations-Scope-Label (Bug CRIT-1).
+"""Tests für UC7 Publikations-Scope-Label (Bug CRIT-1).
 
 UC7 (research-impact-svc) liefert ``total_publications`` aus Semantic
 Scholar — also nicht identisch mit UC1 Header (CORDIS_LINKED) oder UC13.
@@ -21,7 +21,7 @@ from src.infrastructure.repository import (
 
 
 class TestUc7PublicationScopeCrit1:
-    """Bug CRIT-1 Teil-Assertion fuer UC7."""
+    """Bug CRIT-1 Teil-Assertion für UC7."""
 
     def test_scope_is_semantic_scholar_top(self) -> None:
         """UC7 verwendet explizit den SEMANTIC_SCHOLAR_TOP-Scope."""
@@ -34,7 +34,7 @@ class TestUc7PublicationScopeCrit1:
     def test_label_matches_canonical_label(self) -> None:
         """Das Label ist **identisch** zum Return von canonical_publication_label.
 
-        Jede Divergenz waere ein Indikator fuer eine stille Re-Definition.
+        Jede Divergenz wäre ein Indikator für eine stille Re-Definition.
         """
         assert UC7_PUBLICATION_LABEL == canonical_publication_label(
             PublicationScope.SEMANTIC_SCHOLAR_TOP,

@@ -1,15 +1,15 @@
-"""Import-Scheduler fuer Bulk-Imports und API-Delta-Updates.
+"""Import-Scheduler für Bulk-Imports und API-Delta-Updates.
 
-Nutzt APScheduler (AsyncIOScheduler), um zwei Job-Typen auszufuehren:
-1. Woechentlicher Bulk-Import (EPO DOCDB, CORDIS, EuroSciVoc) — initiale Datenbasis
-2. Taeglicher API-Delta-Update (EPO OPS, CORDIS REST API) — aktuelle Daten
+Nutzt APScheduler (AsyncIOScheduler), um zwei Job-Typen auszuführen:
+1. Wöchentlicher Bulk-Import (EPO DOCDB, CORDIS, EuroSciVoc) — initiale Datenbasis
+2. Täglicher API-Delta-Update (EPO OPS, CORDIS REST API) — aktuelle Daten
 
-API-Daten ueberschreiben Bulk-Daten (ON CONFLICT DO UPDATE).
-Bulk = initiales Setup. APIs = primaere laufende Datenquelle.
+API-Daten überschreiben Bulk-Daten (ON CONFLICT DO UPDATE).
+Bulk = initiales Setup. APIs = primäre laufende Datenquelle.
 
 Standard-Schedules:
 - Bulk: Sonntag 02:00 UTC (IMPORT_SCHEDULE)
-- Delta: Taeglich 03:00 UTC (API_DELTA_SCHEDULE)
+- Delta: Täglich 03:00 UTC (API_DELTA_SCHEDULE)
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from apscheduler.triggers.cron import CronTrigger
 
 logger = structlog.get_logger(__name__)
 
-# Letztes Scheduler-Ergebnis (fuer Status-Endpoint)
+# Letztes Scheduler-Ergebnis (für Status-Endpoint)
 _last_run: dict[str, Any] = {}
 
 
@@ -36,9 +36,9 @@ def create_scheduler(
     """Scheduler erstellen und Job registrieren.
 
     Args:
-        app: FastAPI-Instanz (fuer Zugriff auf db_pool und settings).
+        app: FastAPI-Instanz (für Zugriff auf db_pool und settings).
         cron_expression: Cron-Ausdruck (5-Felder: Minute Stunde Tag Monat Wochentag).
-        timezone_str: Zeitzone fuer den Cron-Trigger.
+        timezone_str: Zeitzone für den Cron-Trigger.
 
     Returns:
         Konfigurierter AsyncIOScheduler (noch nicht gestartet).
@@ -49,7 +49,7 @@ def create_scheduler(
     parts = cron_expression.strip().split()
     if len(parts) != 5:
         logger.error(
-            "scheduler_ungueltig_cron",
+            "scheduler_ungültig_cron",
             expression=cron_expression,
             hint="Erwartet 5 Felder: Minute Stunde Tag Monat Wochentag",
         )
@@ -69,11 +69,11 @@ def create_scheduler(
         trigger=trigger,
         args=[app],
         id="weekly_bulk_import",
-        name="Woechentlicher Bulk-Import (EuroSciVoc + CORDIS + EPO)",
+        name="Wöchentlicher Bulk-Import (EuroSciVoc + CORDIS + EPO)",
         replace_existing=True,
     )
 
-    # --- Taeglicher API-Delta-Update ---
+    # --- Täglicher API-Delta-Update ---
     settings = getattr(app, "state", None)
     delta_cron = "0 3 * * *"
     if settings and hasattr(settings, "settings"):
@@ -94,7 +94,7 @@ def create_scheduler(
             trigger=delta_trigger,
             args=[app],
             id="daily_api_delta",
-            name="Taeglicher API-Delta-Update (EPO OPS + CORDIS)",
+            name="Täglicher API-Delta-Update (EPO OPS + CORDIS)",
             replace_existing=True,
             misfire_grace_time=3600,
             max_instances=1,
@@ -112,10 +112,10 @@ def create_scheduler(
 
 
 async def weekly_import_job(app: Any) -> None:
-    """Woechentlicher Import-Job: EuroSciVoc -> CORDIS -> EPO.
+    """Wöchentlicher Import-Job: EuroSciVoc -> CORDIS -> EPO.
 
     Reihenfolge: EuroSciVoc (schnellstes) zuerst, EPO (langsamstes) zuletzt.
-    Ueberspringt eine Quelle wenn deren Import bereits laeuft (manuell getriggert).
+    Überspringt eine Quelle wenn deren Import bereits läuft (manuell getriggert).
     """
     global _last_run
 
@@ -151,8 +151,8 @@ async def weekly_import_job(app: Any) -> None:
 
     # 2. CORDIS
     if _state.cordis_status == ImportStatus.RUNNING:
-        results["cordis"] = "uebersprungen (laeuft bereits)"
-        logger.warning("scheduler_cordis_uebersprungen")
+        results["cordis"] = "übersprungen (läuft bereits)"
+        logger.warning("scheduler_cordis_übersprungen")
     else:
         _state.cordis_status = ImportStatus.RUNNING
         _state.cordis_started_at = datetime.now(tz=timezone.utc).isoformat()
@@ -167,10 +167,10 @@ async def weekly_import_job(app: Any) -> None:
             results["cordis"] = f"fehler: {exc}"
             logger.error("scheduler_cordis_fehler", error=str(exc))
 
-    # 3. EPO (laeuft als Background-Task, kann Stunden dauern)
+    # 3. EPO (läuft als Background-Task, kann Stunden dauern)
     if _state.epo_status == ImportStatus.RUNNING:
-        results["epo"] = "uebersprungen (laeuft bereits)"
-        logger.warning("scheduler_epo_uebersprungen")
+        results["epo"] = "übersprungen (läuft bereits)"
+        logger.warning("scheduler_epo_übersprungen")
     else:
         _state.epo_status = ImportStatus.RUNNING
         _state.epo_started_at = datetime.now(tz=timezone.utc).isoformat()
@@ -186,7 +186,7 @@ async def weekly_import_job(app: Any) -> None:
             logger.error("scheduler_epo_fehler", error=str(exc))
 
     # 4. Junction-Derivation (patent_cpc, patent_applicants, applicants).
-    # Wird immer nach EPO ausgefuehrt — auch bei uebersprungenem Import —
+    # Wird immer nach EPO ausgeführt — auch bei übersprungenem Import —
     # damit manuelle Imports sicher abgedeckt sind. Idempotent durch
     # ON CONFLICT DO NOTHING; bei Full-Scan auf 156 M Patents kann das
     # 30-90 Minuten dauern. Siehe services/import-svc/src/importers/junction_deriver.py.
@@ -216,10 +216,10 @@ async def weekly_import_job(app: Any) -> None:
 
 
 async def daily_api_delta_job(app: Any) -> None:
-    """Taeglicher Delta-Update: Holt aktuelle Daten via EPO OPS + CORDIS API.
+    """Täglicher Delta-Update: Holt aktuelle Daten via EPO OPS + CORDIS API.
 
     Fragt die zuletzt gesuchten Technologien erneut ab (aus den Cache-Tabellen).
-    API-Daten ueberschreiben bestehende Bulk-Eintraege (ON CONFLICT DO UPDATE).
+    API-Daten überschreiben bestehende Bulk-Einträge (ON CONFLICT DO UPDATE).
     """
     global _last_run
 
@@ -303,7 +303,7 @@ async def daily_api_delta_job(app: Any) -> None:
 
 
 def get_schedule_status(scheduler: AsyncIOScheduler | None) -> dict[str, Any]:
-    """Aktuellen Scheduler-Status fuer den Status-Endpoint zurueckgeben."""
+    """Aktuellen Scheduler-Status für den Status-Endpoint zurückgeben."""
     if scheduler is None:
         return {"enabled": False}
 

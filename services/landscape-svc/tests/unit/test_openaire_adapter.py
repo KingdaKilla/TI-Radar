@@ -1,13 +1,13 @@
-"""Unit-Tests fuer den OpenAIRE-Adapter.
+"""Unit-Tests für den OpenAIRE-Adapter.
 
-Fokus: Log-Spam-Unterdrueckung bei ungueltigem Refresh-Token.
+Fokus: Log-Spam-Unterdrückung bei ungültigem Refresh-Token.
 
 Wenn der Refresh-Token-Endpunkt einen 4xx-Fehler liefert (abgelaufener oder
 widerrufener Token), setzt der Adapter ein Modul-Level-Flag `_token_invalid`
 und senkt nachfolgende `openaire_jahr_fehlgeschlagen`- und
 `openaire_teilergebnis`-Logs von `warning` auf `debug` ab. Damit wird die
 vorhersehbare 22+ Zeilen-Kaskade (11 Jahre x 2 Log-Zeilen) pro Analyse
-vermieden, ohne die fachliche Behandlung (Fallback auf CORDIS) zu aendern.
+vermieden, ohne die fachliche Behandlung (Fallback auf CORDIS) zu ändern.
 """
 # ruff: noqa: SIM117
 
@@ -27,7 +27,7 @@ from src.infrastructure.openaire_adapter import (
 
 @pytest.fixture(autouse=True)
 def _reset_module_state() -> None:
-    """Setzt Modul-Level-Singletons zwischen Tests zurueck."""
+    """Setzt Modul-Level-Singletons zwischen Tests zurück."""
     _reset_token_invalid_flag()
     openaire_adapter._cached_token = ""
     openaire_adapter._cached_token_exp = 0.0
@@ -70,12 +70,12 @@ async def test_403_after_token_invalid_is_logged_as_debug(
     spy = _LogSpy()
     spy.install(monkeypatch)
 
-    # Flag direkt setzen (als ob vorher ein 400-Refresh-Fehler aufgetreten waere).
+    # Flag direkt setzen (als ob vorher ein 400-Refresh-Fehler aufgetreten wäre).
     openaire_adapter._token_invalid = True
 
     adapter = OpenAIREAdapter(access_token="dummy", refresh_token="")
 
-    # Token-Refresh ueberspringen (ohne Refresh-Token passiert ohnehin nichts).
+    # Token-Refresh überspringen (ohne Refresh-Token passiert ohnehin nichts).
     async def _noop_ensure(self: OpenAIREAdapter) -> None:
         return None
     monkeypatch.setattr(OpenAIREAdapter, "_ensure_valid_token", _noop_ensure)
@@ -100,7 +100,7 @@ async def test_403_after_token_invalid_is_logged_as_debug(
 
     result = await adapter._fetch_from_api("quantum computing", 2015, 2025)
 
-    # Fachlich: leere Liste (Fallback-Verhalten bleibt unveraendert).
+    # Fachlich: leere Liste (Fallback-Verhalten bleibt unverändert).
     assert result == []
 
     # Log-Spam-Check: KEINE `openaire_jahr_fehlgeschlagen`- oder
@@ -109,13 +109,13 @@ async def test_403_after_token_invalid_is_logged_as_debug(
     debug_events = [ev for ev, _ in spy.by_level("debug")]
 
     assert "openaire_jahr_fehlgeschlagen" not in warning_events, (
-        "Bei token_invalid=True duerfen Year-Errors NICHT als warning geloggt werden."
+        "Bei token_invalid=True dürfen Year-Errors NICHT als warning geloggt werden."
     )
     assert "openaire_teilergebnis" not in warning_events, (
         "Bei token_invalid=True darf kein `openaire_teilergebnis`-Warning entstehen."
     )
     assert "openaire_jahr_fehlgeschlagen" in debug_events, (
-        "Year-Errors muessen bei token_invalid=True auf debug-Level geloggt werden."
+        "Year-Errors müssen bei token_invalid=True auf debug-Level geloggt werden."
     )
     assert "openaire_teilergebnis" in debug_events
 
@@ -128,7 +128,7 @@ async def test_403_without_token_invalid_logs_warning(
     spy = _LogSpy()
     spy.install(monkeypatch)
 
-    # Flag explizit zuruecksetzen (wird auch durch Fixture sichergestellt).
+    # Flag explizit zurücksetzen (wird auch durch Fixture sichergestellt).
     _reset_token_invalid_flag()
 
     adapter = OpenAIREAdapter(access_token="dummy", refresh_token="")
@@ -189,7 +189,7 @@ async def test_refresh_400_sets_flag_and_logs_once(
 
     monkeypatch.setattr(openaire_adapter.httpx, "AsyncClient", _RefreshFailingClient)
 
-    # Abgelaufenes Token erzwingen, damit Refresh ausgeloest wird.
+    # Abgelaufenes Token erzwingen, damit Refresh ausgelöst wird.
     adapter = OpenAIREAdapter(access_token="", refresh_token="some_refresh_token")
     await adapter._ensure_valid_token()
 
@@ -202,7 +202,7 @@ async def test_refresh_400_sets_flag_and_logs_once(
         if ev == "openaire_token_refresh_fehlgeschlagen"
     ]
     assert len(warning_refresh) == 1
-    # Klare Konfigurationsfehler-Message enthaelt Hinweis auf DEPLOYMENT.md.
+    # Klare Konfigurationsfehler-Message enthält Hinweis auf DEPLOYMENT.md.
     assert "hinweis" in warning_refresh[0][1]
     assert "OPENAIRE_REFRESH_TOKEN" in warning_refresh[0][1]["hinweis"]
 

@@ -49,13 +49,13 @@ def _get_base_class() -> type:
 
 
 class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
-    """gRPC-Servicer fuer UC10 EuroSciVoc Discipline Mapping.
+    """gRPC-Servicer für UC10 EuroSciVoc Discipline Mapping.
 
     Koordiniert:
     1. Disziplin-Verteilung (PostgreSQL)
     2. Disziplin-Trend (PostgreSQL)
     3. Cross-Disciplinary-Links (PostgreSQL)
-    4. Interdisziplinaritaets-Metriken (berechnet)
+    4. Interdisziplinaritäts-Metriken (berechnet)
     """
 
     def __init__(self, pool: asyncpg.Pool, settings: Settings | None = None) -> None:
@@ -86,12 +86,12 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
         warnings: list[dict[str, str]] = []
         data_sources: list[dict[str, Any]] = []
 
-        # MIN-10: Alle Aggregat-Queries muessen denselben Tech- + Jahres-Scope
+        # MIN-10: Alle Aggregat-Queries müssen denselben Tech- + Jahres-Scope
         # nutzen wie `discipline_distribution`, sonst divergiert
         # `total_mapped_publications` (UC10) vom Header/UC1
-        # (Live-Beobachtung mRNA: 387 vs. 307). `total_mapped_projects` zaehlt
+        # (Live-Beobachtung mRNA: 387 vs. 307). `total_mapped_projects` zählt
         # `COUNT(DISTINCT project_id)` und darf nicht aus disciplines summiert
-        # werden (Doppelzaehlung bei Mehrfach-Tags).
+        # werden (Doppelzählung bei Mehrfach-Tags).
         tasks = [
             asyncio.create_task(self._repo.discipline_distribution(technology, start_year=start_year, end_year=end_year), name="disciplines"),
             asyncio.create_task(self._repo.discipline_trend(technology, start_year=start_year, end_year=end_year), name="trend"),
@@ -125,7 +125,7 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
                 total_projects = int(result)
 
         # --- Metriken berechnen ---
-        # FIX (AP4 / CRIT-2): Shannon darf nur ueber FIELD-Level-Kategorien
+        # FIX (AP4 / CRIT-2): Shannon darf nur über FIELD-Level-Kategorien
         # berechnet werden, damit er konsistent mit `active_fields` ist.
         # Zuvor wurden ALLE Hierarchie-Level (Field + Subfields + Leaf-Topics)
         # aggregiert, was bei 1 FIELD mit mehreren Subfields Shannon > 0 lieferte.
@@ -154,8 +154,8 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
                 disc_year_counts[did] = {}
             disc_year_counts[did][yr] = disc_year_counts[did].get(yr, 0) + cnt
 
-        # Fuer FIELD-level: Aufsummiere alle Kinder-Disziplinen
-        # Disziplinen mit parent_id == field_id gehoeren zum Feld
+        # Für FIELD-level: Aufsummiere alle Kinder-Disziplinen
+        # Disziplinen mit parent_id == field_id gehören zum Feld
         field_ids = {str(f["id"]) for f in fields}
         field_year_counts: dict[str, dict[int, int]] = {fid: {} for fid in field_ids}
 
@@ -172,11 +172,11 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
                     field_year_counts[parent][yr] = field_year_counts[parent].get(yr, 0) + cnt
 
         def _compute_field_cagr(yearly: dict[int, int]) -> float:
-            """CAGR fuer ein Feld aus jaehrlichen Projektzahlen."""
+            """CAGR für ein Feld aus jährlichen Projektzahlen."""
             if len(yearly) < 2:
                 return 0.0
             sorted_years = sorted(yearly.keys())
-            # Nur vollstaendige Datenjahre (<=2024, CORDIS ~90% in 2025)
+            # Nur vollständige Datenjahre (<=2024, CORDIS ~90% in 2025)
             sorted_years = [y for y in sorted_years if y <= 2024]
             if len(sorted_years) < 2:
                 return 0.0
@@ -187,7 +187,7 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
                 return 0.0
             return (math.pow(last_val / first_val, 1.0 / n_periods) - 1.0)
 
-        # CAGR pro Feld berechnen und an fields anhaengen
+        # CAGR pro Feld berechnen und an fields anhängen
         for f in fields:
             fid = str(f["id"])
             yearly = field_year_counts.get(fid, {})
@@ -212,7 +212,7 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
 
     def _build_response(self, **kwargs: Any) -> Any:
         if uc10_euroscivoc_pb2 is None or common_pb2 is None:
-            # Fuer jedes FIELD-level Disziplin zaehle Unterdisziplinen
+            # Für jedes FIELD-level Disziplin zähle Unterdisziplinen
             field_ids = {str(f["id"]) for f in kwargs["fields"]}
             sub_field_counts: dict[str, int] = {fid: 0 for fid in field_ids}
             for d in kwargs["disciplines"]:
@@ -302,7 +302,7 @@ class EuroSciVocServicer(_get_base_class()):  # type: ignore[misc]
         )
 
         # --- FieldOfScience mit CAGR ---
-        # Fuer jedes FIELD-level Disziplin zaehle Unterdisziplinen
+        # Für jedes FIELD-level Disziplin zähle Unterdisziplinen
         field_ids = {str(f["id"]) for f in kwargs["fields"]}
         sub_field_counts: dict[str, int] = {fid: 0 for fid in field_ids}
         for d in kwargs["disciplines"]:

@@ -1,11 +1,11 @@
 """UC7-spezifische Metriken und Hilfsfunktionen.
 
-Lokaler Fallback fuer shared.domain.research_metrics,
+Lokaler Fallback für shared.domain.research_metrics,
 falls das shared-Package nicht im PYTHONPATH liegt.
 
 v3.4.8 (Bundle A): Parity mit shared.domain.research_metrics --
 ``avg_citations``/``share``/``h_index`` werden jetzt konsistent gesetzt
-und ``compute_citation_trend`` unterstuetzt Jahr-Padding.
+und ``compute_citation_trend`` unterstützt Jahr-Padding.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from typing import Any
 
 
 def compute_h_index(citations: list[int]) -> int:
-    """h-Index: groesster Wert h so dass h Paper >= h Zitationen haben (Hirsch 2005)."""
+    """h-Index: größter Wert h so dass h Paper >= h Zitationen haben (Hirsch 2005)."""
     sorted_c = sorted(citations, reverse=True)
     h = 0
     for i, c in enumerate(sorted_c):
@@ -38,8 +38,8 @@ def compute_citation_trend(
 ) -> list[dict[str, Any]]:
     """Zitationen und Paper-Anzahl pro Jahr mit optionalem Jahr-Padding.
 
-    Fuellt fehlende Jahre zwischen ``start_year`` und ``end_year`` mit
-    Null-Eintraegen auf (Bug C5.2), damit das Frontend konsistente
+    Füllt fehlende Jahre zwischen ``start_year`` und ``end_year`` mit
+    Null-Einträgen auf (Bug C5.2), damit das Frontend konsistente
     Zeitreihen rendern kann.
     """
     by_year: dict[int, dict[str, int]] = {}
@@ -104,7 +104,7 @@ def compute_venue_distribution(
     """Top-Venues inklusive ``avg_citations``, ``h_index`` und ``share``.
 
     * M-009: ``avg_citations`` = total_citations / publication_count
-    * M-010: ``h_index`` -- h-Index beschraenkt auf Paper der Venue
+    * M-010: ``h_index`` -- h-Index beschränkt auf Paper der Venue
     """
     buckets: dict[str, dict[str, Any]] = {}
     for p in papers:
@@ -140,7 +140,7 @@ def compute_venue_distribution(
 
 
 def compute_publication_types(papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Publikationstypen zaehlen und Anteil pro Typ berechnen (Bug C-012)."""
+    """Publikationstypen zählen und Anteil pro Typ berechnen (Bug C-012)."""
     counts: dict[str, int] = {}
     for p in papers:
         pub_type = p.get("publicationTypes") or p.get("type") or ""

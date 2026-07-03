@@ -31,7 +31,7 @@ interface MaturityPanelProps {
   queryTimeSeconds?: number;
 }
 
-// Bug MAJ-9: R²-Schwellwert ab dem ein Sigmoid-Fit als zuverlaessig gilt.
+// Bug MAJ-9: R²-Schwellwert ab dem ein Sigmoid-Fit als zuverlässig gilt.
 // Identisch zu shared.domain.metrics.R2_RELIABILITY_THRESHOLD.
 const R2_RELIABILITY_THRESHOLD = 0.5;
 
@@ -126,10 +126,10 @@ export default function MaturityPanel({
           {/* Phase and Confidence Indicators */}
           <div className="flex flex-wrap items-center justify-center gap-2">
             {(() => {
-              // Bug MAJ-9: Fit unzuverlaessig -> Phase-Badge ausgrauen,
-              // Konfidenz-Badge unterdruecken. Quelle der Wahrheit ist
-              // primaer das Backend-Flag (fit_reliability_flag), R² ist
-              // die zusaetzliche Belt-and-Suspenders-Bedingung.
+              // Bug MAJ-9: Fit unzuverlässig -> Phase-Badge ausgrauen,
+              // Konfidenz-Badge unterdrücken. Quelle der Wahrheit ist
+              // primär das Backend-Flag (fit_reliability_flag), R² ist
+              // die zusätzliche Belt-and-Suspenders-Bedingung.
               const fitUnreliable =
                 !data.fit_reliability_flag ||
                 data.r_squared < R2_RELIABILITY_THRESHOLD;
@@ -146,7 +146,7 @@ export default function MaturityPanel({
                 >
                   Phase: {phaseInfo.label}
                   <InfoTooltip text={phaseTooltip} />
-                  {/* Overfitting-Warnung: zusaetzlicher InfoTooltip neben
+                  {/* Overfitting-Warnung: zusätzlicher InfoTooltip neben
                       der Phase-Badge, wenn Backend R² > 0.98 bei n < 30
                       Datenpunkten gemeldet hat. */}
                   {data.overfit_warning === true && (
@@ -170,7 +170,7 @@ export default function MaturityPanel({
                 <InfoTooltip text={METRIC_TOOLTIPS.inflection_year} />
               </span>
             )}
-            {/* Bug MAJ-9: Konfidenz-Badge nur rendern wenn Fit zuverlaessig
+            {/* Bug MAJ-9: Konfidenz-Badge nur rendern wenn Fit zuverlässig
                 und Konfidenz > 0. Verhindert die Scheinsicherheit
                 "R² = 0.000 + Konfidenz: 80%". */}
             {data.confidence > 0 &&

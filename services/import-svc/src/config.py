@@ -1,6 +1,6 @@
-"""Konfiguration fuer den Import Service via Pydantic Settings.
+"""Konfiguration für den Import Service via Pydantic Settings.
 
-Alle Einstellungen koennen ueber Umgebungsvariablen gesetzt werden.
+Alle Einstellungen können über Umgebungsvariablen gesetzt werden.
 Prefix: kein Prefix (flache Struktur, Docker-freundlich).
 """
 
@@ -14,9 +14,9 @@ class Settings(BaseSettings):
 
     Attribute:
         database_url: PostgreSQL-Verbindungs-URL (asyncpg-kompatibel).
-        bulk_data_dir: Basisverzeichnis fuer Bulk-Dateien (EPO/, CORDIS/).
-        batch_size: Anzahl Datensaetze pro Batch-Insert (COPY).
-        max_workers: Maximale Anzahl paralleler Worker fuer Dateiverarbeitung.
+        bulk_data_dir: Basisverzeichnis für Bulk-Dateien (EPO/, CORDIS/).
+        batch_size: Anzahl Datensätze pro Batch-Insert (COPY).
+        max_workers: Maximale Anzahl paralleler Worker für Dateiverarbeitung.
         log_level: Logging-Level (DEBUG, INFO, WARNING, ERROR).
         debug: Debug-Modus aktivieren (farbiges Logging, auto-reload).
         cors_origins: Kommagetrennte CORS-Origins.
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
 
-    # Scheduler (woechentlicher Bulk-Import)
+    # Scheduler (wöchentlicher Bulk-Import)
     import_schedule: str = "0 2 * * 0"  # Cron: Sonntag 02:00 UTC
     scheduler_enabled: bool = True
     scheduler_timezone: str = "UTC"
@@ -62,8 +62,8 @@ class Settings(BaseSettings):
     cordis_api_rate_limit_rpm: int = 30
     cordis_api_enabled: bool = True
 
-    # API Delta-Update Scheduler (taeglich, ergaenzt woechentlichen Bulk)
-    api_delta_schedule: str = "0 3 * * *"  # Cron: taeglich 03:00 UTC
+    # API Delta-Update Scheduler (täglich, ergänzt wöchentlichen Bulk)
+    api_delta_schedule: str = "0 3 * * *"  # Cron: täglich 03:00 UTC
     api_delta_lookback_days: int = 30
 
     @property

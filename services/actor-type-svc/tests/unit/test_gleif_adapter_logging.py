@@ -1,10 +1,10 @@
-"""Unit-Tests fuer GLEIF-Adapter Log-Level-Verhalten.
+"""Unit-Tests für GLEIF-Adapter Log-Level-Verhalten.
 
 Hintergrund (Bug v3.4.0):
-    GLEIF fuehrt nur LEI-pflichtige Entitaeten (Finanzwesen). Staatliche
+    GLEIF führt nur LEI-pflichtige Entitäten (Finanzwesen). Staatliche
     Forschungsinstitute (CNRS, IMEC, CEA, ETHZ, ...) haben systembedingt
     keinen LEI -> die API antwortet mit HTTP 404. Diese 404er sind
-    *fachlich erwartbar* und duerfen den Operator-Log nicht mit
+    *fachlich erwartbar* und dürfen den Operator-Log nicht mit
     ``warning``-Zeilen zuspammen.
 
 Erwartetes Verhalten:
@@ -13,8 +13,8 @@ Erwartetes Verhalten:
 
 Ansatz:
     Der Adapter verwendet ``structlog``. Wir patchen das modul-lokale
-    ``logger``-Objekt mit einem ``MagicMock`` und pruefen direkt, welche
-    Log-Methode (``debug`` vs. ``warning``) fuer welchen Fehler-Typ
+    ``logger``-Objekt mit einem ``MagicMock`` und prüfen direkt, welche
+    Log-Methode (``debug`` vs. ``warning``) für welchen Fehler-Typ
     aufgerufen wurde.
 """
 
@@ -44,13 +44,13 @@ def _make_http_status_error(status_code: int) -> httpx.HTTPStatusError:
 
 
 def _events(mock_logger: MagicMock, method: str) -> list[tuple[tuple, dict]]:
-    """Liefert Liste (args, kwargs) fuer Aufrufe von logger.<method>."""
+    """Liefert Liste (args, kwargs) für Aufrufe von logger.<method>."""
     return [call.args and (call.args, call.kwargs) or ((), call.kwargs)
             for call in getattr(mock_logger, method).call_args_list]
 
 
 class TestGleifAdapterLogLevel:
-    """Prueft die log-level-Behandlung im ``resolve``-Fehlerpfad."""
+    """Prüft die log-level-Behandlung im ``resolve``-Fehlerpfad."""
 
     @pytest.mark.asyncio
     async def test_404_wird_als_debug_geloggt_nicht_als_warning(self):
@@ -83,7 +83,7 @@ class TestGleifAdapterLogLevel:
 
     @pytest.mark.asyncio
     async def test_500_wird_als_warning_geloggt(self):
-        """5xx Server-Error -> warning (echte API-Stoerung)."""
+        """5xx Server-Error -> warning (echte API-Störung)."""
         adapter = GLEIFAdapter(pool=None)
         err = _make_http_status_error(500)
 
@@ -121,7 +121,7 @@ class TestGleifAdapterLogLevel:
 
     @pytest.mark.asyncio
     async def test_timeout_wird_als_warning_geloggt(self):
-        """Timeout -> warning (echte Verbindungsstoerung)."""
+        """Timeout -> warning (echte Verbindungsstörung)."""
         adapter = GLEIFAdapter(pool=None)
         err = httpx.TimeoutException("request timeout")
 
@@ -140,7 +140,7 @@ class TestGleifAdapterLogLevel:
 
     @pytest.mark.asyncio
     async def test_404_cached_negative_result_vermeidet_zweiten_api_call(self):
-        """Sanity: 404 laesst kein Ergebnis ausser None liefern."""
+        """Sanity: 404 lässt kein Ergebnis ausser None liefern."""
         adapter = GLEIFAdapter(pool=None)
         err = _make_http_status_error(404)
 

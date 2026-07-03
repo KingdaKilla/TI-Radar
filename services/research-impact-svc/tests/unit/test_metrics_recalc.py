@@ -1,9 +1,9 @@
-"""Unit-Tests fuer Bundle A Bug-Fixes in UC7 Research Impact Metriken.
+"""Unit-Tests für Bundle A Bug-Fixes in UC7 Research Impact Metriken.
 
 Deckt die Bugs C-012, M-008, M-009, M-010 und das Zeitraum-Padding C5.2 ab.
 Es werden sowohl die shared-Metriken (``shared.domain.research_metrics``)
 als auch die lokalen Fallback-Metriken (``src.domain.metrics``) getestet,
-damit der Service-Code unabhaengig von der Import-Reihenfolge robust ist.
+damit der Service-Code unabhängig von der Import-Reihenfolge robust ist.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-# shared-Domain (primaer im service.py importiert)
+# shared-Domain (primär im service.py importiert)
 from shared.domain.research_metrics import (
     _compute_citation_trend as shared_citation_trend,
     _compute_publication_types as shared_publication_types,
@@ -62,7 +62,7 @@ class TestPublicationTypesShare:
             _paper(year=2022, citations=1, types=["Review"]),
         ]
         result = shared_publication_types(papers)
-        assert result, "publication_types duerfen nicht leer sein"
+        assert result, "publication_types dürfen nicht leer sein"
         total_share = sum(entry["share"] for entry in result)
         assert total_share == pytest.approx(1.0, abs=1e-3)
         # Jeder Eintrag mit count > 0 muss share > 0 haben (C-012)
@@ -167,10 +167,10 @@ class TestTopVenues:
 # ---------------------------------------------------------------------------
 
 class TestCitationTrendPadding:
-    """Bug C5.2: fehlende Jahre zwischen start_year/end_year mit 0 auffuellen."""
+    """Bug C5.2: fehlende Jahre zwischen start_year/end_year mit 0 auffüllen."""
 
     def test_citation_trend_padded_for_missing_years_shared(self) -> None:
-        # Daten nur fuer 2018-2022, Bereich aber 2016-2024
+        # Daten nur für 2018-2022, Bereich aber 2016-2024
         papers = [
             _paper(year=2018, citations=5),
             _paper(year=2020, citations=10),
@@ -178,15 +178,15 @@ class TestCitationTrendPadding:
         ]
         trend = shared_citation_trend(papers, start_year=2016, end_year=2024)
         years = [e["year"] for e in trend]
-        # ALLE Jahre 2016..2024 muessen enthalten sein
+        # ALLE Jahre 2016..2024 müssen enthalten sein
         assert years == list(range(2016, 2025))
-        # 2016 und 2017 muessen 0-Werte haben
+        # 2016 und 2017 müssen 0-Werte haben
         by_year = {e["year"]: e for e in trend}
         assert by_year[2016]["publication_count"] == 0
         assert by_year[2016]["total_citations"] == 0
         assert by_year[2016]["avg_citations"] == 0.0
         assert by_year[2017]["publication_count"] == 0
-        # Vorhandene Daten bleiben unveraendert
+        # Vorhandene Daten bleiben unverändert
         assert by_year[2018]["total_citations"] == 5
         assert by_year[2020]["publication_count"] == 1
         # 2023 + 2024 sind ebenfalls gepadded

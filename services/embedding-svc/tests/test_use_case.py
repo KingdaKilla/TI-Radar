@@ -1,6 +1,6 @@
-"""Unit-Tests fuer EmbedDocuments und ChunkAndEmbed Use Cases.
+"""Unit-Tests für EmbedDocuments und ChunkAndEmbed Use Cases.
 
-Alle externen Abhaengigkeiten (Repository, Embedder, Chunker) werden durch
+Alle externen Abhängigkeiten (Repository, Embedder, Chunker) werden durch
 AsyncMock/MagicMock-Objekte ersetzt. Kein IO, kein gRPC, kein Protobuf.
 """
 from __future__ import annotations
@@ -210,7 +210,7 @@ class TestEmbedResult:
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-# Fixtures fuer ChunkAndEmbed
+# Fixtures für ChunkAndEmbed
 # ---------------------------------------------------------------------------
 
 def _make_chunk_mocks(
@@ -222,7 +222,7 @@ def _make_chunk_mocks(
     total: int = 100,
     chunked: int = 50,
 ) -> tuple[AsyncMock, MagicMock, AsyncMock]:
-    """Erstellt Mock-ChunkRepo, Mock-Chunker und Mock-Embedder fuer ChunkAndEmbed."""
+    """Erstellt Mock-ChunkRepo, Mock-Chunker und Mock-Embedder für ChunkAndEmbed."""
     chunk_repo = AsyncMock()
     chunk_repo.fetch_unchunked_docs.return_value = docs if docs is not None else []
     chunk_repo.store_chunks_with_embeddings.return_value = stored
@@ -275,7 +275,7 @@ class TestChunkAndEmbedProcessesDocs:
         # Embedder wird mit allen Chunk-Texten aufgerufen
         embedder.embed_batch.assert_called_once_with(["chunk1a", "chunk1b", "chunk2a"])
 
-        # Store erhaelt source_id, chunk_index, chunk_text, vector
+        # Store erhält source_id, chunk_index, chunk_text, vector
         expected_records = [
             ("DOC-1", 0, "chunk1a", [0.1, 0.2]),
             ("DOC-1", 1, "chunk1b", [0.3, 0.4]),
@@ -305,7 +305,7 @@ class TestChunkAndEmbedNoDocs:
     """Testet Verhalten wenn keine unchunked Dokumente vorhanden sind."""
 
     async def test_chunk_and_embed_no_docs(self):
-        """Leerer Fetch gibt completed-Ergebnis mit 0 Chunks zurueck."""
+        """Leerer Fetch gibt completed-Ergebnis mit 0 Chunks zurück."""
         chunk_repo, chunker, embedder = _make_chunk_mocks(
             docs=[], total=200, chunked=200,
         )
@@ -366,12 +366,12 @@ class TestChunkAndEmbedMultipleChunks:
         assert result.docs_processed == 1
         assert result.status == "completed"
 
-        # Alle 3 Chunks werden an den Embedder uebergeben
+        # Alle 3 Chunks werden an den Embedder übergeben
         embedder.embed_batch.assert_called_once_with([
             "Part 1 about quantum", "Part 2 about AI", "Part 3 about patents",
         ])
 
-        # Store erhaelt korrekte Chunk-Indizes
+        # Store erhält korrekte Chunk-Indizes
         expected = [
             ("LONG-DOC", 0, "Part 1 about quantum", [0.1]),
             ("LONG-DOC", 1, "Part 2 about AI", [0.2]),
@@ -381,14 +381,14 @@ class TestChunkAndEmbedMultipleChunks:
 
 
 # ---------------------------------------------------------------------------
-# Tests: ChunkAndEmbed — Leere Chunks werden uebersprungen
+# Tests: ChunkAndEmbed — Leere Chunks werden übersprungen
 # ---------------------------------------------------------------------------
 
 class TestChunkAndEmbedEmptyChunks:
-    """Testet dass Dokumente die keine Chunks erzeugen, uebersprungen werden."""
+    """Testet dass Dokumente die keine Chunks erzeugen, übersprungen werden."""
 
     async def test_chunk_and_embed_empty_chunk_skipped(self):
-        """Chunker gibt leere Liste fuer ein Dokument zurueck -> keine Embeddings."""
+        """Chunker gibt leere Liste für ein Dokument zurück -> keine Embeddings."""
         docs = [("DOC-OK", "Good text"), ("DOC-EMPTY", "")]
         chunks_per_doc = [["chunk from good text"], []]  # zweites Dok erzeugt keine Chunks
         vectors = [[0.1, 0.2]]  # nur 1 Chunk -> 1 Vector

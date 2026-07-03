@@ -1,6 +1,6 @@
-"""TechClusterRepository — PostgreSQL-Datenbankzugriff fuer UC9.
+"""TechClusterRepository — PostgreSQL-Datenbankzugriff für UC9.
 
-Abfragen fuer Akteur-CPC-Beziehungen und Cluster-Daten.
+Abfragen für Akteur-CPC-Beziehungen und Cluster-Daten.
 Nutzt patent_schema und cordis_schema.
 """
 
@@ -22,7 +22,7 @@ EU_EEA_COUNTRIES: frozenset[str] = frozenset({
 
 
 class TechClusterRepository:
-    """Async PostgreSQL-Zugriff fuer UC9 Tech-Cluster-Analysen."""
+    """Async PostgreSQL-Zugriff für UC9 Tech-Cluster-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -36,7 +36,7 @@ class TechClusterRepository:
         european_only: bool = False,
         limit: int = 500,
     ) -> list[dict[str, Any]]:
-        """Akteur-CPC-Paare fuer Co-Occurrence-Matrix."""
+        """Akteur-CPC-Paare für Co-Occurrence-Matrix."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -90,7 +90,7 @@ class TechClusterRepository:
         end_year: int | None = None,
         limit: int = 200,
     ) -> list[dict[str, Any]]:
-        """CPC-Co-Occurrence-Paare fuer Clustering."""
+        """CPC-Co-Occurrence-Paare für Clustering."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -138,7 +138,7 @@ class TechClusterRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Patent-Zahlen pro CPC-Code und Jahr (fuer Cluster-CAGR)."""
+        """Patent-Zahlen pro CPC-Code und Jahr (für Cluster-CAGR)."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2

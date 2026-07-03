@@ -1,14 +1,14 @@
-"""CpcFlowRepository — PostgreSQL-Datenbankzugriff fuer UC5.
+"""CpcFlowRepository — PostgreSQL-Datenbankzugriff für UC5.
 
-Liefert CPC-Co-Klassifikationsdaten fuer Jaccard-Analyse.
+Liefert CPC-Co-Klassifikationsdaten für Jaccard-Analyse.
 Zwei Pfade:
-1. SQL-nativ: Direkte Aggregation ueber patent_cpc Tabelle
+1. SQL-nativ: Direkte Aggregation über patent_cpc Tabelle
 2. Rohdaten: CPC-Codes als Komma-separierte Strings (Fallback)
 
 Queries nutzen PostgreSQL-spezifische Syntax:
-- tsvector @@ plainto_tsquery fuer Volltextsuche
-- LEFT(cpc_code, n) fuer CPC-Level-Truncation
-- Self-Join auf patent_cpc fuer Co-Occurrence-Berechnung
+- tsvector @@ plainto_tsquery für Volltextsuche
+- LEFT(cpc_code, n) für CPC-Level-Truncation
+- Self-Join auf patent_cpc für Co-Occurrence-Berechnung
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from typing import Any
 import asyncpg
 import structlog
 
-# --- Shared Domain fuer Jaccard-Berechnung ---
+# --- Shared Domain für Jaccard-Berechnung ---
 try:
     from shared.domain.cpc_flow import build_jaccard_from_sql
 except ImportError:
@@ -28,17 +28,17 @@ logger = structlog.get_logger(__name__)
 
 
 class CpcFlowRepository:
-    """Async PostgreSQL-Zugriff fuer UC5 CPC Flow-Analysen."""
+    """Async PostgreSQL-Zugriff für UC5 CPC Flow-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
 
     # -----------------------------------------------------------------------
-    # Schema-Pruefung
+    # Schema-Prüfung
     # -----------------------------------------------------------------------
 
     async def has_cpc_table(self) -> bool:
-        """Pruefen ob die normalisierte patent_cpc Tabelle existiert.
+        """Prüfen ob die normalisierte patent_cpc Tabelle existiert.
 
         Hinweis: Auch wenn patent_cpc leer ist, funktioniert der SQL-Pfad,
         da _top_cpc_codes und _cpc_pair_counts via LATERAL unnest(p.cpc_codes)
@@ -68,12 +68,12 @@ class CpcFlowRepository:
         top_n: int = 15,
         cpc_level: int = 4,
     ) -> dict[str, Any]:
-        """SQL-native Jaccard-Berechnung fuer Top-CPC-Codes.
+        """SQL-native Jaccard-Berechnung für Top-CPC-Codes.
 
-        Fuehrt drei Schritte aus:
-        1. Top-N CPC-Codes nach Patent-Haeufigkeit ermitteln
+        Führt drei Schritte aus:
+        1. Top-N CPC-Codes nach Patent-Häufigkeit ermitteln
         2. Einzelne Code-Counts abfragen
-        3. Paarweise Co-Occurrence zaehlen
+        3. Paarweise Co-Occurrence zählen
         4. Jaccard-Matrix in Python berechnen (via shared.domain.cpc_flow)
         """
         # Schritt 1: Top CPC-Codes
@@ -105,8 +105,8 @@ class CpcFlowRepository:
 
         pair_counts = [(r["code_a"], r["code_b"], r["co_count"]) for r in pair_rows]
 
-        # Pair-Co-Counts als Lookup-Dict fuer Proto-Mapper (Bug 2 Fix).
-        # Schluessel ist das sortierte Tuple (code_a < code_b), damit die
+        # Pair-Co-Counts als Lookup-Dict für Proto-Mapper (Bug 2 Fix).
+        # Schlüssel ist das sortierte Tuple (code_a < code_b), damit die
         # Reihenfolge egal ist beim Lookup.
         pair_co_counts: dict[tuple[str, str], int] = {}
         for code_a, code_b, co_count in pair_counts:
@@ -137,7 +137,7 @@ class CpcFlowRepository:
         cpc_level: int = 4,
         limit: int = 15,
     ) -> list[dict[str, Any]]:
-        """Top CPC-Codes nach Patentanzahl fuer eine Technologie."""
+        """Top CPC-Codes nach Patentanzahl für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -191,7 +191,7 @@ class CpcFlowRepository:
     ) -> list[dict[str, Any]]:
         """Pro Jahr x CPC-Code Patent-Counts aggregieren.
 
-        Nur fuer Top-N CPC-Codes. Benoetigt fuer year_data_entries.
+        Nur für Top-N CPC-Codes. Benötigt für year_data_entries.
 
         Returns:
             Liste von {"year", "code", "patent_count"}.
@@ -256,7 +256,7 @@ class CpcFlowRepository:
         end_year: int | None = None,
         cpc_level: int = 4,
     ) -> list[dict[str, Any]]:
-        """Pro Jahr x CPC-Paar Co-Occurrence zaehlen (fuer year-level Jaccard)."""
+        """Pro Jahr x CPC-Paar Co-Occurrence zählen (für year-level Jaccard)."""
         if not top_codes:
             return []
 
@@ -324,7 +324,7 @@ class CpcFlowRepository:
         end_year: int | None = None,
         cpc_level: int = 4,
     ) -> list[dict[str, Any]]:
-        """Paarweise Co-Occurrence der Top-CPC-Codes zaehlen.
+        """Paarweise Co-Occurrence der Top-CPC-Codes zählen.
 
         Self-Join auf patent_cpc: Patente die beide Codes tragen.
         """
@@ -391,7 +391,7 @@ class CpcFlowRepository:
     ) -> list[dict[str, Any]]:
         """CPC-Codes als Rohdaten laden (Fallback wenn patent_cpc nicht existiert).
 
-        Gibt Patente mit komma-separierten CPC-Codes zurueck.
+        Gibt Patente mit komma-separierten CPC-Codes zurück.
         """
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]

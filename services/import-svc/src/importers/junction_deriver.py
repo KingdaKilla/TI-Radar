@@ -1,4 +1,4 @@
-"""Junction-Derivation fuer patent_schema.
+"""Junction-Derivation für patent_schema.
 
 Leitet die Junction-Tabellen aus den denormalisierten Feldern der patents
 Tabelle ab:
@@ -14,7 +14,7 @@ Wird vom Scheduler nach jedem Bulk-Import (weekly_import_job) aufgerufen.
 Idempotent durch ON CONFLICT DO NOTHING — kann gefahrlos re-run werden.
 
 Die SQL-Logik ist identisch zu database/sql/seed_junctions_production.sql.
-Hier als Python-embedded-SQL, damit der Scheduler unabhaengig vom
+Hier als Python-embedded-SQL, damit der Scheduler unabhängig vom
 Filesystem-Pfad ist und auf asyncpg statt psql operiert.
 
 Performance-Hinweis: Bei 156 M Patents dauert der Full-Scan der drei Stages
@@ -89,7 +89,7 @@ ON CONFLICT DO NOTHING
 
 # Performance-Tuning-Statements, session-scoped.
 # statement_timeout=0 deaktiviert das Production-Default-Limit (10 min),
-# das fuer die langen Junction-Sort+Insert-Operationen zu klein ist.
+# das für die langen Junction-Sort+Insert-Operationen zu klein ist.
 _TUNING_ON = (
     "SET statement_timeout = 0",
     "SET idle_in_transaction_session_timeout = 0",
@@ -113,17 +113,17 @@ _TUNING_OFF = (
 async def derive_junctions(pool: asyncpg.Pool) -> dict[str, Any]:
     """Junction-Tabellen aus denormalisierten Patent-Daten ableiten.
 
-    Fuehrt drei Stages sequenziell aus:
+    Führt drei Stages sequenziell aus:
       1. patent_schema.applicants (DISTINCT aus patents.applicant_names)
       2. patent_schema.patent_applicants (N:M junction)
       3. patent_schema.patent_cpc (Jaccard junction)
 
     Jede Stage ist eine eigene Query, die asyncpg implizit als eigene
-    Transaction ausfuehrt. Kein Wrap in BEGIN/COMMIT, damit wir nicht in
+    Transaction ausführt. Kein Wrap in BEGIN/COMMIT, damit wir nicht in
     die MV-Refresh-Falle laufen.
 
     Performance-Tuning (work_mem, synchronous_commit, temp_buffers) wird
-    session-scoped gesetzt und am Ende zurueckgesetzt.
+    session-scoped gesetzt und am Ende zurückgesetzt.
 
     Args:
         pool: Aktiver asyncpg-Pool zur Produktiv-DB.
@@ -175,7 +175,7 @@ async def derive_junctions(pool: asyncpg.Pool) -> dict[str, Any]:
                 result=result_3,
             )
 
-            # Row counts (fuer Log + stats dict)
+            # Row counts (für Log + stats dict)
             row = await conn.fetchrow(
                 "SELECT "
                 "(SELECT COUNT(*) FROM patent_schema.applicants)         AS applicants, "
@@ -185,7 +185,7 @@ async def derive_junctions(pool: asyncpg.Pool) -> dict[str, Any]:
             stats["row_counts"] = dict(row) if row else {}
 
         finally:
-            # Tuning zuruecksetzen — auch bei Fehler
+            # Tuning zurücksetzen — auch bei Fehler
             for stmt in _TUNING_OFF:
                 try:
                     await conn.execute(stmt)

@@ -1,4 +1,4 @@
-"""Deterministische, jahresstratifizierte Stichprobenziehung fuer Patent-Analysen.
+"""Deterministische, jahresstratifizierte Stichprobenziehung für Patent-Analysen.
 
 Statistische Methode: Proportionale Allokation mit systematischer Auswahl
 ==========================================================================
@@ -6,38 +6,38 @@ Statistische Methode: Proportionale Allokation mit systematischer Auswahl
 Die Stichprobenziehung erfolgt in drei Schritten:
 
 1. **Schichtung (Stratifikation)**: Die Grundgesamtheit wird nach Publikationsjahr
-   in disjunkte Schichten (Strata) partitioniert. Jedes Patent gehoert exakt einer
+   in disjunkte Schichten (Strata) partitioniert. Jedes Patent gehört exakt einer
    Schicht an.
 
-2. **Proportionale Allokation**: Jede Schicht erhaelt einen Anteil an der
+2. **Proportionale Allokation**: Jede Schicht erhält einen Anteil an der
    Stichprobe, der ihrem Anteil an der Grundgesamtheit entspricht:
 
        n_h = round(n * N_h / N)
 
-   wobei n = Stichprobengroesse, N_h = Schichtgroesse, N = Grundgesamtheit.
+   wobei n = Stichprobengröße, N_h = Schichtgröße, N = Grundgesamtheit.
 
-   Kleine Schichten (N_h <= Minimum) werden vollstaendig uebernommen
-   (Census-Strata). Die ueberzaehligen Einheiten werden proportional von
-   den grossen Schichten abgezogen.
+   Kleine Schichten (N_h <= Minimum) werden vollständig übernommen
+   (Census-Strata). Die überzähligen Einheiten werden proportional von
+   den großen Schichten abgezogen.
 
 3. **Systematische Auswahl (Midpoint-Regel)**: Innerhalb jeder Schicht wird
-   systematisch mit festem Startoffset ausgewaehlt:
+   systematisch mit festem Startoffset ausgewählt:
 
        Schritt k = N_h / n_h
        Start   s = floor(k / 2)
        Indices = [floor(s + i * k) for i in range(n_h)]
 
-   Die Midpoint-Regel (s = k/2) vermeidet Randeffekte und ist voellig
-   deterministisch — es wird kein Zufallszahlengenerator benoetigt.
-   Die Elemente jeder Schicht werden vorab sortiert (standardmaessig nach
+   Die Midpoint-Regel (s = k/2) vermeidet Randeffekte und ist völlig
+   deterministisch — es wird kein Zufallszahlengenerator benötigt.
+   Die Elemente jeder Schicht werden vorab sortiert (standardmäßig nach
    ihrem Index in der Eingabeliste), sodass bei identischer Eingabe
    stets dasselbe Ergebnis entsteht.
 
 Eigenschaften:
 - Deterministisch: identischer Input -> identischer Output, ohne Seed
 - Proportional: Jahresanteile in der Stichprobe = Jahresanteile in der Population
-- Census-Strata: Jahre mit wenigen Patenten werden vollstaendig uebernommen
-- Laufzeit: O(N) fuer Gruppierung + O(n) fuer Auswahl
+- Census-Strata: Jahre mit wenigen Patenten werden vollständig übernommen
+- Laufzeit: O(N) für Gruppierung + O(n) für Auswahl
 
 Referenzen:
 - Cochran, W. G. (1977). Sampling Techniques. 3rd ed. Wiley.
@@ -60,10 +60,10 @@ T = TypeVar("T")
 # ---------------------------------------------------------------------------
 
 DEFAULT_SAMPLE_SIZE: int = 10_000
-"""Standard-Stichprobengroesse fuer CPC-Co-Klassifikation."""
+"""Standard-Stichprobengröße für CPC-Co-Klassifikation."""
 
 CENSUS_THRESHOLD: int = 5
-"""Schichten mit hoechstens so vielen Elementen werden vollstaendig uebernommen."""
+"""Schichten mit höchstens so vielen Elementen werden vollständig übernommen."""
 
 
 # ---------------------------------------------------------------------------
@@ -76,14 +76,14 @@ class SamplingResult:
     """Ergebnis der stratifizierten Stichprobenziehung.
 
     Attributes:
-        sampled_data: Die ausgewaehlten Elemente in ihrer urspruenglichen
+        sampled_data: Die ausgewählten Elemente in ihrer ursprünglichen
             Schicht-Reihenfolge (sortiert nach Jahr, dann Original-Index).
-        population_size: Groesse der Grundgesamtheit (N).
-        sample_size: Groesse der gezogenen Stichprobe (n).
+        population_size: Größe der Grundgesamtheit (N).
+        sample_size: Größe der gezogenen Stichprobe (n).
         sampling_fraction: Auswahlsatz f = n / N.
-        strata_info: Pro Schicht (Jahr): Populationsgroesse N_h,
-            Stichprobengroesse n_h, und ob Census-Stratum.
-        was_sampled: True wenn tatsaechlich eine Reduktion stattfand.
+        strata_info: Pro Schicht (Jahr): Populationsgröße N_h,
+            Stichprobengröße n_h, und ob Census-Stratum.
+        was_sampled: True wenn tatsächlich eine Reduktion stattfand.
     """
 
     sampled_data: list[tuple[set[str], int]]
@@ -96,7 +96,7 @@ class SamplingResult:
 
 @dataclass(frozen=True, slots=True)
 class StratumInfo:
-    """Informationen ueber eine einzelne Schicht (Jahrgang)."""
+    """Informationen über eine einzelne Schicht (Jahrgang)."""
 
     population_count: int
     sample_count: int
@@ -119,9 +119,9 @@ def stratified_sample(
     Args:
         patent_data: Liste von (cpc_code_set, year) Tupeln. Nur Patente mit
             mindestens 2 CPC-Codes (bereits gefiltert).
-        target_size: Ziel-Stichprobengroesse. Standard: 10.000.
-        census_threshold: Schichten mit <= dieser Groesse werden vollstaendig
-            uebernommen. Standard: 5.
+        target_size: Ziel-Stichprobengröße. Standard: 10.000.
+        census_threshold: Schichten mit <= dieser Größe werden vollständig
+            übernommen. Standard: 5.
 
     Returns:
         SamplingResult mit der gezogenen Stichprobe und Metadaten.
@@ -130,14 +130,14 @@ def stratified_sample(
         ValueError: Wenn target_size < 1.
 
     Performance:
-        O(N) fuer Gruppierung, O(n) fuer systematische Auswahl.
+        O(N) für Gruppierung, O(n) für systematische Auswahl.
         Bei N=100.000 und n=10.000 typischerweise < 10ms in CPython 3.12.
 
     Beispiel::
 
         data = [({\"H01L\", \"G06N\"}, 2020), ({\"B01D\", \"C07C\"}, 2021), ...]
         result = stratified_sample(data, target_size=1000)
-        print(f\"{result.sample_size} von {result.population_size} ausgewaehlt\")
+        print(f\"{result.sample_size} von {result.population_size} ausgewählt\")
         # Downstream: build_cooccurrence_with_years(result.sampled_data)
     """
     if target_size < 1:
@@ -240,16 +240,16 @@ def _allocate_proportional(
 
     Algorithmus:
     1. Identifiziere Census-Strata (N_h <= census_threshold).
-    2. Reserviere deren volle Groesse.
-    3. Verteile die verbleibende Stichprobengroesse proportional auf die
-       uebrigen Schichten.
+    2. Reserviere deren volle Größe.
+    3. Verteile die verbleibende Stichprobengröße proportional auf die
+       übrigen Schichten.
     4. Korrigiere Rundungsfehler durch Largest-Remainder-Methode (Hare-Quota),
        damit die Summe exakt target_size ergibt.
 
     Args:
-        strata_sizes: {year: N_h} fuer jede Schicht.
-        target_size: Gewuenschte Gesamt-Stichprobengroesse n.
-        census_threshold: Schichten <= dieser Groesse werden voll uebernommen.
+        strata_sizes: {year: N_h} für jede Schicht.
+        target_size: Gewünschte Gesamt-Stichprobengröße n.
+        census_threshold: Schichten <= dieser Größe werden voll übernommen.
 
     Returns:
         {year: n_h} Allokation pro Schicht.
@@ -267,15 +267,15 @@ def _allocate_proportional(
         size for year, size in strata_sizes.items() if year not in census_years
     )
 
-    # Falls Census-Strata bereits die gesamte Stichprobe ausfuellen
+    # Falls Census-Strata bereits die gesamte Stichprobe ausfüllen
     if remaining_target <= 0 or non_census_total == 0:
         result: dict[int, int] = {}
         for year, size in strata_sizes.items():
             if year in census_years:
                 result[year] = size
             else:
-                # Mindestens 1 pro nicht-leerer Schicht, um Repraesentativitaet
-                # zu wahren (falls ueberhaupt Platz)
+                # Mindestens 1 pro nicht-leerer Schicht, um Repräsentativität
+                # zu wahren (falls überhaupt Platz)
                 result[year] = min(1, size) if remaining_target > 0 else 0
         return result
 
@@ -299,13 +299,13 @@ def _allocate_proportional(
     current_sum = sum(allocation.values())
     deficit = target_size - current_sum
 
-    # Sortiere nach groesstem Remainder (absteigend)
+    # Sortiere nach größtem Remainder (absteigend)
     remainders.sort(key=lambda x: x[1], reverse=True)
 
     for year, _ in remainders:
         if deficit <= 0:
             break
-        # Nicht ueber N_h hinaus allokieren
+        # Nicht über N_h hinaus allokieren
         if allocation[year] < strata_sizes[year]:
             allocation[year] += 1
             deficit -= 1
@@ -316,15 +316,15 @@ def _allocate_proportional(
 def _systematic_select(indices: list[int], n: int) -> list[int]:
     """Systematische Auswahl mit Midpoint-Start aus einer sortierten Index-Liste.
 
-    Waehlt n Elemente aus indices mittels gleichmaessiger Schrittweite.
+    Wählt n Elemente aus indices mittels gleichmäßiger Schrittweite.
     Der Startpunkt liegt bei floor(step/2) (Midpoint-Regel).
 
     Args:
         indices: Sortierte Liste von Indizes (aufsteigend).
-        n: Anzahl zu waehlender Elemente.
+        n: Anzahl zu wählender Elemente.
 
     Returns:
-        Liste von n ausgewaehlten Indizes.
+        Liste von n ausgewählten Indizes.
     """
     total = len(indices)
     if n >= total:
@@ -344,15 +344,15 @@ def _systematic_select(indices: list[int], n: int) -> list[int]:
 
 @dataclass(frozen=True, slots=True)
 class JaccardConfidence:
-    """Konfidenzschaetzung fuer einen Jaccard-Index aus stratifizierter Stichprobe.
+    """Konfidenzschätzung für einen Jaccard-Index aus stratifizierter Stichprobe.
 
     Attributes:
-        jaccard: Punkt-Schaetzung des Jaccard-Index.
-        standard_error: Geschaetzter Standardfehler (mit FPC).
+        jaccard: Punkt-Schätzung des Jaccard-Index.
+        standard_error: Geschätzter Standardfehler (mit FPC).
         margin_of_error_95: Halbe Breite des 95%-Konfidenzintervalls.
         ci_lower: Untere Grenze des 95%-Konfidenzintervalls (geclippt auf [0, 1]).
         ci_upper: Obere Grenze des 95%-Konfidenzintervalls (geclippt auf [0, 1]).
-        effective_n: Effektive Stichprobengroesse (Vereinigungsmenge).
+        effective_n: Effektive Stichprobengröße (Vereinigungsmenge).
     """
 
     jaccard: float
@@ -369,21 +369,21 @@ def estimate_jaccard_confidence(
     sample_size: int,
     population_size: int,
 ) -> JaccardConfidence:
-    """Konfidenzintervall fuer einen geschaetzten Jaccard-Index berechnen.
+    """Konfidenzintervall für einen geschätzten Jaccard-Index berechnen.
 
     Der Jaccard-Index J = |A intersect B| / |A union B| kann als Proportion
     p der Patente in der Vereinigungsmenge betrachtet werden, die beide
     CPC-Codes tragen.
 
-    Fuer Proportionen aus endlichen Populationen gilt:
+    Für Proportionen aus endlichen Populationen gilt:
 
         SE(p) = sqrt(p * (1-p) / (n-1)) * sqrt(1 - n/N)
 
     wobei:
-    - p = intersection_count / union_count (Punkt-Schaetzung)
-    - n = union_count in der Stichprobe (effektive Stichprobengroesse)
-    - N = union_count * (population_size / sample_size) (geschaetzte
-      Vereinigungsgroesse in der Population)
+    - p = intersection_count / union_count (Punkt-Schätzung)
+    - n = union_count in der Stichprobe (effektive Stichprobengröße)
+    - N = union_count * (population_size / sample_size) (geschätzte
+      Vereinigungsgröße in der Population)
     - sqrt(1 - n/N) = Finite Population Correction (FPC)
 
     Bei sample_size == population_size (keine Stichprobe) ist SE = 0.
@@ -391,11 +391,11 @@ def estimate_jaccard_confidence(
     Args:
         intersection_count: |A intersect B| in der Stichprobe.
         union_count: |A union B| in der Stichprobe.
-        sample_size: Stichprobengroesse n.
-        population_size: Populationsgroesse N.
+        sample_size: Stichprobengröße n.
+        population_size: Populationsgröße N.
 
     Returns:
-        JaccardConfidence mit Punkt-Schaetzung und 95%-KI.
+        JaccardConfidence mit Punkt-Schätzung und 95%-KI.
     """
     if union_count == 0:
         return JaccardConfidence(
@@ -420,7 +420,7 @@ def estimate_jaccard_confidence(
             effective_n=union_count,
         )
 
-    # Geschaetzte Vereinigungsgroesse in der Population
+    # Geschätzte Vereinigungsgröße in der Population
     scaling = population_size / sample_size
     estimated_union_pop = union_count * scaling
 

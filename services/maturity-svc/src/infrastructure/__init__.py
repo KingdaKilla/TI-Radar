@@ -1,1 +1,1 @@
-"""Infrastruktur-Schicht: Datenbankzugriff fuer UC2 Maturity."""
+"""Infrastruktur-Schicht: Datenbankzugriff für UC2 Maturity."""

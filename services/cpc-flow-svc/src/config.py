@@ -1,6 +1,6 @@
-"""Konfiguration fuer den CPC-Flow-Service.
+"""Konfiguration für den CPC-Flow-Service.
 
-Pydantic Settings laedt Werte aus Umgebungsvariablen und .env-Dateien.
+Pydantic Settings lädt Werte aus Umgebungsvariablen und .env-Dateien.
 Alle Konfigurationsparameter sind zentral hier definiert.
 """
 
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     metrics_port: int = 9095
 
     # --- Timeouts ---
-    db_query_timeout_s: float = 60.0  # CPC-Jaccard kann laenger dauern
+    db_query_timeout_s: float = 60.0  # CPC-Jaccard kann länger dauern
 
     # --- CPC-Flow Konfiguration ---
     cpc_level: int = 4

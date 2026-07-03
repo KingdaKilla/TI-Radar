@@ -9,7 +9,7 @@ from typing import Any
 
 
 def normalize_cpc(code: str, level: int = 4) -> str:
-    """CPC-Code auf ein bestimmtes Hierarchie-Level kuerzen.
+    """CPC-Code auf ein bestimmtes Hierarchie-Level kürzen.
 
     Level 4 = Subklasse (z.B. 'H01L'), Level 3 = Klasse (z.B. 'H01').
     """
@@ -55,7 +55,7 @@ def build_cooccurrence(
     Returns:
         (labels, jaccard_matrix, total_connections)
     """
-    # Haeufigste CPC-Codes ermitteln
+    # Häufigste CPC-Codes ermitteln
     code_counter: Counter[str] = Counter()
     for codes in patent_sets:
         for code in codes:
@@ -68,7 +68,7 @@ def build_cooccurrence(
     n = len(top_codes)
     code_index = {code: i for i, code in enumerate(top_codes)}
 
-    # Co-Occurrence zaehlen
+    # Co-Occurrence zählen
     pair_counts: Counter[tuple[int, int]] = Counter()
     code_patent_sets: dict[int, set[int]] = {i: set() for i in range(n)}
 
@@ -98,21 +98,21 @@ def build_cooccurrence(
 def build_cooccurrence_with_years(
     patent_data: list[tuple[set[str], int]], top_n: int = 15
 ) -> tuple[list[str], list[list[float]], int, dict[str, Any]]:
-    """Co-Occurrence mit Jahr-Tracking fuer Frontend-seitige Neuberechnung.
+    """Co-Occurrence mit Jahr-Tracking für Frontend-seitige Neuberechnung.
 
     Returns:
         (labels, jaccard_matrix, total_connections, year_data)
     """
-    # Alle CPC-Sets (ohne Jahr) fuer Gesamt-Matrix
+    # Alle CPC-Sets (ohne Jahr) für Gesamt-Matrix
     patent_sets = [codes for codes, _ in patent_data]
 
-    # Haeufigste CPC-Codes ermitteln
+    # Häufigste CPC-Codes ermitteln
     code_counter: Counter[str] = Counter()
     for codes in patent_sets:
         for code in codes:
             code_counter[code] += 1
 
-    # Alle CPC-Codes sortiert nach Haeufigkeit (fuer year_data)
+    # Alle CPC-Codes sortiert nach Häufigkeit (für year_data)
     all_codes = [code for code, _ in code_counter.most_common()]
     top_codes = all_codes[:top_n]
     if len(top_codes) < 2:
@@ -121,7 +121,7 @@ def build_cooccurrence_with_years(
     n = len(top_codes)
     code_index = {code: i for i, code in enumerate(top_codes)}
 
-    # Co-Occurrence zaehlen (Gesamt + pro Jahr)
+    # Co-Occurrence zählen (Gesamt + pro Jahr)
     pair_counts: Counter[tuple[int, int]] = Counter()
     code_patent_sets: dict[int, set[int]] = {i: set() for i in range(n)}
 
@@ -194,7 +194,7 @@ def build_jaccard_from_sql(
 
     Args:
         top_codes: Sortierte CPC-Codes (Top-N).
-        code_counts: {cpc_code: patent_count} fuer jeden Top-Code.
+        code_counts: {cpc_code: patent_count} für jeden Top-Code.
         pair_counts: [(code_a, code_b, co_count), ...] Co-Occurrence-Paare.
 
     Returns:
@@ -238,7 +238,7 @@ def build_year_data_from_aggregates(
     (identisch zu build_cooccurrence_with_years).
 
     Args:
-        all_codes: Alle CPC-Codes sortiert nach Haeufigkeit.
+        all_codes: Alle CPC-Codes sortiert nach Häufigkeit.
         cpc_year_counts: [(cpc_code, pub_year, count), ...] pro Code und Jahr.
         pair_year_counts: [(code_a, code_b, pub_year, co_count), ...] pro Paar und Jahr.
 
@@ -285,19 +285,19 @@ def compute_whitespace_opportunities(
     jaccard_threshold: float = 0.05,
     top_n: int = 10,
 ) -> list[dict[str, Any]]:
-    """Whitespace-Analyse: Innovationsluecken in CPC-Ko-Klassifikation identifizieren.
+    """Whitespace-Analyse: Innovationslücken in CPC-Ko-Klassifikation identifizieren.
 
-    Findet CPC-Code-Paare mit hoher Einzelaktivitaet aber geringer Ko-Klassifikation.
+    Findet CPC-Code-Paare mit hoher Einzelaktivität aber geringer Ko-Klassifikation.
     Basiert auf Yoon & Park (2005) 'Patent Vacuums' und Kim, Cho & Kim (2019)
     'Recombinant Search'.
 
     Args:
         labels: CPC-Code-Labels (z.B. ['H01L', 'C01B', ...]).
         matrix: Jaccard-Similarity-Matrix (NxN, symmetrisch).
-        code_counts: {cpc_code: patent_count} fuer Aktivitaetsfilter.
-        min_activity_percentile: Mindest-Perzentil fuer Einzelaktivitaet.
-        jaccard_threshold: Maximaler Jaccard fuer Whitespace-Kandidaten.
-        top_n: Anzahl zurueckgegebener Whitespace-Opportunitaeten.
+        code_counts: {cpc_code: patent_count} für Aktivitätsfilter.
+        min_activity_percentile: Mindest-Perzentil für Einzelaktivität.
+        jaccard_threshold: Maximaler Jaccard für Whitespace-Kandidaten.
+        top_n: Anzahl zurückgegebener Whitespace-Opportunitäten.
 
     Returns:
         Sortierte Liste der Top-Whitespace-Paare:
@@ -343,12 +343,12 @@ def compute_whitespace_opportunities(
     return opportunities[:top_n]
 
 
-# Farben fuer CPC-Sektionen (A-H + Y)
+# Farben für CPC-Sektionen (A-H + Y)
 CPC_COLORS: dict[str, str] = {
     "A": "#ef4444",  # rot
     "B": "#f97316",  # orange
     "C": "#eab308",  # gelb
-    "D": "#22c55e",  # gruen
+    "D": "#22c55e",  # grün
     "E": "#06b6d4",  # cyan
     "F": "#3b82f6",  # blau
     "G": "#8b5cf6",  # violett

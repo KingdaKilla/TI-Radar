@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.api_health — JWT-Token-Pruefung und Runtime-Failure-Erkennung."""
+"""Tests für shared.domain.api_health — JWT-Token-Prüfung und Runtime-Failure-Erkennung."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ def _make_jwt(payload: dict) -> str:
 
 class TestCheckJwtExpiry:
     def test_valid_token(self):
-        token = _make_jwt({"exp": time.time() + 7 * 86400})  # 7 Tage gueltig (> 3-Tage-Schwelle)
+        token = _make_jwt({"exp": time.time() + 7 * 86400})  # 7 Tage gültig (> 3-Tage-Schwelle)
         result = check_jwt_expiry(token, "TestAPI", now=time.time())
         assert result is None
 
@@ -42,7 +42,7 @@ class TestCheckJwtExpiry:
         result = check_jwt_expiry(token, "TestAPI", now=time.time())
         assert result is not None
         assert result.level == "warning"
-        assert "laeuft" in result.message
+        assert "läuft" in result.message
 
     def test_expired_with_refresh_token(self):
         token = _make_jwt({"exp": time.time() - 3600})

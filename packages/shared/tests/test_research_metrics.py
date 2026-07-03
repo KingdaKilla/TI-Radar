@@ -1,4 +1,4 @@
-"""Tests fuer shared.domain.research_metrics — h-Index, Zitationstrend, Top-Papers."""
+"""Tests für shared.domain.research_metrics — h-Index, Zitationstrend, Top-Papers."""
 
 from __future__ import annotations
 

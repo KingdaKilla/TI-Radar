@@ -5,8 +5,8 @@
  * Technology input with pool-restricted autocomplete,
  * time range selector and European-only toggle.
  *
- * v3.6.7: Eingabe ist auf die kuratierte Pool-Whitelist beschraenkt
- * (siehe Backend router_suggestions.py). Freie DB-ngram-Vorschlaege
+ * v3.6.7: Eingabe ist auf die kuratierte Pool-Whitelist beschränkt
+ * (siehe Backend router_suggestions.py). Freie DB-ngram-Vorschläge
  * werden nicht mehr gerendert - verhindert unsinnige Eingaben, die
  * zuvor Backend-Fehler produziert haben.
  * ────────────────────────────────────────────── */
@@ -32,7 +32,7 @@ interface SearchBarProps {
 
 const MAX_SUGGESTIONS_VISIBLE = 12;
 
-/** Normalisiert eine Eingabe fuer den Pool-Lookup (trim, lowercase, whitespace-normalisierung). */
+/** Normalisiert eine Eingabe für den Pool-Lookup (trim, lowercase, whitespace-normalisierung). */
 function normalizeKey(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, " ");
 }
@@ -65,7 +65,7 @@ export default function SearchBar({ onSubmit, isLoading }: SearchBarProps) {
 
   const { data: pool = [], isLoading: poolLoading } = useSuggestionPool();
 
-  // Client-seitige Filterung: Pool-Eintraege die den Input enthalten
+  // Client-seitige Filterung: Pool-Einträge die den Input enthalten
   // (case-insensitive, Substring-Match). Bei leerer Eingabe: erste N zeigen.
   const filteredSuggestions = useMemo(() => {
     const input = technology.trim().toLowerCase();
@@ -287,7 +287,7 @@ export default function SearchBar({ onSubmit, isLoading }: SearchBarProps) {
             type="button"
             role="switch"
             aria-checked={europeanOnly}
-            aria-label="Nur europaeische Daten anzeigen"
+            aria-label="Nur europäische Daten anzeigen"
             onClick={() => setEuropeanOnly((prev) => !prev)}
             className={clsx(
               "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-colors",
@@ -351,7 +351,7 @@ export default function SearchBar({ onSubmit, isLoading }: SearchBarProps) {
             aria-label="Radar-Analyse starten"
             title={
               !isValid
-                ? "Technologie aus Pool auswaehlen"
+                ? "Technologie aus Pool auswählen"
                 : "Radar-Analyse starten"
             }
           >

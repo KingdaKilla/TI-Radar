@@ -1,4 +1,4 @@
-"""Unit-Tests fuer SparseSearchRepository.
+"""Unit-Tests für SparseSearchRepository.
 
 Testet die BM25/Full-Text-Suche via ts_rank_cd, Quellnamen-Singularisierung,
 und Fehlerbehandlung bei unbekannten Quellen.
@@ -28,8 +28,8 @@ def _make_pool(
     """Erstellt einen Mock-asyncpg-Pool.
 
     asyncpg.Pool.acquire() ist ein synchroner Aufruf, der einen
-    async context manager zurueckgibt — daher MagicMock fuer pool,
-    AsyncMock fuer die Connection.
+    async context manager zurückgibt — daher MagicMock für pool,
+    AsyncMock für die Connection.
     """
     pool = MagicMock()
     conn = AsyncMock()
@@ -54,7 +54,7 @@ def _make_row(
     year: str = "2023",
     country: str = "DE",
 ) -> dict:
-    """Erstellt eine Mock-DB-Row als dict fuer Sparse-Suche."""
+    """Erstellt eine Mock-DB-Row als dict für Sparse-Suche."""
     return {
         "source_id": source_id,
         "title": title,
@@ -134,7 +134,7 @@ class TestSearchEmptyResult:
 # ---------------------------------------------------------------------------
 
 class TestUnknownSourceSkipped:
-    """Testet dass unbekannte Quellen uebersprungen werden."""
+    """Testet dass unbekannte Quellen übersprungen werden."""
 
     async def test_search_unknown_source_skipped(self):
         pool = _make_pool(fetch_rows=[])
@@ -167,7 +167,7 @@ class TestUnknownSourceSkipped:
 # ---------------------------------------------------------------------------
 
 class TestSearchMultipleSources:
-    """Testet Suche ueber mehrere Quellen."""
+    """Testet Suche über mehrere Quellen."""
 
     async def test_search_multiple_sources(self):
         patent_rows = [_make_row(source_id="p1", rank=0.9)]
@@ -245,11 +245,11 @@ class TestSqlUsesTsRankCd:
 
     def test_all_queries_use_plainto_tsquery(self):
         for source, sql in _SPARSE_QUERIES.items():
-            assert "plainto_tsquery" in sql, f"Query fuer '{source}' fehlt plainto_tsquery"
+            assert "plainto_tsquery" in sql, f"Query für '{source}' fehlt plainto_tsquery"
 
     def test_all_queries_use_search_vector(self):
         for source, sql in _SPARSE_QUERIES.items():
-            assert "search_vector" in sql, f"Query fuer '{source}' fehlt search_vector"
+            assert "search_vector" in sql, f"Query für '{source}' fehlt search_vector"
 
 
 # ---------------------------------------------------------------------------

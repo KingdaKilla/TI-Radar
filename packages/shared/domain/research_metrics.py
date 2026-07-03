@@ -1,16 +1,16 @@
-"""Reine Berechnungsfunktionen fuer Research Impact (UC7).
+"""Reine Berechnungsfunktionen für Research Impact (UC7).
 
 Alle Funktionen sind zustandslos und ohne I/O -- testbar und auditierbar.
 
-v3.4.8 (Bundle A): Fix fuer C-012 / M-008 / M-009 / M-010 / C5.2:
+v3.4.8 (Bundle A): Fix für C-012 / M-008 / M-009 / M-010 / C5.2:
 * ``_compute_citation_trend`` liefert ``total_citations``, ``publication_count``
-  und ``avg_citations`` -- bisher nur ``citations``/``paper_count``. Zusaetzlich
-  optionales Padding ueber einen Ziel-Jahresbereich (``start_year``/``end_year``),
+  und ``avg_citations`` -- bisher nur ``citations``/``paper_count``. Zusätzlich
+  optionales Padding über einen Ziel-Jahresbereich (``start_year``/``end_year``),
   damit das Frontend konsistente Zeitreihen rendern kann.
 * ``_compute_venue_distribution`` liefert ``name``, ``publication_count``,
   ``avg_citations``, ``h_index`` und ``share`` -- bisher fehlten
   ``avg_citations`` und ``h_index`` komplett.
-* ``_compute_publication_types`` liefert jetzt zusaetzlich ``share`` pro Typ.
+* ``_compute_publication_types`` liefert jetzt zusätzlich ``share`` pro Typ.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from typing import Any
 
 
 def _compute_h_index(citations: list[int]) -> int:
-    """h-Index: groesster Wert h so dass h Paper >= h Zitationen haben."""
+    """h-Index: größter Wert h so dass h Paper >= h Zitationen haben."""
     sorted_c = sorted(citations, reverse=True)
     h = 0
     for i, c in enumerate(sorted_c):
@@ -40,12 +40,12 @@ def _compute_citation_trend(
 
     Liefert pro Eintrag ``total_citations``, ``publication_count`` und
     ``avg_citations``. Wenn ``start_year``/``end_year`` gesetzt sind, werden
-    fehlende Jahre mit Null-Eintraegen aufgefuellt (Bug C5.2).
+    fehlende Jahre mit Null-Einträgen aufgefüllt (Bug C5.2).
 
     Args:
         papers: Semantic-Scholar Paper-Dicts mit ``year`` und ``citationCount``.
-        start_year: Optionales Startjahr fuer Padding (inklusiv).
-        end_year: Optionales Endjahr fuer Padding (inklusiv).
+        start_year: Optionales Startjahr für Padding (inklusiv).
+        end_year: Optionales Endjahr für Padding (inklusiv).
 
     Returns:
         Sortierte Liste (aufsteigend nach Jahr).
@@ -63,7 +63,7 @@ def _compute_citation_trend(
         bucket["citations"] += int(p.get("citationCount", 0) or 0)
         bucket["paper_count"] += 1
 
-    # --- Padding ueber Zielbereich ---
+    # --- Padding über Zielbereich ---
     if start_year is not None and end_year is not None and start_year <= end_year:
         for y in range(start_year, end_year + 1):
             by_year.setdefault(y, {"citations": 0, "paper_count": 0})
@@ -78,7 +78,7 @@ def _compute_citation_trend(
             "total_citations": total,
             "publication_count": count,
             "avg_citations": avg,
-            # Kompat-Felder fuer Alt-Konsumenten:
+            # Kompat-Felder für Alt-Konsumenten:
             "citations": total,
             "paper_count": count,
         })
@@ -118,7 +118,7 @@ def _compute_venue_distribution(
     Berechnet pro Venue:
     * ``publication_count`` -- Anzahl Papers in der Venue.
     * ``avg_citations``     -- durchschnittliche Zitationen pro Paper (M-009).
-    * ``h_index``           -- h-Index beschraenkt auf die Paper der Venue (M-010).
+    * ``h_index``           -- h-Index beschränkt auf die Paper der Venue (M-010).
     * ``share``             -- Anteil an allen Papers mit Venue.
     """
     buckets: dict[str, dict[str, Any]] = {}
@@ -157,10 +157,10 @@ def _compute_venue_distribution(
 
 
 def _compute_publication_types(papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Publikationstypen zaehlen und Anteil berechnen.
+    """Publikationstypen zählen und Anteil berechnen.
 
     Bug C-012: ``share`` pro Typ = ``count / total_types`` -- bisher fehlte
-    das Feld vollstaendig, der Mapper hat es dann auf 0 gesetzt.
+    das Feld vollständig, der Mapper hat es dann auf 0 gesetzt.
     """
     counts: dict[str, int] = {}
     for p in papers:

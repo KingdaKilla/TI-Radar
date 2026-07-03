@@ -1,9 +1,9 @@
-"""gRPC Server fuer den UC1 Landscape Service.
+"""gRPC Server für den UC1 Landscape Service.
 
 Startet den async gRPC-Server mit:
 - LandscapeServicer (UC1 Analyse)
 - Health-Check-Service (gRPC Health Checking Protocol)
-- Reflection (fuer grpcurl / grpc-cli Debugging)
+- Reflection (für grpcurl / grpc-cli Debugging)
 - PostgreSQL Connection Pool (asyncpg)
 - Graceful Shutdown bei SIGTERM/SIGINT
 
@@ -80,7 +80,7 @@ GRPC_REQUEST_DURATION = Histogram(
 )
 DB_POOL_SIZE = Gauge(
     "db_pool_size",
-    "Aktuelle DB Connection Pool Groesse",
+    "Aktuelle DB Connection Pool Größe",
     ["service"],
 )
 
@@ -88,8 +88,8 @@ DB_POOL_SIZE = Gauge(
 async def create_db_pool(settings: Settings) -> asyncpg.Pool:
     """PostgreSQL Connection Pool erstellen.
 
-    Verwendet asyncpg fuer hochperformanten async Zugriff.
-    Pool-Groesse wird ueber Settings konfiguriert.
+    Verwendet asyncpg für hochperformanten async Zugriff.
+    Pool-Größe wird über Settings konfiguriert.
     """
     logger.info(
         "db_pool_erstellen",
@@ -118,7 +118,7 @@ async def serve() -> None:
     start_http_server(9090)
     logger.info("prometheus_metrics_gestartet", port=9090)
 
-    # --- Pruefe ob gRPC verfuegbar ---
+    # --- Prüfe ob gRPC verfügbar ---
     if grpc_aio is None:
         logger.error("grpc_nicht_installiert", hinweis="pip install grpcio grpcio-tools")
         sys.exit(1)
@@ -144,7 +144,7 @@ async def serve() -> None:
         logger.info("servicer_registriert", service="LandscapeService")
     else:
         logger.warning(
-            "stubs_nicht_verfuegbar",
+            "stubs_nicht_verfügbar",
             hinweis="gRPC-Stubs noch nicht generiert — Service startet ohne RPC-Registrierung",
         )
 
@@ -164,7 +164,7 @@ async def serve() -> None:
             )
         logger.info("health_check_registriert")
 
-    # --- Reflection (fuer grpcurl Debugging) ---
+    # --- Reflection (für grpcurl Debugging) ---
     if reflection is not None and uc1_landscape_pb2 is not None:
         service_names = (
             uc1_landscape_pb2.DESCRIPTOR.services_by_name["LandscapeService"].full_name,
@@ -208,7 +208,7 @@ async def serve() -> None:
         )
     await server.stop(grace=10)
 
-    # DB-Pool schliessen
+    # DB-Pool schließen
     await pool.close()
     logger.info("server_gestoppt")
 

@@ -1,4 +1,4 @@
-"""Export-Endpoints fuer CSV, JSON, Excel, PDF und Batch-Export.
+"""Export-Endpoints für CSV, JSON, Excel, PDF und Batch-Export.
 
 Stellt REST-Endpoints bereit, um Analyseergebnisse in verschiedenen
 Formaten herunterzuladen. Ergebnisse werden in export_schema.analysis_cache
@@ -11,7 +11,7 @@ Endpoints:
   POST /api/v1/export/pdf   — PDF-Report-Download (StreamingResponse)
   POST /api/v1/export/batch — ZIP-Batch-Export (mehrere Technologien)
   GET  /api/v1/export/history — Export-Log abfragen
-  DELETE /api/v1/export/cache — Abgelaufene Cache-Eintraege loeschen
+  DELETE /api/v1/export/cache — Abgelaufene Cache-Einträge löschen
 """
 
 from __future__ import annotations
@@ -72,9 +72,9 @@ router = APIRouter(prefix="/api/v1/export", tags=["Export"])
 
 
 class ExportRequest(BaseModel):
-    """Anfrage fuer einen Datenexport.
+    """Anfrage für einen Datenexport.
 
-    Definiert die Parameter fuer die Analyse, deren Ergebnisse
+    Definiert die Parameter für die Analyse, deren Ergebnisse
     exportiert werden sollen. Entspricht im Wesentlichen den
     Parametern des Orchestrator RadarRequest.
     """
@@ -103,7 +103,7 @@ class ExportRequest(BaseModel):
     )
     european_only: bool = Field(
         default=False,
-        description="Nur EU-27 + assoziierte Laender beruecksichtigen",
+        description="Nur EU-27 + assoziierte Länder berücksichtigen",
     )
 
 
@@ -130,7 +130,7 @@ class CachePurgeResult(BaseModel):
 
 
 class WebhookCreate(BaseModel):
-    """Registrierung eines Webhooks fuer Event-Benachrichtigungen.
+    """Registrierung eines Webhooks für Event-Benachrichtigungen.
 
     Implementiert das Event-Hub-Pattern (Pub/Sub): Der Client registriert
     eine Callback-URL und wird bei relevanten Events automatisch per
@@ -148,12 +148,12 @@ class WebhookCreate(BaseModel):
     )
     secret: str = Field(
         default="",
-        description="Optionaler HMAC-Secret fuer Payload-Signierung (X-Webhook-Signature)",
+        description="Optionaler HMAC-Secret für Payload-Signierung (X-Webhook-Signature)",
     )
 
 
 class WebhookResponse(BaseModel):
-    """Bestaetigung einer Webhook-Registrierung."""
+    """Bestätigung einer Webhook-Registrierung."""
 
     id: str
     callback_url: str
@@ -162,10 +162,10 @@ class WebhookResponse(BaseModel):
 
 
 class BatchExportRequest(BaseModel):
-    """Anfrage fuer einen Batch-Export (mehrere Technologien als ZIP).
+    """Anfrage für einen Batch-Export (mehrere Technologien als ZIP).
 
-    Generiert fuer jede Technologie eine separate CSV-Datei und
-    buendelt diese in einem ZIP-Archiv.
+    Generiert für jede Technologie eine separate CSV-Datei und
+    bündelt diese in einem ZIP-Archiv.
     """
 
     technologies: list[str] = Field(
@@ -192,7 +192,7 @@ class BatchExportRequest(BaseModel):
     )
     european_only: bool = Field(
         default=False,
-        description="Nur EU-27 + assoziierte Laender beruecksichtigen",
+        description="Nur EU-27 + assoziierte Länder berücksichtigen",
     )
 
 
@@ -204,7 +204,7 @@ class BatchExportRequest(BaseModel):
 def _build_cache_key(req: ExportRequest) -> str:
     """Erzeugt einen deterministischen Cache-Key aus den Request-Parametern.
 
-    Verwendet SHA-256 ueber die normalisierten Parameter, damit
+    Verwendet SHA-256 über die normalisierten Parameter, damit
     identische Anfragen denselben Cache-Eintrag treffen.
     """
     normalized = {
@@ -222,7 +222,7 @@ async def _get_cached_result(
     pool: asyncpg.Pool,
     cache_key: str,
 ) -> dict[str, Any] | None:
-    """Sucht ein gueltiges (nicht abgelaufenes) Cache-Ergebnis.
+    """Sucht ein gültiges (nicht abgelaufenes) Cache-Ergebnis.
 
     Returns:
         Das gecachte RadarResponse-JSON oder None falls kein Treffer.
@@ -340,7 +340,7 @@ async def _get_analysis_data(
 
     cache_key = _build_cache_key(req)
 
-    # 1. Cache pruefen
+    # 1. Cache prüfen
     if pool is not None:
         try:
             cached = await _get_cached_result(pool, cache_key)
@@ -374,7 +374,7 @@ async def _get_analysis_data(
         logger.error("orchestrator_timeout", technology=req.technology)
         raise HTTPException(
             status_code=504,
-            detail="Orchestrator-Service Timeout — bitte spaeter erneut versuchen",
+            detail="Orchestrator-Service Timeout — bitte später erneut versuchen",
         )
     except httpx.HTTPStatusError as exc:
         logger.error(
@@ -416,7 +416,7 @@ async def export_csv_endpoint(
     """Exportiert Analyseergebnisse als CSV-Datei.
 
     Generiert eine CSV-Datei mit einer Sektion pro Use-Case.
-    Jeder UC hat spezifische Spaltenkoepfe (z.B. UC1: year, patent_count, ...).
+    Jeder UC hat spezifische Spaltenköpfe (z.B. UC1: year, patent_count, ...).
     """
     t0 = time.monotonic()
 
@@ -480,7 +480,7 @@ async def export_json_endpoint(
 ) -> JSONResponse:
     """Exportiert Analyseergebnisse als JSON.
 
-    Gibt das vollstaendige RadarResponse-JSON zurueck, optional
+    Gibt das vollständige RadarResponse-JSON zurück, optional
     gefiltert auf bestimmte Use-Cases.
     """
     t0 = time.monotonic()
@@ -488,7 +488,7 @@ async def export_json_endpoint(
     # Daten holen (Cache oder Orchestrator)
     data = await _get_analysis_data(request, req)
 
-    # Optional: Nur angeforderte UCs zurueckgeben
+    # Optional: Nur angeforderte UCs zurückgeben
     if req.use_cases:
         uc_panel_map = _uc_to_panel_map()
         filtered: dict[str, Any] = {
@@ -684,11 +684,11 @@ async def export_batch_endpoint(
     req: BatchExportRequest,
     request: Request,
 ) -> StreamingResponse:
-    """Exportiert Analyseergebnisse fuer mehrere Technologien als ZIP.
+    """Exportiert Analyseergebnisse für mehrere Technologien als ZIP.
 
-    Generiert pro Technologie eine separate CSV-Datei und buendelt
+    Generiert pro Technologie eine separate CSV-Datei und bündelt
     alle Dateien in einem ZIP-Archiv. Fehlgeschlagene Technologien
-    werden uebersprungen und im Log dokumentiert.
+    werden übersprungen und im Log dokumentiert.
     """
     t0 = time.monotonic()
 
@@ -699,7 +699,7 @@ async def export_batch_endpoint(
 
     with zipfile.ZipFile(zip_buffer, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
         for technology in req.technologies:
-            # ExportRequest fuer jede einzelne Technologie erstellen
+            # ExportRequest für jede einzelne Technologie erstellen
             single_req = ExportRequest(
                 technology=technology,
                 start_year=req.start_year,
@@ -721,10 +721,10 @@ async def export_batch_endpoint(
                 logger.info("batch_csv_erstellt", technology=technology, size=len(csv_bytes))
 
             except HTTPException as exc:
-                # Orchestrator-Fehler — Technologie ueberspringen, nicht abbrechen
+                # Orchestrator-Fehler — Technologie überspringen, nicht abbrechen
                 errors.append(f"{technology}: HTTP {exc.status_code} — {exc.detail}")
                 logger.warning(
-                    "batch_technologie_uebersprungen",
+                    "batch_technologie_übersprungen",
                     technology=technology,
                     error=exc.detail,
                 )
@@ -806,17 +806,17 @@ async def export_history(
     limit: int = 50,
     offset: int = 0,
 ) -> list[ExportHistoryEntry]:
-    """Gibt die letzten Export-Log-Eintraege zurueck (paginiert).
+    """Gibt die letzten Export-Log-Einträge zurück (paginiert).
 
-    Nuetzlich fuer Audit-Trails und Nutzungsstatistiken.
-    Der Response-Header ``X-Total-Count`` enthaelt die Gesamtanzahl aller
-    Eintraege, unabhaengig von offset/limit.
+    Nützlich für Audit-Trails und Nutzungsstatistiken.
+    Der Response-Header ``X-Total-Count`` enthält die Gesamtanzahl aller
+    Einträge, unabhängig von offset/limit.
     """
     pool: asyncpg.Pool | None = request.app.state.db_pool
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbank nicht verfuegbar — Export-Historie kann nicht abgefragt werden",
+            detail="Datenbank nicht verfügbar — Export-Historie kann nicht abgefragt werden",
         )
 
     clamped_limit = min(limit, 500)
@@ -863,11 +863,11 @@ async def export_history(
 @router.delete(
     "/cache",
     response_model=CachePurgeResult,
-    summary="Abgelaufene Cache-Eintraege loeschen",
+    summary="Abgelaufene Cache-Einträge löschen",
     dependencies=[Depends(require_admin_key)],
 )
 async def purge_expired_cache(request: Request) -> CachePurgeResult:
-    """Loescht alle abgelaufenen Eintraege aus export_schema.analysis_cache.
+    """Löscht alle abgelaufenen Einträge aus export_schema.analysis_cache.
 
     Kann manuell oder per Cron-Job aufgerufen werden, um Speicherplatz
     in der Datenbank freizugeben.
@@ -876,7 +876,7 @@ async def purge_expired_cache(request: Request) -> CachePurgeResult:
     if pool is None:
         raise HTTPException(
             status_code=503,
-            detail="Datenbank nicht verfuegbar — Cache kann nicht bereinigt werden",
+            detail="Datenbank nicht verfügbar — Cache kann nicht bereinigt werden",
         )
 
     result = await pool.execute(
@@ -886,7 +886,7 @@ async def purge_expired_cache(request: Request) -> CachePurgeResult:
         """
     )
 
-    # asyncpg gibt z.B. "DELETE 5" zurueck
+    # asyncpg gibt z.B. "DELETE 5" zurück
     deleted_count = 0
     if result and result.startswith("DELETE"):
         parts = result.split()
@@ -900,7 +900,7 @@ async def purge_expired_cache(request: Request) -> CachePurgeResult:
 
     result = CachePurgeResult(
         deleted_count=deleted_count,
-        message=f"{deleted_count} abgelaufene Cache-Eintraege geloescht",
+        message=f"{deleted_count} abgelaufene Cache-Einträge gelöscht",
     )
 
     # Webhook-Benachrichtigung (Event-Hub Pattern)
@@ -917,7 +917,7 @@ async def purge_expired_cache(request: Request) -> CachePurgeResult:
 # POST /api/v1/export/webhooks  +  DELETE /api/v1/export/webhooks/{id}
 # ---------------------------------------------------------------------------
 
-# In-Memory Webhook-Registry (MVP — fuer Produktion: Datenbank-Tabelle)
+# In-Memory Webhook-Registry (MVP — für Produktion: Datenbank-Tabelle)
 _webhook_registry: dict[str, dict[str, Any]] = {}
 
 VALID_WEBHOOK_EVENTS = frozenset({
@@ -934,20 +934,20 @@ VALID_WEBHOOK_EVENTS = frozenset({
     summary="Webhook registrieren (Event-Hub Pattern)",
 )
 async def register_webhook(webhook: WebhookCreate) -> WebhookResponse:
-    """Registriert einen Webhook fuer Event-Benachrichtigungen.
+    """Registriert einen Webhook für Event-Benachrichtigungen.
 
     Der Client gibt eine Callback-URL und eine Liste von Event-Typen an.
     Bei jedem relevanten Event sendet der Export-Service einen HTTP POST
     mit dem Event-Payload an die Callback-URL.
 
-    Gueltige Event-Typen: ``export.completed``, ``export.failed``, ``cache.purged``
+    Gültige Event-Typen: ``export.completed``, ``export.failed``, ``cache.purged``
     """
     invalid = set(webhook.events) - VALID_WEBHOOK_EVENTS
     if invalid:
         raise HTTPException(
             status_code=400,
-            detail=f"Ungueltige Event-Typen: {', '.join(sorted(invalid))}. "
-                   f"Gueltig: {', '.join(sorted(VALID_WEBHOOK_EVENTS))}",
+            detail=f"Ungültige Event-Typen: {', '.join(sorted(invalid))}. "
+                   f"Gültig: {', '.join(sorted(VALID_WEBHOOK_EVENTS))}",
         )
 
     webhook_id = str(uuid.uuid4())[:8]
@@ -995,7 +995,7 @@ async def unregister_webhook(webhook_id: str) -> None:
     summary="Registrierte Webhooks auflisten",
 )
 async def list_webhooks() -> list[WebhookResponse]:
-    """Gibt alle registrierten Webhooks zurueck."""
+    """Gibt alle registrierten Webhooks zurück."""
     return [
         WebhookResponse(
             id=wh_id,
@@ -1008,7 +1008,7 @@ async def list_webhooks() -> list[WebhookResponse]:
 
 
 async def notify_webhooks(event_type: str, payload: dict[str, Any]) -> None:
-    """Benachrichtigt alle registrierten Webhooks fuer einen Event-Typ.
+    """Benachrichtigt alle registrierten Webhooks für einen Event-Typ.
 
     Wird intern aufgerufen nach Export-Abschluss oder Cache-Bereinigung.
     Fehler bei der Zustellung werden geloggt, blockieren aber nicht.
@@ -1041,7 +1041,7 @@ async def notify_webhooks(event_type: str, payload: dict[str, Any]) -> None:
 
 
 def _all_uc_names() -> list[str]:
-    """Gibt alle 12 UC-Bezeichnungen zurueck."""
+    """Gibt alle 12 UC-Bezeichnungen zurück."""
     return [
         "landscape", "maturity", "competitive", "funding",
         "cpc_flow", "geographic", "research_impact", "temporal",
@@ -1053,7 +1053,7 @@ def _uc_to_panel_map() -> dict[str, str]:
     """Mapping von UC-Name auf Panel-Key im RadarResponse.
 
     In der aktuellen Implementierung sind UC-Name und Panel-Key
-    identisch, aber dieses Mapping ermoeglicht zukuenftige Aenderungen.
+    identisch, aber dieses Mapping ermöglicht zukünftige Änderungen.
     """
     names = _all_uc_names()
     return {name: name for name in names}

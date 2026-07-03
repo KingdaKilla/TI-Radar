@@ -1,17 +1,17 @@
-"""PublicationRepository — PostgreSQL-Datenbankzugriff fuer UC-C (UC13).
+"""PublicationRepository — PostgreSQL-Datenbankzugriff für UC-C (UC13).
 
-Abfragen fuer Publikations-Impact-Chain aus cordis_schema.publications.
-Verknuepft Publikationen mit Projekten ueber project_id.
+Abfragen für Publikations-Impact-Chain aus cordis_schema.publications.
+Verknüpft Publikationen mit Projekten über project_id.
 
 **CRIT-1 — Master-Scope:** Dieses Repository nutzt den Scope
 ``PublicationScope.CORDIS_LINKED`` aus
 :mod:`shared.domain.publication_definitions`.  Dieselbe Query-Definition
 wird auch vom landscape-svc (UC1 Header) in ``count_cordis_publications``
 verwendet — so ist garantiert, dass Header.total_publications ==
-UC13.total_publications fuer identische Parameter.
+UC13.total_publications für identische Parameter.
 
 Hinweis: publication_date ist bei vielen CORDIS-Publikationen NULL.
-Daher wird p.start_date als primaerer Zeitfilter verwendet.
+Daher wird p.start_date als primärer Zeitfilter verwendet.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ logger = structlog.get_logger(__name__)
 
 
 class PublicationRepository:
-    """Async PostgreSQL-Zugriff fuer UC-C Publikations-Analysen."""
+    """Async PostgreSQL-Zugriff für UC-C Publikations-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
@@ -36,7 +36,7 @@ class PublicationRepository:
         start_year: int,
         end_year: int,
     ) -> list[dict[str, Any]]:
-        """Publikationen pro Projekt-Startjahr fuer passende Projekte zaehlen."""
+        """Publikationen pro Projekt-Startjahr für passende Projekte zählen."""
         sql = """
             SELECT EXTRACT(YEAR FROM p.start_date)::int AS year,
                    COUNT(*) AS publication_count,
@@ -60,7 +60,7 @@ class PublicationRepository:
         *,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Projekte mit den meisten Publikationen, inkl. Foerderung."""
+        """Projekte mit den meisten Publikationen, inkl. Förderung."""
         sql = """
             SELECT p.acronym AS project_acronym,
                    p.framework,

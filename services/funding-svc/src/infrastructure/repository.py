@@ -1,7 +1,7 @@
-"""FundingRepository — PostgreSQL-Datenbankzugriff fuer UC4.
+"""FundingRepository — PostgreSQL-Datenbankzugriff für UC4.
 
-Liefert EU-Foerderdaten aus CORDIS: Zeitreihen, Programme,
-Instrumente, Top-Organisationen und Laenderverteilung.
+Liefert EU-Förderdaten aus CORDIS: Zeitreihen, Programme,
+Instrumente, Top-Organisationen und Länderverteilung.
 
 Alle Queries arbeiten auf cordis_schema.projects und
 cordis_schema.organizations.
@@ -20,13 +20,13 @@ logger = structlog.get_logger(__name__)
 
 
 class FundingRepository:
-    """Async PostgreSQL-Zugriff fuer UC4 Funding-Analysen."""
+    """Async PostgreSQL-Zugriff für UC4 Funding-Analysen."""
 
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._pool = pool
 
     # -----------------------------------------------------------------------
-    # Foerderung pro Jahr
+    # Förderung pro Jahr
     # -----------------------------------------------------------------------
 
     async def funding_by_year(
@@ -36,7 +36,7 @@ class FundingRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[FundingYear]:
-        """EU-Foerderung pro Jahr fuer eine Technologie."""
+        """EU-Förderung pro Jahr für eine Technologie."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -73,7 +73,7 @@ class FundingRepository:
             ]
 
     # -----------------------------------------------------------------------
-    # Foerderung pro Programm
+    # Förderung pro Programm
     # -----------------------------------------------------------------------
 
     async def funding_by_programme(
@@ -83,7 +83,7 @@ class FundingRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Foerderung aufgeschluesselt nach EU-Rahmenprogramm."""
+        """Förderung aufgeschlüsselt nach EU-Rahmenprogramm."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -123,7 +123,7 @@ class FundingRepository:
             ]
 
     # -----------------------------------------------------------------------
-    # Foerderung pro Instrument (RIA, IA, CSA)
+    # Förderung pro Instrument (RIA, IA, CSA)
     # -----------------------------------------------------------------------
 
     async def funding_by_instrument(
@@ -133,7 +133,7 @@ class FundingRepository:
         start_year: int | None = None,
         end_year: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Foerderung aufgeschluesselt nach Instrument (RIA, IA, CSA, ERC)."""
+        """Förderung aufgeschlüsselt nach Instrument (RIA, IA, CSA, ERC)."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -184,7 +184,7 @@ class FundingRepository:
         end_year: int | None = None,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Top-Organisationen nach erhaltenem Foerdervolumen."""
+        """Top-Organisationen nach erhaltenem Fördervolumen."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2
@@ -233,7 +233,7 @@ class FundingRepository:
             ]
 
     # -----------------------------------------------------------------------
-    # Laenderverteilung
+    # Länderverteilung
     # -----------------------------------------------------------------------
 
     async def funding_by_country(
@@ -244,7 +244,7 @@ class FundingRepository:
         end_year: int | None = None,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Foerderung pro Land (aus Organizations-Tabelle)."""
+        """Förderung pro Land (aus Organizations-Tabelle)."""
         conditions = ["p.search_vector @@ plainto_tsquery('english', $1)"]
         params: list[Any] = [technology]
         idx = 2

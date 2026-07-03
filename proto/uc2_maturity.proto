@@ -108,7 +108,7 @@ message MaturityResponse {
   // DEPRECATED (Bug C-004): Historisch mehrdeutig — bekam mal den naiven
   // CAGR, mal die Gompertz-Fit-basierte momentane Wachstumsrate, wodurch
   // maturity.cagr und landscape.patent_cagr divergierten (AI 29.6 % vs
-  // 71.3 %, mRNA -18.4 % vs +3.1 %). Fuer neue Clients stattdessen:
+  // 71.3 %, mRNA -18.4 % vs +3.1 %). Für neue Clients stattdessen:
   //   - empirical_cagr   (Feld 18) — gleiche Methode wie landscape-svc
   //   - fitted_growth_rate (Feld 19) — Gompertz/Logistic-Fit-Rate
   // Dieses Feld wird weiterhin gesetzt und spiegelt ``empirical_cagr``
@@ -148,34 +148,34 @@ message MaturityResponse {
   // Interpretation: <2 = negligible, 2-7 = moderate, >7 = strong evidence.
   double delta_aicc = 14;
 
-  // True wenn Decline-Phase erkannt: jaehrliche Anmelderaten fallen
-  // konsekutiv bei maturity_percent >= 90%. Ergaenzt die S-Kurve,
+  // True wenn Decline-Phase erkannt: jährliche Anmelderaten fallen
+  // konsekutiv bei maturity_percent >= 90%. Ergänzt die S-Kurve,
   // die als monoton steigende kumulative Funktion Decline nicht abbildet.
   bool is_declining = 15;
 
   // Bug MAJ-9: True nur wenn Sigmoid-Fit zustande kam UND R² >= 0.5
   // (Reliability-Threshold). Frontend-Gate: Phase-Label und Konfidenz-Badge
-  // ausschliesslich bei flag == True rendern, sonst Phase ausgrauen und
-  // Konfidenz-Badge unterdruecken (Vermeidung von Scheinsicherheit).
+  // ausschließlich bei flag == True rendern, sonst Phase ausgrauen und
+  // Konfidenz-Badge unterdrücken (Vermeidung von Scheinsicherheit).
   bool fit_reliability_flag = 16;
 
   // Overfitting-Warnung: True wenn R² > 0.98 bei < 30 Datenpunkten.
-  // Ergaenzt fit_reliability_flag um den umgekehrten Fall ("Fit zu gut
+  // Ergänzt fit_reliability_flag um den umgekehrten Fall ("Fit zu gut
   // bei zu wenig Daten"). Live-Fall Semiconductor Laser v3.4.0: R² = 0.9983
-  // bei n = 9 vollstaendigen Jahren — klassisches 3-Parameter Sigmoid-Overfit.
-  // Frontend zeigt bei True einen zusaetzlichen InfoTooltip neben der Phase.
+  // bei n = 9 vollständigen Jahren — klassisches 3-Parameter Sigmoid-Overfit.
+  // Frontend zeigt bei True einen zusätzlichen InfoTooltip neben der Phase.
   bool overfit_warning = 17;
 
-  // Empirical (naive) CAGR über die jaehrlichen Raten — identische Methode
+  // Empirical (naive) CAGR über die jährlichen Raten — identische Methode
   // wie landscape-svc (`patent_cagr`): (end/start)^(1/n)-1 auf nicht-kumulativen
-  // Jahreswerten, letzte unvollstaendige Jahre via ``data_complete_year``
+  // Jahreswerten, letzte unvollständige Jahre via ``data_complete_year``
   // ausgeschlossen. Fraction (0.123 = 12.3%), nicht Prozent.
-  // Wird fuer die Konsistenz zwischen maturity.* und landscape.patent_cagr
-  // benoetigt (Bug C-004: Gompertz-Fit-CAGR wich bis 71 Punkte vom naiven
+  // Wird für die Konsistenz zwischen maturity.* und landscape.patent_cagr
+  // benötigt (Bug C-004: Gompertz-Fit-CAGR wich bis 71 Punkte vom naiven
   // CAGR ab und flippte bei mRNA sogar das Vorzeichen).
   double empirical_cagr = 18;
 
-  // Fitted growth rate aus dem gewaehlten S-Curve-Modell (Gompertz/Logistic/
+  // Fitted growth rate aus dem gewählten S-Curve-Modell (Gompertz/Logistic/
   // Richards). Semantik: momentane Wachstumsrate am letzten Datenpunkt der
   // gefitteten Kurve, nicht der historische Durchschnitt.
   // Entspricht dem alten ``cagr``-Feld (Feld 5) — wird parallel gepflegt,

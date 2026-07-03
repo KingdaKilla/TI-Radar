@@ -1,9 +1,9 @@
-"""gRPC Server fuer den Embedding Service.
+"""gRPC Server für den Embedding Service.
 
 Startet den async gRPC-Server mit:
 - EmbeddingServicer (Batch-Population von pgvector-Embeddings)
 - Health-Check-Service (gRPC Health Checking Protocol)
-- Reflection (fuer grpcurl / grpc-cli Debugging)
+- Reflection (für grpcurl / grpc-cli Debugging)
 - PostgreSQL Connection Pool (asyncpg)
 - Graceful Shutdown bei SIGTERM/SIGINT
 
@@ -79,7 +79,7 @@ GRPC_REQUEST_DURATION = Histogram(
 )
 DB_POOL_SIZE = Gauge(
     "db_pool_size",
-    "Aktuelle DB Connection Pool Groesse",
+    "Aktuelle DB Connection Pool Größe",
     ["service"],
 )
 
@@ -134,7 +134,7 @@ async def serve() -> None:
         logger.info("servicer_registriert", service="EmbeddingService")
     else:
         logger.warning(
-            "stubs_nicht_verfuegbar",
+            "stubs_nicht_verfügbar",
             hinweis="gRPC-Stubs noch nicht generiert — Service startet ohne RPC-Registrierung",
         )
 

@@ -1,7 +1,7 @@
-"""Unit-Tests fuer geographic-svc Mapper-Module (dict_response.py).
+"""Unit-Tests für geographic-svc Mapper-Module (dict_response.py).
 
 Testet die korrekte Abbildung von GeographicResult auf das dict-basierte
-Response-Format, inkl. Laenderverteilung, Staedte, Kooperationspaare
+Response-Format, inkl. Länderverteilung, Städte, Kooperationspaare
 und Cross-Border-Share.
 """
 
@@ -72,19 +72,19 @@ class TestDictResponseMapperBasicFields:
         assert expected_keys == set(d.keys())
 
     def test_total_countries(self):
-        """total_countries wird korrekt uebertragen."""
+        """total_countries wird korrekt übertragen."""
         result = _make_result(total_countries=3)
         d = geographic_result_to_dict(result)
         assert d["total_countries"] == 3
 
     def test_total_cities(self):
-        """total_cities wird korrekt uebertragen."""
+        """total_cities wird korrekt übertragen."""
         result = _make_result(total_cities=2)
         d = geographic_result_to_dict(result)
         assert d["total_cities"] == 2
 
     def test_cross_border_share(self):
-        """cross_border_share wird korrekt uebertragen."""
+        """cross_border_share wird korrekt übertragen."""
         result = _make_result(cross_border_share=0.35)
         d = geographic_result_to_dict(result)
         assert d["cross_border_share"] == pytest.approx(0.35, abs=0.001)
@@ -97,11 +97,11 @@ class TestDictResponseMapperBasicFields:
 
 
 # ---------------------------------------------------------------------------
-# Tests: Laenderverteilung
+# Tests: Länderverteilung
 # ---------------------------------------------------------------------------
 
 class TestDictResponseMapperCountryDist:
-    """Testet Laenderverteilung-Abbildung."""
+    """Testet Länderverteilung-Abbildung."""
 
     def test_country_dist_passed_through(self):
         """country_distribution wird direkt durchgereicht."""
@@ -110,7 +110,7 @@ class TestDictResponseMapperCountryDist:
         assert len(d["country_distribution"]) == 3
 
     def test_country_dist_fields(self):
-        """Laender-Eintraege behalten ihre Felder."""
+        """Länder-Einträge behalten ihre Felder."""
         result = _make_result()
         d = geographic_result_to_dict(result)
         de = d["country_distribution"][0]
@@ -120,18 +120,18 @@ class TestDictResponseMapperCountryDist:
         assert de["total"] == 580
 
     def test_empty_country_dist(self):
-        """Leere Laenderliste wird korrekt durchgereicht."""
+        """Leere Länderliste wird korrekt durchgereicht."""
         result = _make_result(country_dist=[])
         d = geographic_result_to_dict(result)
         assert d["country_distribution"] == []
 
 
 # ---------------------------------------------------------------------------
-# Tests: Staedteverteilung
+# Tests: Städteverteilung
 # ---------------------------------------------------------------------------
 
 class TestDictResponseMapperCityDist:
-    """Testet Staedteverteilung-Abbildung."""
+    """Testet Städteverteilung-Abbildung."""
 
     def test_city_data_passed_through(self):
         """city_distribution wird direkt durchgereicht."""
@@ -140,7 +140,7 @@ class TestDictResponseMapperCityDist:
         assert len(d["city_distribution"]) == 2
 
     def test_city_data_fields(self):
-        """Stadt-Eintraege behalten ihre Felder."""
+        """Stadt-Einträge behalten ihre Felder."""
         result = _make_result()
         d = geographic_result_to_dict(result)
         berlin = d["city_distribution"][0]
@@ -150,7 +150,7 @@ class TestDictResponseMapperCityDist:
         assert berlin["project_count"] == 15
 
     def test_empty_city_data(self):
-        """Leere Staedteliste wird korrekt durchgereicht."""
+        """Leere Städteliste wird korrekt durchgereicht."""
         result = _make_result(city_data=[])
         d = geographic_result_to_dict(result)
         assert d["city_distribution"] == []
@@ -170,7 +170,7 @@ class TestDictResponseMapperCoopPairs:
         assert len(d["cooperation_pairs"]) == 2
 
     def test_collab_pair_fields(self):
-        """Kooperationspaar-Eintraege behalten ihre Felder."""
+        """Kooperationspaar-Einträge behalten ihre Felder."""
         result = _make_result()
         d = geographic_result_to_dict(result)
         pair = d["cooperation_pairs"][0]
@@ -222,7 +222,7 @@ class TestDictResponseMapperMetadata:
     """Testet Metadata-Abbildung."""
 
     def test_processing_time(self):
-        """processing_time_ms wird korrekt uebertragen."""
+        """processing_time_ms wird korrekt übertragen."""
         result = _make_result(processing_time_ms=48)
         d = geographic_result_to_dict(result)
         assert d["metadata"]["processing_time_ms"] == 48
@@ -239,7 +239,7 @@ class TestDictResponseMapperMetadata:
     def test_warnings_passed(self):
         """Warnings werden korrekt durchgereicht."""
         warnings = [
-            {"message": "Daten unvollstaendig", "severity": "MEDIUM", "code": "DATA_INCOMPLETE"},
+            {"message": "Daten unvollständig", "severity": "MEDIUM", "code": "DATA_INCOMPLETE"},
         ]
         result = _make_result(warnings=warnings)
         d = geographic_result_to_dict(result)
@@ -252,7 +252,7 @@ class TestDictResponseMapperMetadata:
         assert d["metadata"]["request_id"] == "req-geo-5"
 
     def test_request_id_default_empty(self):
-        """request_id ist standardmaessig leer."""
+        """request_id ist standardmäßig leer."""
         result = _make_result()
         d = geographic_result_to_dict(result)
         assert d["metadata"]["request_id"] == ""
