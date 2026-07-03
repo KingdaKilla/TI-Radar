@@ -10,13 +10,13 @@
 --
 -- CONCURRENTLY:
 --   Alle 9 MVs haben einen UNIQUE Index (verifiziert via pg_index.indisunique),
---   also ist CONCURRENTLY unterstuetzt. Der alte MV-Inhalt bleibt waehrend
+--   also ist CONCURRENTLY unterstützt. Der alte MV-Inhalt bleibt während
 --   des Refresh lesbar, was wichtig ist wenn UC-Services parallel queryen.
 --
 -- HINWEIS zu Junction-Fill:
 --   Die aktuellen MV-Definitionen lesen direkt aus patents.cpc_codes und
 --   patents.applicant_names (denormalisiert). Das bedeutet: ein Junction-
---   Fill aus seed_junctions_production.sql AENDERT diese MVs NICHT, weil
+--   Fill aus seed_junctions_production.sql ÄNDERT diese MVs NICHT, weil
 --   sie die Junction-Tabellen gar nicht benutzen. Dieser Refresh ist trotzdem
 --   sinnvoll nach einem VOLLEN DATEN-RESTORE (Stale-Detection).
 --
@@ -37,9 +37,9 @@
 \set ON_ERROR_STOP on
 
 -- statement_timeout deaktivieren: die teuren MVs (mv_patent_counts_by_cpc_year,
--- mv_cpc_cooccurrence, mv_yearly_tech_counts, mv_top_applicants) ueberschreiten
+-- mv_cpc_cooccurrence, mv_yearly_tech_counts, mv_top_applicants) überschreiten
 -- das Production-Default (10 min), weil sie aus patents.cpc_codes denormalisiert
--- lesen und auf 156 M Patents aggregieren. REFRESH CONCURRENTLY macht zusaetzlich
+-- lesen und auf 156 M Patents aggregieren. REFRESH CONCURRENTLY macht zusätzlich
 -- einen FULL JOIN mit dem alten Stand, was die Zeit verdoppelt.
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -71,7 +71,7 @@ REFRESH MATERIALIZED VIEW CONCURRENTLY cross_schema.mv_top_cordis_orgs;
 \echo '[9/9] mv_funding_by_instrument...'
 REFRESH MATERIALIZED VIEW CONCURRENTLY cross_schema.mv_funding_by_instrument;
 
--- Session-Settings zuruecksetzen
+-- Session-Settings zurücksetzen
 RESET statement_timeout;
 RESET lock_timeout;
 

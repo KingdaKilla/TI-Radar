@@ -1,7 +1,7 @@
 # =============================================================================
 # TI-Radar v2 — UC-Service Dockerfile (Multi-Stage Template)
 # =============================================================================
-# Parametrisierter Build fuer alle UC-Services (UC1-UC9, UCB, UCD, UCE).
+# Parametrisierter Build für alle UC-Services (UC1-UC9, UCB, UCD, UCE).
 # SERVICE_DIR gibt an, welcher Service gebaut wird.
 #
 # Verwendung:
@@ -12,7 +12,7 @@
 # --- Stage 1: Builder (uv + Dependencies) ---
 FROM python:3.12-slim AS builder
 
-# Systemabhaengigkeiten fuer asyncpg + scipy Kompilierung + uv
+# Systemabhängigkeiten für asyncpg + scipy Kompilierung + uv
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libpq-dev gcc g++ && \
@@ -46,7 +46,7 @@ FROM python:3.12-slim AS runtime
 # Sicherheit: Non-Root User
 RUN groupadd -r svc && useradd -r -g svc -d /app -s /sbin/nologin svc
 
-# Laufzeit-Dependencies (libpq fuer asyncpg)
+# Laufzeit-Dependencies (libpq für asyncpg)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libpq5 && \
     rm -rf /var/lib/apt/lists/*

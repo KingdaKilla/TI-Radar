@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ti-radar-shared"
 version = "2.0.0"
-description = "Shared domain logic fuer TI-Radar v2 — deterministische Metriken, Modelle, Textgenerierung"
+description = "Shared domain logic für TI-Radar v2 — deterministische Metriken, Modelle, Textgenerierung"
 requires-python = ">=3.12"
 license = "MIT"
 authors = [{name = "Benjamin Schaefer"}]

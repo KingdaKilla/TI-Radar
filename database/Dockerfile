@@ -13,14 +13,14 @@ COPY database/mock_data/                    /docker-entrypoint-initdb.d/mock_dat
 # Restore-Werkzeuge (nicht bei Init)
 #
 # Hier kommen nur Dateien rein, die der Container zur Laufzeit oder
-# beim Restore tatsaechlich braucht:
-#   - SQL-Skripte fuer Truncate / Junction-Ableitung / MV-Refresh
+# beim Restore tatsächlich braucht:
+#   - SQL-Skripte für Truncate / Junction-Ableitung / MV-Refresh
 #   - Bash-Wrapper (werden per docker cp aus dem Image extrahiert und
-#     dann auf dem Host ausgefuehrt)
+#     dann auf dem Host ausgeführt)
 #
 # Bewusst NICHT im Image: .env.example und docker-compose.server.yml.
 # Die sind keine Runtime-Artefakte, sondern Deployment-Vorlagen; sie
-# liegen auf GitHub und koennen bei Bedarf per `curl` vom Server aus
+# liegen auf GitHub und können bei Bedarf per `curl` vom Server aus
 # geholt werden.
 COPY database/sql/restore_dump.sql               /opt/restore/restore_dump.sql
 COPY database/sql/seed_junctions_production.sql  /opt/restore/seed_junctions_production.sql

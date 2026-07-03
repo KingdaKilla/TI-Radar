@@ -13,28 +13,28 @@
 --      INSERT ist hier eine eigene implizite Transaktion (psql-autocommit).
 --
 --   2. Nur die drei Produktion-relevanten Patent-Stages (applicants,
---      patent_applicants, patent_cpc). Die Mock-spezifischen Stages fuer
+--      patent_applicants, patent_cpc). Die Mock-spezifischen Stages für
 --      CORDIS-unified_actors und research_schema.papers sind ausgeklammert.
 --
 --   3. Hardcoded-CPC-Description-Block weggelassen — cpc_descriptions ist
---      Production-seitig bereits mit echten Daten gefuellt.
+--      Production-seitig bereits mit echten Daten gefüllt.
 --
 --   4. Materialized-View-Refreshes sind in die separate Datei
---      refresh_cross_schema_mvs.sql ausgelagert und muessen NACH diesem
---      Skript ausgefuehrt werden.
+--      refresh_cross_schema_mvs.sql ausgelagert und müssen NACH diesem
+--      Skript ausgeführt werden.
 --
---   5. Stage 1 (applicants) hat Skip-Logik: laeuft nur, wenn die Tabelle
+--   5. Stage 1 (applicants) hat Skip-Logik: läuft nur, wenn die Tabelle
 --      noch unter 5 M Zeilen hat (Mock-Schwellwert). Bei einem Re-Run nach
---      bereits erfolgtem Stage 1 wird der teure DISTINCT-Scan uebersprungen.
+--      bereits erfolgtem Stage 1 wird der teure DISTINCT-Scan übersprungen.
 --
 --   6. Stage 2 (patent_applicants) und Stage 3 (patent_cpc) sind in DEKADEN
 --      partitioniert (pre1980, 1980s, 1990s, 2000s, 2010s, 2020s). Ein
 --      einzelner Lauf gegen die volle 156 M Patents Tabelle hatte bei Stage 2
 --      nach 4+ Stunden noch keinen einzigen Commit produziert (riesiger
 --      Sort+JOIN+Insert in einer Query). Per-Decade INSERTs reduzieren die
---      Sort-Groesse, erlauben Zwischen-Commits und sind resumable.
+--      Sort-Größe, erlauben Zwischen-Commits und sind resumable.
 --
--- Design-Entscheidungen, die aus der Mock-Version uebernommen wurden:
+-- Design-Entscheidungen, die aus der Mock-Version übernommen wurden:
 --
 --   a) Jaccard-Filter `array_length(cpc_codes, 1) >= 2` in Stage 3. Per
 --      Schema-Kommentar ist das by design:
@@ -54,7 +54,7 @@
 --   docker exec ti-radar-db psql -U tip_admin -d ti_radar \
 --     -f /tmp/seed_junctions_production.sql
 --
--- Anschliessend die Materialized Views refreshen:
+-- Anschließend die Materialized Views refreshen:
 --
 --   docker cp database/sql/refresh_cross_schema_mvs.sql \
 --     ti-radar-db:/tmp/refresh_cross_schema_mvs.sql
@@ -75,16 +75,16 @@
 \set ON_ERROR_STOP on
 
 -- ---------------------------------------------------------------------------
--- Temporaeres Performance-Tuning fuer den aktuellen psql-Session
+-- Temporäres Performance-Tuning für den aktuellen psql-Session
 -- ---------------------------------------------------------------------------
--- Diese Settings gelten NUR fuer diese Session und werden am Ende
--- zurueckgesetzt. Sie beschleunigen grosse Bulk-Inserts durch groessere
+-- Diese Settings gelten NUR für diese Session und werden am Ende
+-- zurückgesetzt. Sie beschleunigen große Bulk-Inserts durch größere
 -- Sort-Buffers und asynchrones Commit.
 --
 -- statement_timeout = 0 deaktiviert das (production-seitige) 10-Minuten-
--- Query-Limit fuer diese Session. Auch mit per-Decade-Splits kann eine
+-- Query-Limit für diese Session. Auch mit per-Decade-Splits kann eine
 -- einzelne Decade (besonders 2010s mit ~50 M Patents) das Default-Limit
--- ueberschreiten.
+-- überschreiten.
 
 SET statement_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -95,7 +95,7 @@ SET synchronous_commit = OFF;
 SET temp_buffers = '256MB';
 
 -- Pre-Check: Zeigt die aktuellen Row-Counts an, damit der Benutzer
--- VOR dem Lauf sieht, ob die Tabellen leer sind oder teilweise befuellt.
+-- VOR dem Lauf sieht, ob die Tabellen leer sind oder teilweise befüllt.
 \echo ''
 \echo '--- Vorher (Row-Counts) ---'
 SELECT 'patents' AS tabelle, COUNT(*) AS zeilen FROM patent_schema.patents
@@ -114,7 +114,7 @@ SELECT 'patent_cpc',                      COUNT(*) FROM patent_schema.patent_cpc
 -- patents.applicant_names (Semikolon-separiert).
 --
 -- Skip-Logik: Wenn die Tabelle bereits >= 5 M Zeilen hat, wird Stage 1
--- uebersprungen (Re-Run-safe). Mock-Daten-Stand ist << 5 M.
+-- übersprungen (Re-Run-safe). Mock-Daten-Stand ist << 5 M.
 -- ============================================================================
 
 \echo ''
@@ -152,7 +152,7 @@ END $$;
 -- ============================================================================
 -- Stage 2/3: patent_schema.patent_applicants (N:M Junction, per Dekade)
 -- ----------------------------------------------------------------------------
--- Verknuepft jedes Patent mit seinen Anmeldern. Join ueber raw_name.
+-- Verknüpft jedes Patent mit seinen Anmeldern. Join über raw_name.
 -- Per-Decade-Splits: pre1980, 1980s, 1990s, 2000s, 2010s, 2020s.
 -- Jeder INSERT ist eine eigene implizite Transaktion (psql autocommit).
 -- ============================================================================
@@ -345,7 +345,7 @@ SELECT 'patent_cpc',                      COUNT(*) FROM patent_schema.patent_cpc
 
 
 -- ---------------------------------------------------------------------------
--- Session-Settings zuruecksetzen
+-- Session-Settings zurücksetzen
 -- ---------------------------------------------------------------------------
 
 RESET statement_timeout;
@@ -360,6 +360,6 @@ RESET temp_buffers;
 \echo ''
 \echo '=== Junction-Ableitung abgeschlossen ==='
 \echo ''
-\echo 'NAECHSTER SCHRITT: Materialized Views refreshen'
+\echo 'NÄCHSTER SCHRITT: Materialized Views refreshen'
 \echo '  docker exec ti-radar-db psql -U tip_admin -d ti_radar -f /tmp/refresh_cross_schema_mvs.sql'
 \echo ''

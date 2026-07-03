@@ -6,9 +6,9 @@
 -- equivalent. These serve as the specification for the new asyncpg-based
 -- repository implementations.
 --
--- HINWEIS: Diese Datei enthaelt NUR Kommentare als Referenz-Dokumentation.
--- Keine ausfuehrbaren SQL-Statements, da die referenzierten Tabellen erst
--- nach dem Daten-Import existieren / befuellt sind.
+-- HINWEIS: Diese Datei enthält NUR Kommentare als Referenz-Dokumentation.
+-- Keine ausführbaren SQL-Statements, da die referenzierten Tabellen erst
+-- nach dem Daten-Import existieren / befüllt sind.
 -- ============================================================================
 
 

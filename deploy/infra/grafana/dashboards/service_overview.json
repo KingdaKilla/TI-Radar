@@ -23,7 +23,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "Uebersicht",
+      "title": "Übersicht",
       "type": "row"
     },
     {
@@ -529,7 +529,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Graceful-Degradation-Events: Timeouts, gRPC-Fehler, Service-Ausfaelle aufgeschluesselt nach Typ und UC-Service.",
+      "description": "Graceful-Degradation-Events: Timeouts, gRPC-Fehler, Service-Ausfälle aufgeschlüsselt nach Typ und UC-Service.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -596,7 +596,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Heatmap der gRPC-Request-Dauer ueber alle UC-Services. Zeigt die Verteilung der Antwortzeiten als Heatmap-Buckets.",
+      "description": "Heatmap der gRPC-Request-Dauer über alle UC-Services. Zeigt die Verteilung der Antwortzeiten als Heatmap-Buckets.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -656,7 +656,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "HTTP-Requests an den Orchestrator (FastAPI REST-API) aufgeschluesselt nach Endpoint und Status-Code.",
+      "description": "HTTP-Requests an den Orchestrator (FastAPI REST-API) aufgeschlüsselt nach Endpoint und Status-Code.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },

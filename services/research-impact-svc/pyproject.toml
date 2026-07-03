@@ -1,7 +1,7 @@
 [project]
 name = "research-impact-svc"
 version = "2.0.0"
-description = "UC7 Research Impact Service — gRPC-Microservice fuer Forschungswirkungsanalyse"
+description = "UC7 Research Impact Service — gRPC-Microservice für Forschungswirkungsanalyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

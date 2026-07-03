@@ -1,7 +1,7 @@
 # =============================================================================
 # TI-Radar — Embedding-Service Dockerfile (CPU-basiert)
 # =============================================================================
-# Fuer GPU-Beschleunigung: EMBEDDING_DEVICE=cuda setzen und
+# Für GPU-Beschleunigung: EMBEDDING_DEVICE=cuda setzen und
 # Base-Image auf nvidia/cuda:12.4.1-runtime-ubuntu22.04 wechseln.
 # =============================================================================
 

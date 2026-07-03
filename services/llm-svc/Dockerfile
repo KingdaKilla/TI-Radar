@@ -1,10 +1,10 @@
 # =============================================================================
 # Dockerfile — LLM Analysis Service
 # =============================================================================
-# Multi-Stage Build: uv fuer schnelle Dependency-Installation,
+# Multi-Stage Build: uv für schnelle Dependency-Installation,
 # python:3.12-slim als Runtime-Image.
 #
-# Kein DB-Zugriff — dieser Service ruft ausschliesslich externe LLM-APIs auf.
+# Kein DB-Zugriff — dieser Service ruft ausschließlich externe LLM-APIs auf.
 #
 # Verwendung:
 #   docker build -t llm-svc .

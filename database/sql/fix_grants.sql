@@ -1,6 +1,6 @@
 -- ==========================================================================
 -- Hotfix: Fehlende GRANT-Statements nach Dump-Restore
--- Ausfuehren als tip_admin:
+-- Ausführen als tip_admin:
 --   docker exec -i ti-radar-db psql -U tip_admin -d ti_radar < fix_grants.sql
 -- ==========================================================================
 
@@ -111,7 +111,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA entity_schema TO svc_export;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA export_schema TO svc_export;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA export_schema TO svc_export;
 -- svc_export legt beim Startup fehlende Tabellen/Indizes in export_schema an
--- (idempotent per CREATE ... IF NOT EXISTS). Dazu ist CREATE ON SCHEMA noetig.
+-- (idempotent per CREATE ... IF NOT EXISTS). Dazu ist CREATE ON SCHEMA nötig.
 GRANT CREATE ON SCHEMA export_schema TO svc_export;
 -- Future tables (z.B. nach Dump-Restore mit neu angelegten Objekten):
 ALTER DEFAULT PRIVILEGES IN SCHEMA export_schema
@@ -144,5 +144,5 @@ GRANT SELECT ON ALL TABLES IN SCHEMA research_schema TO tip_readonly;
 GRANT SELECT ON ALL TABLES IN SCHEMA entity_schema TO tip_readonly;
 GRANT SELECT ON ALL TABLES IN SCHEMA export_schema TO tip_readonly;
 
--- Ergebnis pruefen
-DO $$ BEGIN RAISE NOTICE 'Alle GRANT-Statements erfolgreich ausgefuehrt.'; END $$;
+-- Ergebnis prüfen
+DO $$ BEGIN RAISE NOTICE 'Alle GRANT-Statements erfolgreich ausgeführt.'; END $$;

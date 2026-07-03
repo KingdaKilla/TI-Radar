@@ -1,7 +1,7 @@
 [project]
 name = "temporal-svc"
 version = "2.0.0"
-description = "UC8 Temporal Dynamics Service — gRPC-Microservice fuer zeitliche Dynamikanalyse"
+description = "UC8 Temporal Dynamics Service — gRPC-Microservice für zeitliche Dynamikanalyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

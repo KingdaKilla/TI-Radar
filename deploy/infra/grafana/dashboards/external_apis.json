@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "TI-Radar v2 External APIs — Latenz, Verfuegbarkeit und Rate Limits externer Datenquellen",
+  "description": "TI-Radar v2 External APIs — Latenz, Verfügbarkeit und Rate Limits externer Datenquellen",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -23,12 +23,12 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "API Verfuegbarkeit",
+      "title": "API Verfügbarkeit",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Verfuegbarkeit der externen API-Services basierend auf dem UP-Status ihrer Scrape-Targets. 1 = erreichbar, 0 = nicht erreichbar.",
+      "description": "Verfügbarkeit der externen API-Services basierend auf dem UP-Status ihrer Scrape-Targets. 1 = erreichbar, 0 = nicht erreichbar.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -73,7 +73,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Import-Service Verfuegbarkeit (Bulk-Import, OpenAIRE-Anbindung)",
+      "description": "Import-Service Verfügbarkeit (Bulk-Import, OpenAIRE-Anbindung)",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -118,7 +118,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Export-Service Verfuegbarkeit (PDF/CSV-Export)",
+      "description": "Export-Service Verfügbarkeit (PDF/CSV-Export)",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -278,7 +278,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Durchschnittliche Antwortzeit der Services mit externen API-Abhaengigkeiten: landscape (OpenAIRE), research_impact (Semantic Scholar), competitive (GLEIF).",
+      "description": "Durchschnittliche Antwortzeit der Services mit externen API-Abhängigkeiten: landscape (OpenAIRE), research_impact (Semantic Scholar), competitive (GLEIF).",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -369,7 +369,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Fehlerrate der Services mit externen API-Abhaengigkeiten. Hohe Fehlerraten koennen auf Rate-Limits, API-Downtimes oder Netzwerkprobleme hinweisen.",
+      "description": "Fehlerrate der Services mit externen API-Abhängigkeiten. Hohe Fehlerraten können auf Rate-Limits, API-Downtimes oder Netzwerkprobleme hinweisen.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -598,7 +598,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Uebersicht der externen Datenquellen und ihrer Rate-Limits",
+      "description": "Übersicht der externen Datenquellen und ihrer Rate-Limits",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -615,7 +615,7 @@
       "id": 30,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
-        "content": "# Externe Datenquellen — Rate Limits & Hinweise\n\n| Datenquelle | Service | Rate Limit | Hinweise |\n|-------------|---------|------------|----------|\n| **EPO OPS** | Patent-Services (maturity, cpc_flow, patent_grant) | 3.5 GB/Woche, OAuth2 Token | v2 nutzt lokale PostgreSQL-Kopie statt Live-API |\n| **OpenAIRE** | landscape-svc | Optional Token erhoet Limits | Publikationszaehlung, Graph-API |\n| **Semantic Scholar** | research-impact-svc | 100 req/5min (ohne Key) | h-Index, Zitationsdaten, Top Papers |\n| **GLEIF** | competitive-svc | Keine offiziellen Limits | LEI-Lookup, Entity Resolution |\n| **CORDIS** | Diverse UC-Services | Kein API-Key noetig | v2 nutzt lokale PostgreSQL-Kopie |\n\n## Monitoring-Hinweise\n\n- **Rate-Limit-Fehler** erscheinen als `RESOURCE_EXHAUSTED` in den Degradation-Events\n- **Timeouts** koennen auf langsame externe APIs hindeuten (v.a. Semantic Scholar)\n- **UNAVAILABLE** bedeutet, dass der UC-Service selbst nicht erreichbar ist\n- Die meisten Daten werden aus der lokalen PostgreSQL geladen (Bulk-Import)\n- Nur OpenAIRE und Semantic Scholar machen Live-API-Calls pro Anfrage\n\n## v1 vs v2 Architektur\n\n- **v1**: Direkte API-Calls bei jeder Anfrage (SQLite + REST APIs)\n- **v2**: PostgreSQL Bulk-Import + optionale Live-Ergaenzung (OpenAIRE, Semantic Scholar)",
+        "content": "# Externe Datenquellen — Rate Limits & Hinweise\n\n| Datenquelle | Service | Rate Limit | Hinweise |\n|-------------|---------|------------|----------|\n| **EPO OPS** | Patent-Services (maturity, cpc_flow, patent_grant) | 3.5 GB/Woche, OAuth2 Token | v2 nutzt lokale PostgreSQL-Kopie statt Live-API |\n| **OpenAIRE** | landscape-svc | Optional Token erhöht Limits | Publikationszählung, Graph-API |\n| **Semantic Scholar** | research-impact-svc | 100 req/5min (ohne Key) | h-Index, Zitationsdaten, Top Papers |\n| **GLEIF** | competitive-svc | Keine offiziellen Limits | LEI-Lookup, Entity Resolution |\n| **CORDIS** | Diverse UC-Services | Kein API-Key nötig | v2 nutzt lokale PostgreSQL-Kopie |\n\n## Monitoring-Hinweise\n\n- **Rate-Limit-Fehler** erscheinen als `RESOURCE_EXHAUSTED` in den Degradation-Events\n- **Timeouts** können auf langsame externe APIs hindeuten (v.a. Semantic Scholar)\n- **UNAVAILABLE** bedeutet, dass der UC-Service selbst nicht erreichbar ist\n- Die meisten Daten werden aus der lokalen PostgreSQL geladen (Bulk-Import)\n- Nur OpenAIRE und Semantic Scholar machen Live-API-Calls pro Anfrage\n\n## v1 vs v2 Architektur\n\n- **v1**: Direkte API-Calls bei jeder Anfrage (SQLite + REST APIs)\n- **v2**: PostgreSQL Bulk-Import + optionale Live-Ergänzung (OpenAIRE, Semantic Scholar)",
         "mode": "markdown"
       },
       "title": "Externe Datenquellen — Rate Limits & Architektur",

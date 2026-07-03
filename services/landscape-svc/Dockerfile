@@ -1,7 +1,7 @@
 # =============================================================================
 # Dockerfile — UC1 Landscape Service
 # =============================================================================
-# Multi-Stage Build: uv fuer schnelle Dependency-Installation,
+# Multi-Stage Build: uv für schnelle Dependency-Installation,
 # python:3.12-slim als Runtime-Image.
 #
 # Verwendung:

@@ -1,7 +1,7 @@
 [project]
 name = "landscape-svc"
 version = "2.0.0"
-description = "UC1 Technology Landscape Service — gRPC-Microservice fuer Technologie-Landschaftsanalyse"
+description = "UC1 Technology Landscape Service — gRPC-Microservice für Technologie-Landschaftsanalyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

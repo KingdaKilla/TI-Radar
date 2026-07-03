@@ -1,15 +1,15 @@
 -- =============================================================================
--- 006_citation_schema.sql — Patent-Zitationsnetzwerk fuer Forward/Backward Citation Analysis
+-- 006_citation_schema.sql — Patent-Zitationsnetzwerk für Forward/Backward Citation Analysis
 -- =============================================================================
 -- UC-F: Zitations-Analyse
 --
 -- Speichert Zitationsbeziehungen zwischen Patenten, extrahiert aus EPO DOCDB XML
--- (<references-cited> Element). Ermoeglicht Forward- und Backward-Citation-Analyse
--- zur Identifikation von Schluesselpatenten und Technologie-Trends.
+-- (<references-cited> Element). Ermöglicht Forward- und Backward-Citation-Analyse
+-- zur Identifikation von Schlüsselpatenten und Technologie-Trends.
 --
--- Abhaengigkeiten:
+-- Abhängigkeiten:
 --   - patent_schema (aus 002_schema.sql) muss existieren
---   - patent_schema.patents Tabelle als Referenz fuer patent IDs
+--   - patent_schema.patents Tabelle als Referenz für patent IDs
 -- =============================================================================
 
 -- Zitationstabelle: Welches Patent zitiert welches andere Patent
@@ -22,20 +22,20 @@ CREATE TABLE IF NOT EXISTS patent_schema.patent_citations (
     PRIMARY KEY (citing_patent, cited_patent)
 );
 
--- Index fuer Backward-Citation-Abfragen (welche Patente zitieren dieses Patent?)
+-- Index für Backward-Citation-Abfragen (welche Patente zitieren dieses Patent?)
 CREATE INDEX IF NOT EXISTS idx_citations_cited
     ON patent_schema.patent_citations (cited_patent);
 
--- Index fuer zeitliche Analysen
+-- Index für zeitliche Analysen
 CREATE INDEX IF NOT EXISTS idx_citations_year
     ON patent_schema.patent_citations (citing_year);
 
--- Index fuer Kategorie-Filter (X/Y/A Relevanz-Stufen)
+-- Index für Kategorie-Filter (X/Y/A Relevanz-Stufen)
 CREATE INDEX IF NOT EXISTS idx_citations_category
     ON patent_schema.patent_citations (citation_category)
     WHERE citation_category IS NOT NULL;
 
--- Kommentar fuer Dokumentation
+-- Kommentar für Dokumentation
 COMMENT ON TABLE patent_schema.patent_citations IS
     'Patent-Zitationsnetzwerk — Forward/Backward Citations aus EPO DOCDB XML (UC-F)';
 COMMENT ON COLUMN patent_schema.patent_citations.citation_category IS
@@ -43,7 +43,7 @@ COMMENT ON COLUMN patent_schema.patent_citations.citation_category IS
 COMMENT ON COLUMN patent_schema.patent_citations.cited_phase IS
     'Verfahrensphase: search, examination, opposition';
 
--- TODO: Materialized View fuer Top-zitierte Patente pro Technologie (CPC-gefiltert)
+-- TODO: Materialized View für Top-zitierte Patente pro Technologie (CPC-gefiltert)
 -- Wird nach Import + Enrichment erstellt, z.B.:
 --
 -- CREATE MATERIALIZED VIEW IF NOT EXISTS patent_schema.mv_top_cited_patents AS

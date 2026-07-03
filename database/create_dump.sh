@@ -18,15 +18,15 @@ echo "Datenbank: $DB_NAME"
 echo "Ziel:      $LOCAL_DUMP"
 echo ""
 
-# 1. Pruefen ob Container laeuft
+# 1. Prüfen ob Container läuft
 if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
-    echo "FEHLER: Container '$CONTAINER' laeuft nicht."
+    echo "FEHLER: Container '$CONTAINER' läuft nicht."
     echo "Starte mit: cd deploy && docker compose up -d db"
     exit 1
 fi
 
-# 2. Aktuelle Tabellengroessen anzeigen
-echo "--- Aktuelle Tabellengroessen (Top 20) ---"
+# 2. Aktuelle Tabellengrößen anzeigen
+echo "--- Aktuelle Tabellengrößen (Top 20) ---"
 docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -c "
     SELECT schemaname || '.' || relname AS tabelle,
            pg_size_pretty(pg_total_relation_size(schemaname || '.' || relname)) AS groesse,
@@ -42,7 +42,7 @@ echo ""
 echo "--- Materialized Views aktualisieren ---"
 docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -c "
     SELECT cross_schema.refresh_all_views();
-" 2>/dev/null || echo "(refresh_all_views nicht verfuegbar, uebersprungen)"
+" 2>/dev/null || echo "(refresh_all_views nicht verfügbar, übersprungen)"
 
 # 4. VACUUM ANALYZE
 echo ""
@@ -52,7 +52,7 @@ docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -c "VACUUM ANALYZE;"
 # 5. pg_dump
 echo ""
 echo "--- pg_dump starten (Schema + Daten, komprimiert) ---"
-echo "    Dies kann bei 150+ Mio Patenten laenger dauern..."
+echo "    Dies kann bei 150+ Mio Patenten länger dauern..."
 docker exec "$CONTAINER" pg_dump \
     -U "$DB_USER" \
     -d "$DB_NAME" \
@@ -69,7 +69,7 @@ echo ""
 echo "--- Kopiere Dump aus Container nach D:\\ ---"
 docker cp "${CONTAINER}:${DUMP_FILE}" "$LOCAL_DUMP"
 
-# 7. Aufraeumen im Container
+# 7. Aufräumen im Container
 docker exec "$CONTAINER" rm -f "$DUMP_FILE"
 
 # 8. Ergebnis
@@ -79,7 +79,7 @@ echo "========================================="
 echo " Dump erfolgreich erstellt"
 echo "========================================="
 echo " Datei:   $LOCAL_DUMP"
-echo " Groesse: $DUMP_SIZE"
+echo " Größe: $DUMP_SIZE"
 echo " Datum:   $DATE"
 echo ""
 echo " Restore-Befehl:"

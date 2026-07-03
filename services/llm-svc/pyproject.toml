@@ -1,7 +1,7 @@
 [project]
 name = "llm-svc"
 version = "2.0.0"
-description = "LLM Analysis Service — gRPC-Microservice fuer textuelle KI-Analyse von UC-Panel-Daten"
+description = "LLM Analysis Service — gRPC-Microservice für textuelle KI-Analyse von UC-Panel-Daten"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

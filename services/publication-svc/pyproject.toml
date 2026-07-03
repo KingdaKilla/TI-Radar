@@ -1,7 +1,7 @@
 [project]
 name = "publication-svc"
 version = "3.0.0"
-description = "UC-C Publication Analytics Service — gRPC-Microservice fuer Publikations-Impact-Chain-Analyse"
+description = "UC-C Publication Analytics Service — gRPC-Microservice für Publikations-Impact-Chain-Analyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "TI-Radar Team" }]

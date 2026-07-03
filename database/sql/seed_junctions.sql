@@ -6,8 +6,8 @@
 --         UC3/UC8      leer (patent_applicants / unified_actors fehlen)
 --         UC7          leer (research_schema.papers fehlt)
 --
--- Voraussetzung: 002_schema.sql + seed_mock.sh bereits ausgefuehrt
--- Ausfuehren:    psql -U tip_admin -d ti_radar -f seed_junctions.sql
+-- Voraussetzung: 002_schema.sql + seed_mock.sh bereits ausgeführt
+-- Ausführen:    psql -U tip_admin -d ti_radar -f seed_junctions.sql
 -- ============================================================================
 
 BEGIN;
@@ -23,7 +23,7 @@ BEGIN;
 --    patents.applicant_names (Semikolon-separiert)
 -- ============================================================================
 
-\echo '1/6  Fuege Anmeldernamen in patent_schema.applicants ein...'
+\echo '1/6  Füge Anmeldernamen in patent_schema.applicants ein...'
 
 INSERT INTO patent_schema.applicants (raw_name, normalized_name)
 SELECT DISTINCT
@@ -42,10 +42,10 @@ ON CONFLICT (raw_name) DO NOTHING;
 
 -- ============================================================================
 -- 2. patent_schema.patent_applicants
---    Verknuepft jedes Patent mit seinen Anmeldern (N:M)
+--    Verknüpft jedes Patent mit seinen Anmeldern (N:M)
 -- ============================================================================
 
-\echo '2/6  Fuege Eintraege in patent_schema.patent_applicants ein...'
+\echo '2/6  Füge Einträge in patent_schema.patent_applicants ein...'
 
 INSERT INTO patent_schema.patent_applicants (patent_id, patent_year, applicant_id)
 SELECT DISTINCT
@@ -76,7 +76,7 @@ ON CONFLICT DO NOTHING;
 --    Nur Patente mit >= 2 CPC-Codes (Jaccard-Anforderung).
 -- ============================================================================
 
-\echo '3/6  Fuege Eintraege in patent_schema.patent_cpc ein...'
+\echo '3/6  Füge Einträge in patent_schema.patent_cpc ein...'
 
 INSERT INTO patent_schema.patent_cpc (patent_id, cpc_code, pub_year)
 SELECT DISTINCT
@@ -96,30 +96,30 @@ ON CONFLICT DO NOTHING;
 
 -- ============================================================================
 -- 4. patent_schema.cpc_descriptions
---    Laedt Beschreibungen fuer alle CPC-Subklassen die im Mock vorkommen.
+--    Lädt Beschreibungen für alle CPC-Subklassen die im Mock vorkommen.
 --    Bekannte Quantum-Computing-relevante Codes mit echten Beschreibungen,
---    Rest erhaelt generischen Platzhalter.
+--    Rest erhält generischen Platzhalter.
 -- ============================================================================
 
-\echo '4/6  Fuege CPC-Beschreibungen ein...'
+\echo '4/6  Füge CPC-Beschreibungen ein...'
 
--- Bekannte Beschreibungen fuer haeufige Quantum-Computing-CPC-Codes
+-- Bekannte Beschreibungen für häufige Quantum-Computing-CPC-Codes
 INSERT INTO patent_schema.cpc_descriptions (code, section, class_code, description_en, description_de)
 VALUES
     ('G06N', 'G', 'G06', 'Computing; Calculating; Counting — Models based on specific computational theories', 'Datenverarbeitung — Modelle basierend auf spezifischen Rechentheorien'),
-    ('H04L', 'H', 'H04', 'Electric Communication Technique — Transmission of digital information', 'Elektrische Nachrichtentechnik — Uebertragung digitaler Informationen'),
-    ('H04B', 'H', 'H04', 'Electric Communication Technique — Transmission', 'Elektrische Nachrichtentechnik — Uebertragung'),
+    ('H04L', 'H', 'H04', 'Electric Communication Technique — Transmission of digital information', 'Elektrische Nachrichtentechnik — Übertragung digitaler Informationen'),
+    ('H04B', 'H', 'H04', 'Electric Communication Technique — Transmission', 'Elektrische Nachrichtentechnik — Übertragung'),
     ('H04W', 'H', 'H04', 'Electric Communication Technique — Wireless communication networks', 'Elektrische Nachrichtentechnik — Drahtlose Kommunikationsnetze'),
     ('G06F', 'G', 'G06', 'Electric Digital Data Processing', 'Elektrische digitale Datenverarbeitung'),
-    ('G06Q', 'G', 'G06', 'Data Processing Systems or Methods specially adapted for Administrative, Commercial, Financial, Managerial, Supervisory, or Forecasting Purposes', 'Datenverarbeitungssysteme fuer administrative, kommerzielle oder finanzielle Zwecke'),
+    ('G06Q', 'G', 'G06', 'Data Processing Systems or Methods specially adapted for Administrative, Commercial, Financial, Managerial, Supervisory, or Forecasting Purposes', 'Datenverarbeitungssysteme für administrative, kommerzielle oder finanzielle Zwecke'),
     ('H01L', 'H', 'H01', 'Basic Electric Elements — Semiconductor devices', 'Grundlegende elektrische Bauelemente — Halbleiterbauteile'),
     ('B82Y', 'B', 'B82', 'Nanotechnology', 'Nanotechnologie'),
-    ('G01R', 'G', 'G01', 'Measuring; Testing — Electric variables', 'Messen; Pruefen — Elektrische Groessen'),
+    ('G01R', 'G', 'G01', 'Measuring; Testing — Electric variables', 'Messen; Prüfen — Elektrische Größen'),
     ('H03K', 'H', 'H03', 'Basic Electronic Circuitry — Pulse technique', 'Grundlegende elektronische Schaltkreise — Impulstechnik'),
     ('H05H', 'H', 'H05', 'Electric Techniques not otherwise provided for — Plasma technique', 'Elektrische Techniken — Plasmatechnik'),
     ('G01N', 'G', 'G01', 'Investigating or Analysing Materials by determining their chemical or physical properties', 'Untersuchen oder Analysieren von Materialien'),
     ('G02B', 'G', 'G02', 'Optics — Optical elements, systems or apparatus', 'Optik — Optische Elemente, Systeme oder Vorrichtungen'),
-    ('A61B', 'A', 'A61', 'Medical or Veterinary Science — Diagnosis; Surgery', 'Medizin oder Veterinaerwesen — Diagnostik; Chirurgie'),
+    ('A61B', 'A', 'A61', 'Medical or Veterinary Science — Diagnosis; Surgery', 'Medizin oder Veterinärwesen — Diagnostik; Chirurgie'),
     ('C12N', 'C', 'C12', 'Biochemistry; Microbiology — Micro-organisms or enzymes', 'Biochemie; Mikrobiologie — Mikroorganismen oder Enzyme')
 ON CONFLICT (code) DO NOTHING;
 
@@ -141,11 +141,11 @@ ON CONFLICT (code) DO NOTHING;
 
 -- ============================================================================
 -- 5. entity_schema.unified_actors + actor_source_mappings
---    Erstellt unified_actors aus CORDIS-Organisationen fuer UC3/UC4.
---    Ermoeglicht organisationsuebergreifende Verknuepfungen.
+--    Erstellt unified_actors aus CORDIS-Organisationen für UC3/UC4.
+--    Ermöglicht organisationsübergreifende Verknüpfungen.
 -- ============================================================================
 
-\echo '5/6  Fuege unified_actors und source_mappings aus CORDIS-Orgs ein...'
+\echo '5/6  Füge unified_actors und source_mappings aus CORDIS-Orgs ein...'
 
 -- Eindeutige Organisationen als unified_actors
 INSERT INTO entity_schema.unified_actors (id, canonical_name, country, actor_type)
@@ -169,7 +169,7 @@ FROM (
 ) o
 ON CONFLICT DO NOTHING;
 
--- source_mappings: CORDIS-Org-IDs mit den unified_actors verknuepfen
+-- source_mappings: CORDIS-Org-IDs mit den unified_actors verknüpfen
 INSERT INTO entity_schema.actor_source_mappings
     (unified_actor_id, source_type, source_id, source_name, confidence, match_method)
 SELECT
@@ -191,7 +191,7 @@ ON CONFLICT (source_type, source_id) DO NOTHING;
 --    Leitet Mock-Papers aus CORDIS-Publikationen ab, damit UC7 nicht leer ist.
 -- ============================================================================
 
-\echo '6/6  Fuege Mock-Papers in research_schema aus CORDIS-Publikationen ein...'
+\echo '6/6  Füge Mock-Papers in research_schema aus CORDIS-Publikationen ein...'
 
 -- Papers aus CORDIS-Publikationen
 INSERT INTO research_schema.papers

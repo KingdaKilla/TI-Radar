@@ -1,11 +1,11 @@
 # =============================================================================
 # Dockerfile — Export Service (TI-Radar v2)
 # =============================================================================
-# Multi-Stage Build mit uv fuer schnelle Dependency-Installation:
+# Multi-Stage Build mit uv für schnelle Dependency-Installation:
 #   1. Builder: Dependencies installieren (Caching-Layer)
-#   2. Runtime: Minimales Image mit nur den noetigsten Paketen
+#   2. Runtime: Minimales Image mit nur den nötigsten Paketen
 #
-# Ausfuehren:
+# Ausführen:
 #   docker build -t export-svc .
 #   docker run -p 8020:8020 export-svc
 # =============================================================================
@@ -15,12 +15,12 @@
 # ---------------------------------------------------------------------------
 FROM python:3.12-slim AS builder
 
-# uv fuer schnelle Dependency-Installation
+# uv für schnelle Dependency-Installation
 RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 
-# Nur pyproject.toml kopieren fuer besseres Docker-Layer-Caching
+# Nur pyproject.toml kopieren für besseres Docker-Layer-Caching
 # (Build-Context ist Projekt-Root, daher voller Pfad)
 COPY services/export-svc/pyproject.toml .
 
@@ -39,7 +39,7 @@ RUN . /opt/venv/bin/activate && \
 # ---------------------------------------------------------------------------
 FROM python:3.12-slim AS runtime
 
-# Sicherheit: Nicht als root ausfuehren
+# Sicherheit: Nicht als root ausführen
 RUN groupadd -r appuser && useradd -r -g appuser -s /sbin/nologin appuser
 
 # Laufzeit-Dependencies: libpq (asyncpg) + WeasyPrint (PDF-Export)
@@ -57,7 +57,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app
 
-# Shared-Paket kopieren (fuer Domain-Modelle)
+# Shared-Paket kopieren (für Domain-Modelle)
 COPY --from=builder /app/shared/ shared/
 
 # Anwendungscode kopieren (Build-Context = Projekt-Root)
@@ -68,7 +68,7 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
-# Konfigurierbare Umgebungsvariablen (Defaults fuer Container)
+# Konfigurierbare Umgebungsvariablen (Defaults für Container)
 # HINWEIS: appuser hat kein Home-Verzeichnis (useradd -r ohne -m).
 # Matplotlib + Fontconfig brauchen writable Cache-Pfade —
 # deshalb werden sie nach /tmp umgeleitet (von appuser beschreibbar).

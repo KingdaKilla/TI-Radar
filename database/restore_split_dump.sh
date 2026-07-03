@@ -10,18 +10,18 @@
 # Environment-Variablen (optional):
 #
 #   COMPOSE_FILE=deploy/docker-compose.server.yml
-#     Compose-File fuer den "docker compose up -d db" Aufruf in Phase [1/9].
+#     Compose-File für den "docker compose up -d db" Aufruf in Phase [1/9].
 #     Default: deploy/docker-compose.yml (lokal).
 #     Auf dem Server: COMPOSE_FILE=deploy/docker-compose.server.yml setzen.
 #
 #   DELETE_DUMPS_AFTER_RESTORE=1
-#     Loescht jede .backup-Datei auf dem HOST sofort nach ihrem erfolgreichen
+#     Löscht jede .backup-Datei auf dem HOST sofort nach ihrem erfolgreichen
 #     pg_restore, um Plattenplatz zu sparen. WICHTIG: pg_restore Exit-Code wird
-#     streng geprueft — bei rc > 1 (fatal error) wird NICHT geloescht und das
+#     streng geprüft — bei rc > 1 (fatal error) wird NICHT gelöscht und das
 #     Skript bricht ab. Warnings (rc==1, z.B. "already exists") gelten als OK.
 #     00_schema_only.sql und dump.sha256 bleiben IMMER erhalten.
 #     DIESE OPTION IST DESTRUKTIV — danach ist kein Restart ohne erneuten
-#     Transfer moeglich.
+#     Transfer möglich.
 #
 # Erwartet:
 #   /pfad/zum/dump-verzeichnis/
@@ -48,7 +48,7 @@ DB_NAME="ti_radar"
 COMPOSE_FILE="${COMPOSE_FILE:-deploy/docker-compose.yml}"
 DELETE_DUMPS_AFTER_RESTORE="${DELETE_DUMPS_AFTER_RESTORE:-0}"
 
-# Farben fuer Terminal-Ausgabe
+# Farben für Terminal-Ausgabe
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -60,13 +60,13 @@ echo "Dump-Dir: ${DUMP_DIR}"
 echo "Compose:  ${COMPOSE_FILE}"
 if [ "$DELETE_DUMPS_AFTER_RESTORE" = "1" ]; then
     echo -e "${YELLOW}WARNUNG: DELETE_DUMPS_AFTER_RESTORE=1 aktiv${NC}"
-    echo -e "${YELLOW}  -> Jede .backup-Datei wird nach erfolgreichem Restore GELOESCHT${NC}"
-    echo -e "${YELLOW}  -> Nach Abbruch / Fehler ist kein Restart ohne erneuten Transfer moeglich${NC}"
+    echo -e "${YELLOW}  -> Jede .backup-Datei wird nach erfolgreichem Restore GELÖSCHT${NC}"
+    echo -e "${YELLOW}  -> Nach Abbruch / Fehler ist kein Restart ohne erneuten Transfer möglich${NC}"
 fi
 echo "============================================"
 
 # -------------------------------------------------
-# Validierung: Dump-Verzeichnis pruefen
+# Validierung: Dump-Verzeichnis prüfen
 # -------------------------------------------------
 if [ ! -f "${DUMP_DIR}/00_schema_only.sql" ]; then
     echo -e "${RED}FEHLER: ${DUMP_DIR}/00_schema_only.sql nicht gefunden.${NC}"
@@ -80,10 +80,10 @@ if [ ! -d "${DUMP_DIR}/patent_schema" ]; then
 fi
 
 # Hilfsfunktion: Backup-Datei in Container kopieren, restaurieren,
-# strenge Exit-Code-Pruefung und optionales Loeschen nach Erfolg.
+# strenge Exit-Code-Prüfung und optionales Löschen nach Erfolg.
 #
 # pg_restore Exit-Codes:
-#   0  -> vollstaendiger Erfolg
+#   0  -> vollständiger Erfolg
 #   1  -> Warnings (z.B. Item bereits vorhanden, skip) - akzeptabel
 #   >1 -> fatal error - hier wird das Skript abgebrochen
 restore_backup() {
@@ -110,7 +110,7 @@ restore_backup() {
         --data-only --disable-triggers \
         /tmp/restore_part.backup 2>&1) || rc=$?
 
-    # Container-Kopie immer aufraeumen (Platz im Container-Temp)
+    # Container-Kopie immer aufräumen (Platz im Container-Temp)
     docker exec "$CONTAINER" rm -f /tmp/restore_part.backup || true
 
     if [ "$rc" -eq 0 ] || [ "$rc" -eq 1 ]; then
@@ -121,22 +121,22 @@ restore_backup() {
             echo -e "${GREEN}OK${NC}"
         fi
 
-        # Optional: Dump-Datei auf HOST loeschen, um Platz zu sparen
+        # Optional: Dump-Datei auf HOST löschen, um Platz zu sparen
         if [ "$DELETE_DUMPS_AFTER_RESTORE" = "1" ]; then
             if rm -f "$backup_file"; then
-                echo -e "      ${YELLOW}-> Host-Dump geloescht (${file_size} frei)${NC}"
+                echo -e "      ${YELLOW}-> Host-Dump gelöscht (${file_size} frei)${NC}"
             else
-                echo -e "      ${RED}-> Loeschen von $backup_file fehlgeschlagen${NC}"
+                echo -e "      ${RED}-> Löschen von $backup_file fehlgeschlagen${NC}"
             fi
         fi
         return 0
     else
-        # Fataler Fehler: NICHT loeschen, Skript abbrechen
+        # Fataler Fehler: NICHT löschen, Skript abbrechen
         echo -e "${RED}FAIL (pg_restore rc=$rc)${NC}"
         echo "   --- pg_restore output (letzte 20 Zeilen) ---"
         echo "$pg_output" | tail -20 | sed 's/^/     /'
         echo "   ---"
-        echo -e "   ${RED}Abbruch. Host-Dump $backup_file bleibt fuer Retry erhalten.${NC}"
+        echo -e "   ${RED}Abbruch. Host-Dump $backup_file bleibt für Retry erhalten.${NC}"
         return "$rc"
     fi
 }
@@ -163,14 +163,14 @@ for i in $(seq 1 30); do
 done
 
 # -------------------------------------------------
-# [2/9] Performance-Tuning fuer schnellen Import
+# [2/9] Performance-Tuning für schnellen Import
 # -------------------------------------------------
 # WICHTIG: ALTER SYSTEM darf NICHT in einer Transaktion laufen
 # ("cannot run inside a transaction block"). psql -c "stmt1; stmt2"
 # wrappt alle Statements implizit in eine Transaktion, daher
 # jeden ALTER SYSTEM als eigenen -c Aufruf absetzen.
 echo ""
-echo "[2/9] PostgreSQL Performance-Tuning fuer Import..."
+echo "[2/9] PostgreSQL Performance-Tuning für Import..."
 for setting in \
     "max_wal_size = '10GB'" \
     "wal_level = 'minimal'" \
@@ -189,10 +189,10 @@ docker compose -f "$COMPOSE_FILE" restart db
 sleep 5
 
 # -------------------------------------------------
-# [3/8] Tabellen leeren + Sequenzen zuruecksetzen
+# [3/8] Tabellen leeren + Sequenzen zurücksetzen
 # -------------------------------------------------
 echo ""
-echo "[3/9] Tabellen leeren, Sequenzen zuruecksetzen..."
+echo "[3/9] Tabellen leeren, Sequenzen zurücksetzen..."
 
 # restore_dump.sql ist im Image unter /opt/restore/ eingebacken
 if docker exec "$CONTAINER" test -f /opt/restore/restore_dump.sql; then
@@ -250,16 +250,16 @@ done
 # Die Dumps enthalten patent_cpc_*.backup und patent_applicants_*.backup,
 # aber diese sind in der aktuellen Prod-DB leer (nur Header, 1-4 KB).
 # Die Junctions werden daher aus patents.cpc_codes und patents.applicant_names
-# (denormalisierte Felder, die der EPO-Importer direkt befuellt) abgeleitet.
-# Idempotent durch ON CONFLICT DO NOTHING — bei zukuenftigen Dumps mit bereits
-# gefuellten Junction-Partitionen ist der Effekt ein No-op.
+# (denormalisierte Felder, die der EPO-Importer direkt befüllt) abgeleitet.
+# Idempotent durch ON CONFLICT DO NOTHING — bei zukünftigen Dumps mit bereits
+# gefüllten Junction-Partitionen ist der Effekt ein No-op.
 echo ""
 echo "[7/9] Junction-Tabellen ableiten (patent_cpc, patent_applicants, applicants)..."
 
 # Drei Fundstellen in dieser Reihenfolge:
-#   1. Host-Dateisystem (Repo-Checkout) - fuer lokale Entwicklung
-#   2. Im DB-Image eingebacken unter /opt/restore/ - fuer Server-Deployment
-#      wo das Repo evtl. nicht vollstaendig vorhanden ist
+#   1. Host-Dateisystem (Repo-Checkout) - für lokale Entwicklung
+#   2. Im DB-Image eingebacken unter /opt/restore/ - für Server-Deployment
+#      wo das Repo evtl. nicht vollständig vorhanden ist
 #   3. Skip mit Warnung
 if [ -f "database/sql/seed_junctions_production.sql" ]; then
     docker cp "database/sql/seed_junctions_production.sql" \
@@ -311,12 +311,12 @@ else
 fi
 
 # -------------------------------------------------
-# [9/9] Performance-Settings zuruecksetzen
+# [9/9] Performance-Settings zurücksetzen
 # -------------------------------------------------
 # Gleiche ALTER-SYSTEM-Transaktions-Regel wie in Phase [2/9] — jeder
 # RESET braucht einen eigenen psql -c Aufruf.
 echo ""
-echo "[9/9] PostgreSQL Performance-Settings zuruecksetzen..."
+echo "[9/9] PostgreSQL Performance-Settings zurücksetzen..."
 for setting in \
     max_wal_size \
     wal_level \

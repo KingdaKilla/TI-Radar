@@ -1654,7 +1654,7 @@ END $$;
 
 
 -- --------------------------------------------------------------------------
--- Role passwords (env-basiert, Defaults fuer Development)
+-- Role passwords (env-basiert, Defaults für Development)
 -- --------------------------------------------------------------------------
 ALTER ROLE svc_landscape PASSWORD 'svc_landscape_pw';
 ALTER ROLE svc_maturity PASSWORD 'svc_maturity_pw';

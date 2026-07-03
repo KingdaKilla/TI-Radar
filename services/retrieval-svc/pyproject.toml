@@ -1,7 +1,7 @@
 [project]
 name = "retrieval-svc"
 version = "1.0.0"
-description = "Retrieval Service — Semantische Suche ueber pgvector fuer RAG-Pipeline (lokal)"
+description = "Retrieval Service — Semantische Suche über pgvector für RAG-Pipeline (lokal)"
 requires-python = ">=3.12"
 
 dependencies = [

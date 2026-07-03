@@ -1,7 +1,7 @@
 [project]
 name = "competitive-svc"
 version = "2.0.0"
-description = "UC3 Competitive Intelligence Service — gRPC-Microservice fuer Wettbewerbs-Analyse mit HHI und Netzwerk-Graph"
+description = "UC3 Competitive Intelligence Service — gRPC-Microservice für Wettbewerbs-Analyse mit HHI und Netzwerk-Graph"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

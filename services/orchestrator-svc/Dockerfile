@@ -3,9 +3,9 @@
 # =============================================================================
 # Multi-Stage Build:
 #   1. Builder: Dependencies installieren (Caching-Layer)
-#   2. Runtime: Minimales Image mit nur den noetigsten Paketen
+#   2. Runtime: Minimales Image mit nur den nötigsten Paketen
 #
-# Ausfuehren:
+# Ausführen:
 #   docker build -t orchestrator-svc .
 #   docker run -p 8000:8000 orchestrator-svc
 # =============================================================================
@@ -15,7 +15,7 @@
 # ---------------------------------------------------------------------------
 FROM python:3.12-slim AS builder
 
-# System-Dependencies fuer grpcio (Kompilierung)
+# System-Dependencies für grpcio (Kompilierung)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -23,7 +23,7 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Nur pyproject.toml kopieren fuer besseres Docker-Layer-Caching
+# Nur pyproject.toml kopieren für besseres Docker-Layer-Caching
 # (Build-Context ist Projekt-Root, daher voller Pfad)
 COPY services/orchestrator-svc/pyproject.toml .
 
@@ -39,10 +39,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # ---------------------------------------------------------------------------
 FROM python:3.12-slim AS runtime
 
-# Sicherheit: Nicht als root ausfuehren
+# Sicherheit: Nicht als root ausführen
 RUN groupadd -r appuser && useradd -r -g appuser -s /sbin/nologin appuser
 
-# Laufzeit-Dependencies fuer asyncpg (libpq)
+# Laufzeit-Dependencies für asyncpg (libpq)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libpq5 \
@@ -66,13 +66,13 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
-# Konfigurierbare Umgebungsvariablen (Defaults fuer Container)
+# Konfigurierbare Umgebungsvariablen (Defaults für Container)
 ENV HOST=0.0.0.0 \
     PORT=8000 \
     LOG_LEVEL=INFO \
     DEBUG=false
 
-# Health Check: flacher Health-Endpoint ohne gRPC-Pruefung
+# Health Check: flacher Health-Endpoint ohne gRPC-Prüfung
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 

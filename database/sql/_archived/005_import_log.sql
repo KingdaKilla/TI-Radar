@@ -1,9 +1,9 @@
 -- ============================================================================
 -- 005_import_log.sql
--- Import-Tracking fuer inkrementelle Imports (EPO, CORDIS, EuroSciVoc)
+-- Import-Tracking für inkrementelle Imports (EPO, CORDIS, EuroSciVoc)
 -- ============================================================================
 --
--- Ermoeglicht das Ueberspringen bereits importierter Dateien bei erneutem
+-- Ermöglicht das Überspringen bereits importierter Dateien bei erneutem
 -- Import-Lauf. Jeder erfolgreich abgeschlossene Import wird mit Dateiname,
 -- Quelle, Anzahl und Dauer protokolliert.
 --
@@ -13,7 +13,7 @@
 BEGIN;
 
 -- --------------------------------------------------------------------------
--- Import-Log Tabelle in cross_schema (quellenuebergreifend)
+-- Import-Log Tabelle in cross_schema (quellenübergreifend)
 -- --------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS cross_schema.import_log (
@@ -35,19 +35,19 @@ CREATE TABLE IF NOT EXISTS cross_schema.import_log (
 );
 
 COMMENT ON TABLE cross_schema.import_log IS
-    'Import-Tracking fuer inkrementelle Imports. Jede erfolgreich importierte '
-    'Datei wird protokolliert, um bei erneutem Import-Lauf uebersprungen zu werden.';
+    'Import-Tracking für inkrementelle Imports. Jede erfolgreich importierte '
+    'Datei wird protokolliert, um bei erneutem Import-Lauf übersprungen zu werden.';
 
 COMMENT ON COLUMN cross_schema.import_log.source IS
     'Datenquelle: epo, cordis oder euroscivoc.';
 COMMENT ON COLUMN cross_schema.import_log.filename IS
     'Dateiname der importierten Datei (ZIP oder CSV).';
 COMMENT ON COLUMN cross_schema.import_log.record_count IS
-    'Anzahl der importierten Datensaetze aus dieser Datei.';
+    'Anzahl der importierten Datensätze aus dieser Datei.';
 COMMENT ON COLUMN cross_schema.import_log.duration_seconds IS
-    'Import-Dauer fuer diese Datei in Sekunden.';
+    'Import-Dauer für diese Datei in Sekunden.';
 COMMENT ON COLUMN cross_schema.import_log.status IS
-    'Import-Status: completed (erfolgreich), failed (fehlgeschlagen), skipped (uebersprungen).';
+    'Import-Status: completed (erfolgreich), failed (fehlgeschlagen), skipped (übersprungen).';
 
 
 -- --------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================================
 # restore_on_server.sh
-# Vollstaendiges Restore der ti_radar_dump.backup auf dem Zielserver
+# Vollständiges Restore der ti_radar_dump.backup auf dem Zielserver
 # ============================================================================
 #
 # Aufruf von AUSSERHALB des Containers:
@@ -26,7 +26,7 @@ echo "Dump: $DUMP_PATH"
 echo "============================================"
 
 # -------------------------------------------------
-# Schritt 1: DB-Container starten (falls nicht laeuft)
+# Schritt 1: DB-Container starten (falls nicht läuft)
 # -------------------------------------------------
 echo ""
 echo "[1/7] DB-Container starten..."
@@ -34,10 +34,10 @@ docker compose up -d db
 sleep 5
 
 # -------------------------------------------------
-# Schritt 2: Performance-Tuning fuer schnellen Import
+# Schritt 2: Performance-Tuning für schnellen Import
 # -------------------------------------------------
 echo ""
-echo "[2/7] PostgreSQL Performance-Tuning fuer Import..."
+echo "[2/7] PostgreSQL Performance-Tuning für Import..."
 # ALTER SYSTEM darf nicht in einer Transaktion laufen; jeder Aufruf als
 # eigener psql -c Call.
 for setting in \
@@ -61,7 +61,7 @@ sleep 5
 # Schritt 3: Dump-Datei in Container kopieren
 # -------------------------------------------------
 echo ""
-echo "[3/7] Dump in Container kopieren (kann dauern bei grossen Dateien)..."
+echo "[3/7] Dump in Container kopieren (kann dauern bei großen Dateien)..."
 docker cp "$DUMP_PATH" "$CONTAINER":/tmp/dump.backup
 
 # -------------------------------------------------
@@ -69,11 +69,11 @@ docker cp "$DUMP_PATH" "$CONTAINER":/tmp/dump.backup
 #            (SQL ist im Image unter /opt/restore/ eingebacken)
 # -------------------------------------------------
 echo ""
-echo "[4/7] Tabellen leeren, Sequenzen zuruecksetzen, Vektor-Dimensionen anpassen..."
+echo "[4/7] Tabellen leeren, Sequenzen zurücksetzen, Vektor-Dimensionen anpassen..."
 docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -f /opt/restore/restore_dump.sql
 
 # -------------------------------------------------
-# Schritt 5: pg_restore ausfuehren
+# Schritt 5: pg_restore ausführen
 # -------------------------------------------------
 echo ""
 echo "[5/7] pg_restore starten (--data-only --disable-triggers --jobs=4)..."
@@ -104,10 +104,10 @@ docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -c "
 "
 
 # -------------------------------------------------
-# Schritt 7: Performance-Settings zuruecksetzen
+# Schritt 7: Performance-Settings zurücksetzen
 # -------------------------------------------------
 echo ""
-echo "[7/7] PostgreSQL Performance-Settings zuruecksetzen..."
+echo "[7/7] PostgreSQL Performance-Settings zurücksetzen..."
 for setting in \
     max_wal_size \
     wal_level \
@@ -124,9 +124,9 @@ done
 docker compose restart db
 sleep 5
 
-# Aufraeumen
+# Aufräumen
 echo ""
-echo "Dump-Datei im Container aufraeumen..."
+echo "Dump-Datei im Container aufräumen..."
 docker exec "$CONTAINER" rm -f /tmp/dump.backup
 
 # -------------------------------------------------

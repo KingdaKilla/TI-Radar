@@ -10,8 +10,8 @@
 #   pip install grpcio-tools protobuf
 #
 # Output:
-#   packages/shared/generated/python/*.py  (pb2.py + pb2_grpc.py fuer jedes Proto)
-#   packages/shared/generated/python/*.pyi (Type-Stubs fuer Mypy/IDE)
+#   packages/shared/generated/python/*.py  (pb2.py + pb2_grpc.py für jedes Proto)
+#   packages/shared/generated/python/*.pyi (Type-Stubs für Mypy/IDE)
 # =============================================================================
 set -euo pipefail
 
@@ -26,14 +26,14 @@ echo "Proto-Verzeichnis:  $PROTO_DIR"
 echo "Output-Verzeichnis: $OUT_DIR"
 echo ""
 
-# Pruefen ob grpcio-tools installiert ist
+# Prüfen ob grpcio-tools installiert ist
 if ! python -m grpc_tools.protoc --version &>/dev/null 2>&1; then
     echo "FEHLER: grpcio-tools nicht gefunden."
     echo "Installation: pip install grpcio-tools>=1.60 protobuf>=4.25"
     exit 1
 fi
 
-# Pruefen ob Proto-Dateien vorhanden sind
+# Prüfen ob Proto-Dateien vorhanden sind
 PROTO_FILES=("$PROTO_DIR"/*.proto)
 if [ ${#PROTO_FILES[@]} -eq 0 ]; then
     echo "FEHLER: Keine .proto-Dateien in $PROTO_DIR gefunden."
@@ -78,7 +78,7 @@ done
 echo "  $fix_count Dateien gepatcht."
 echo ""
 
-# __init__.py fuer das generated-Package und das python-Subpackage
+# __init__.py für das generated-Package und das python-Subpackage
 echo "Aktualisiere __init__.py Dateien..."
 
 touch "$PROJECT_ROOT/packages/shared/generated/__init__.py"

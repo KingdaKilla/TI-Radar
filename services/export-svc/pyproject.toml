@@ -19,7 +19,7 @@ dependencies = [
     "pydantic>=2.10,<3.0",
     "pydantic-settings>=2.0,<3.0",
 
-    # Datenbank (asyncpg fuer PostgreSQL-Cache)
+    # Datenbank (asyncpg für PostgreSQL-Cache)
     "asyncpg>=0.29,<1.0",
 
     # HTTP-Client (Orchestrator-Aufrufe)
@@ -31,7 +31,7 @@ dependencies = [
     # PDF-Export (HTML-to-PDF Rendering)
     "weasyprint>=63.0,<67.0",
 
-    # Chart-Rendering (matplotlib erzeugt PNG-Charts fuer PDF)
+    # Chart-Rendering (matplotlib erzeugt PNG-Charts für PDF)
     "matplotlib>=3.9,<4.0",
 
     # Jinja2 Templating (WIPO PDF-Report)

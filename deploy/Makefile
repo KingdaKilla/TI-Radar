@@ -60,7 +60,7 @@ install-all: install-shared ## Alle Services installieren (editable)
 		fi; \
 	done
 
-clean: ## Build-Artefakte aufraeumen
+clean: ## Build-Artefakte aufräumen
 	find $(PROJECT_ROOT) -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find $(PROJECT_ROOT) -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
 	find $(PROJECT_ROOT) -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true

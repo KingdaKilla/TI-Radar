@@ -1,10 +1,10 @@
 -- ============================================================================
 -- restore_dump.sql
--- Vollstaendiges Restore-Skript fuer ti_radar_dump.backup
+-- Vollständiges Restore-Skript für ti_radar_dump.backup
 -- auf einem Server, wo die DB bereits existiert
 -- ============================================================================
 --
--- Ausfuehrung:
+-- Ausführung:
 --   docker exec ti-radar-db psql -U tip_admin -d ti_radar -f /tmp/restore_dump.sql
 --
 -- Danach:
@@ -67,7 +67,7 @@ TRUNCATE public.alembic_version;
 
 
 -- ============================================================================
--- 2. Vektor-Dimensionen an Dump anpassen (nur noetig wenn Dump andere Dims hat)
+-- 2. Vektor-Dimensionen an Dump anpassen (nur nötig wenn Dump andere Dims hat)
 --    Schema definiert vector(384). Nur document_chunks verwendet vector(1024)
 --    im Dump, alle anderen Embedding-Spalten sind bereits 384.
 -- ============================================================================
@@ -77,7 +77,7 @@ ALTER TABLE cross_schema.document_chunks
 
 
 -- ============================================================================
--- 3. Identity/Serial Sequenzen zuruecksetzen
+-- 3. Identity/Serial Sequenzen zurücksetzen
 --    Damit neue IDs nicht mit vorhandenen Dump-IDs kollidieren
 -- ============================================================================
 
@@ -115,7 +115,7 @@ ALTER TABLE export_schema.export_log ALTER COLUMN id RESTART;
 COMMIT;
 
 -- ============================================================================
--- Fertig! Jetzt pg_restore ausfuehren:
+-- Fertig! Jetzt pg_restore ausführen:
 --
 --   docker exec ti-radar-db pg_restore -U tip_admin -d ti_radar \
 --       --data-only --disable-triggers --jobs=4 /tmp/dump.backup
@@ -133,7 +133,7 @@ COMMIT;
 --           REFRESH MATERIALIZED VIEW cross_schema.mv_top_cordis_orgs;
 --           REFRESH MATERIALIZED VIEW cross_schema.mv_funding_by_instrument;"
 --
--- Und PostgreSQL Performance-Settings zuruecksetzen:
+-- Und PostgreSQL Performance-Settings zurücksetzen:
 --
 --   docker exec ti-radar-db psql -U tip_admin -d ti_radar -c "
 --       ALTER SYSTEM RESET max_wal_size;

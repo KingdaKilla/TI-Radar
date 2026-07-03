@@ -1,7 +1,7 @@
 # =============================================================================
 # Dockerfile — Retrieval Service
 # =============================================================================
-# Semantische Suche ueber pgvector fuer RAG-Pipeline.
+# Semantische Suche über pgvector für RAG-Pipeline.
 # Hybrid Search (Dense + Sparse) + Cross-Encoder Reranking.
 # =============================================================================
 

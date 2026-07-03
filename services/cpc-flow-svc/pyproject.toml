@@ -1,7 +1,7 @@
 [project]
 name = "cpc-flow-svc"
 version = "2.0.0"
-description = "UC5 CPC Technology Flow Service — gRPC-Microservice fuer CPC-Co-Klassifikations-Analyse via Jaccard-Index"
+description = "UC5 CPC Technology Flow Service — gRPC-Microservice für CPC-Co-Klassifikations-Analyse via Jaccard-Index"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

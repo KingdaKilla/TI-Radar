@@ -1,7 +1,7 @@
 [project]
 name = "maturity-svc"
 version = "2.0.0"
-description = "UC2 Technology Maturity Assessment Service — gRPC-Microservice fuer S-Curve-basierte Reifegrad-Analyse"
+description = "UC2 Technology Maturity Assessment Service — gRPC-Microservice für S-Curve-basierte Reifegrad-Analyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

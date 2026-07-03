@@ -1,7 +1,7 @@
 [project]
 name = "actor-type-svc"
 version = "2.0.0"
-description = "UC11 Actor Type Service — gRPC-Microservice fuer Akteur-Typ-Verteilungsanalyse"
+description = "UC11 Actor Type Service — gRPC-Microservice für Akteur-Typ-Verteilungsanalyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "TI-Radar Team" }]

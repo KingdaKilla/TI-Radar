@@ -1,7 +1,7 @@
 [project]
 name = "euroscivoc-svc"
 version = "2.0.0"
-description = "UC10 EuroSciVoc Service — gRPC-Microservice fuer EuroSciVoc-Taxonomie-Analyse"
+description = "UC10 EuroSciVoc Service — gRPC-Microservice für EuroSciVoc-Taxonomie-Analyse"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [

@@ -2,13 +2,13 @@
    TI-Radar PDF Report — Print-optimiertes CSS
    WIPO Patent Landscape Report (Pub. 946) Struktur
 
-   Optimiert fuer WeasyPrint-Rendering.
-   - A4 Querformat (landscape) fuer Diagramm-Sektionen
-   - A4 Hochformat (portrait) fuer Text-Sektionen
+   Optimiert für WeasyPrint-Rendering.
+   - A4 Querformat (landscape) für Diagramm-Sektionen
+   - A4 Hochformat (portrait) für Text-Sektionen
    Professionelles Business-Report-Layout mit Farbschema #2a4365 (Dunkelblau).
    ============================================================================ */
 
-/* --- Seitendefinition: A4 Querformat (Standard fuer UC-Sektionen) --- */
+/* --- Seitendefinition: A4 Querformat (Standard für UC-Sektionen) --- */
 @page {
     size: A4 landscape;
     margin: 18mm 20mm 22mm 20mm;
@@ -53,7 +53,7 @@
     @bottom-right { content: none; }
 }
 
-/* Hochformat-Seiten fuer Text-Sektionen (Executive Summary, Methodik, etc.) */
+/* Hochformat-Seiten für Text-Sektionen (Executive Summary, Methodik, etc.) */
 @page portrait-page {
     size: A4 portrait;
     margin: 20mm 18mm 22mm 18mm;
@@ -285,7 +285,7 @@ p {
     margin-top: 2px;
 }
 
-/* --- Sektions-Ueberschriften --- */
+/* --- Sektions-Überschriften --- */
 .section {
     page-break-before: always;
     padding-top: 5mm;
@@ -295,7 +295,7 @@ p {
     page-break-before: auto;
 }
 
-/* Portrait-Sektionen (Executive Summary, Methodik, Datenqualitaet) */
+/* Portrait-Sektionen (Executive Summary, Methodik, Datenqualität) */
 .section-portrait {
     page: portrait-page;
 }
@@ -402,7 +402,7 @@ p {
     font-variant-numeric: tabular-nums;
 }
 
-/* Hervorhebung fuer wichtige Zellen */
+/* Hervorhebung für wichtige Zellen */
 .data-table .highlight {
     font-weight: 600;
     color: #2a4365;
@@ -499,7 +499,7 @@ p {
     margin: 0;
 }
 
-/* --- Datenqualitaets-Grid --- */
+/* --- Datenqualitäts-Grid --- */
 .quality-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

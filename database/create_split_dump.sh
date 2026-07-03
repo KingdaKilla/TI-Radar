@@ -11,7 +11,7 @@
 # Ergebnis:
 #   D:\ti_radar_dump_YYYY-MM-DD/
 #   ├── 00_schema_only.sql
-#   ├── patent_schema/  (Dekaden-Split fuer patents, patent_cpc, patent_applicants)
+#   ├── patent_schema/  (Dekaden-Split für patents, patent_cpc, patent_applicants)
 #   ├── cordis_schema.backup
 #   ├── research_schema.backup
 #   ├── entity_schema.backup
@@ -42,7 +42,7 @@ DATE=$(date +%Y-%m-%d)
 BASE_DIR="${1:-/d}/ti_radar_dump_${DATE}"
 PATENT_DIR="${BASE_DIR}/patent_schema"
 
-# Windows-Style-Pfade fuer 'docker cp' (docker.exe versteht /d/ nicht).
+# Windows-Style-Pfade für 'docker cp' (docker.exe versteht /d/ nicht).
 # cygpath -m liefert "D:/..." statt "D:\...".
 # Wenn cygpath fehlt (Linux/macOS), bleibt der Pfad unveraendert.
 if command -v cygpath >/dev/null 2>&1; then
@@ -64,10 +64,10 @@ echo "Datum: ${DATE}"
 echo "============================================"
 
 # -------------------------------------------------
-# Pruefen ob Container laeuft
+# Prüfen ob Container läuft
 # -------------------------------------------------
 if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
-    echo "FEHLER: Container '$CONTAINER' laeuft nicht."
+    echo "FEHLER: Container '$CONTAINER' läuft nicht."
     exit 1
 fi
 
@@ -89,7 +89,7 @@ docker exec "$CONTAINER" pg_dump \
     --schema-only \
     --no-owner --no-privileges \
     -f "${C_BASE}/00_schema_only.sql"
-# Sofort nach D: kopieren und im Container loeschen
+# Sofort nach D: kopieren und im Container löschen
 docker cp "${CONTAINER}:${C_BASE}/00_schema_only.sql" "${WIN_BASE_DIR}/00_schema_only.sql"
 docker exec "$CONTAINER" rm -f "${C_BASE}/00_schema_only.sql"
 echo "   -> 00_schema_only.sql"
@@ -102,8 +102,8 @@ echo "[3/5] Patent-Schema: Dekaden-Split..."
 
 # Hilfsfunktion: Dumpt eine oder mehrere Partitionen in eine Datei
 # und kopiert die Datei sofort aus dem Container nach D:, damit der
-# Container-Tempspace (in der Docker-VHDX auf C:) nie ueber eine Datei
-# hinaus waechst.
+# Container-Tempspace (in der Docker-VHDX auf C:) nie über eine Datei
+# hinaus wächst.
 dump_partitions() {
     local label="$1"
     local outfile="$2"
@@ -116,7 +116,7 @@ dump_partitions() {
         --no-owner --no-privileges \
         "$@" \
         -f "${C_PATENT}/${outfile}"
-    # Sofort nach D: kopieren und im Container loeschen
+    # Sofort nach D: kopieren und im Container löschen
     docker cp "${CONTAINER}:${C_PATENT}/${outfile}" "${WIN_PATENT_DIR}/${outfile}"
     docker exec "$CONTAINER" rm -f "${C_PATENT}/${outfile}"
 }
@@ -214,16 +214,16 @@ for schema in cordis_schema research_schema entity_schema export_schema cross_sc
         --no-owner --no-privileges \
         -n "$schema" \
         -f "${C_BASE}/${schema}.backup"
-    # Sofort nach D: kopieren und im Container loeschen
+    # Sofort nach D: kopieren und im Container löschen
     docker cp "${CONTAINER}:${C_BASE}/${schema}.backup" "${WIN_BASE_DIR}/${schema}.backup"
     docker exec "$CONTAINER" rm -f "${C_BASE}/${schema}.backup"
 done
 
 # -------------------------------------------------
-# Container-Tempspace aufraeumen
+# Container-Tempspace aufräumen
 # -------------------------------------------------
 # Hinweis: Dateien wurden bereits direkt nach jedem pg_dump nach D: kopiert
-# und einzeln im Container geloescht (siehe dump_partitions() und Schema-Loop).
+# und einzeln im Container gelöscht (siehe dump_partitions() und Schema-Loop).
 # Hier nur noch das leere Temp-Verzeichnis entfernen.
 docker exec "$CONTAINER" rm -rf "$C_BASE"
 

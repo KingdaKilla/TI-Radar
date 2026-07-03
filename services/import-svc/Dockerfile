@@ -1,7 +1,7 @@
 # =============================================================================
 # Dockerfile — TI-Radar v2 Import Service
 # =============================================================================
-# Multi-Stage Build: uv fuer schnelle Dependency-Installation,
+# Multi-Stage Build: uv für schnelle Dependency-Installation,
 # python:3.12-slim als Runtime-Image.
 #
 # Verwendung:
@@ -34,7 +34,7 @@ COPY services/import-svc/src/ ./src/
 # --- Stage 2: Runtime (schlankes Image) ---
 FROM python:3.12-slim AS runtime
 
-# lxml benoetigt libxml2 und libxslt zur Laufzeit
+# lxml benötigt libxml2 und libxslt zur Laufzeit
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libxml2 libxslt1.1 \
     && rm -rf /var/lib/apt/lists/*

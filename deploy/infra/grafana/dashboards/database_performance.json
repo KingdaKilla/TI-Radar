@@ -28,7 +28,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Aktuelle DB Connection Pool Groesse pro UC-Service. Jeder Service verwaltet einen asyncpg Pool mit min/max Connections.",
+      "description": "Aktuelle DB Connection Pool Größe pro UC-Service. Jeder Service verwaltet einen asyncpg Pool mit min/max Connections.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -77,7 +77,7 @@
         },
         "tooltip": { "mode": "multi", "sort": "desc" }
       },
-      "title": "Connection Pool Groesse pro Service",
+      "title": "Connection Pool Größe pro Service",
       "type": "timeseries",
       "targets": [
         {
@@ -90,7 +90,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Aktuelle Connection Pool Groesse aller Services als Balkendiagramm.",
+      "description": "Aktuelle Connection Pool Größe aller Services als Balkendiagramm.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -122,7 +122,7 @@
         "textMode": "auto",
         "wideLayout": false
       },
-      "title": "Pool Groesse (aktuell)",
+      "title": "Pool Größe (aktuell)",
       "type": "stat",
       "targets": [
         {
@@ -179,7 +179,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Durchschnittliche Pool-Groesse pro Service",
+      "description": "Durchschnittliche Pool-Größe pro Service",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -223,7 +223,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "Maximale Pool-Groesse ueber alle Services",
+      "description": "Maximale Pool-Größe über alle Services",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -254,7 +254,7 @@
         },
         "textMode": "auto"
       },
-      "title": "Max Pool Groesse",
+      "title": "Max Pool Größe",
       "type": "stat",
       "targets": [
         {
@@ -274,7 +274,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "description": "gRPC-Request-Dauer als Proxy fuer Query-Performance. Der Grossteil der Service-Zeit wird in PostgreSQL-Queries verbracht. Aufgeschluesselt nach Service mit P99/P95/P50 Quantilen.",
+      "description": "gRPC-Request-Dauer als Proxy für Query-Performance. Der Großteil der Service-Zeit wird in PostgreSQL-Queries verbracht. Aufgeschlüsselt nach Service mit P99/P95/P50 Quantilen.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -453,7 +453,7 @@
       "id": 20,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
-        "content": "# Materialized View Refresh\n\nDie TI-Radar v2 Datenbank nutzt PostgreSQL Materialized Views fuer\nvorberechnete Aggregationen (Schema: `analytics_schema`).\n\n## Refresh-Mechanismus\n\n| View | Aktualisierung | Endpoint |\n|------|---------------|----------|\n| Landscape Summary | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n| Country Stats | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n| Actor Rankings | Nach Entity Resolution | `POST /api/v1/import/refresh-views` |\n| CPC Co-occurrence | Nach EPO-Import | `POST /api/v1/import/refresh-views` |\n| Temporal Trends | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n\n## Monitoring\n\nDer Import-Service (`import-svc:8030`) stellt den Refresh-Endpoint bereit.\nEin manueller Refresh ist nach jedem Datenimport empfohlen.\n\n**Hinweis:** Derzeit keine Prometheus-Metriken fuer MV-Refresh verfuegbar.\nFuer zukuenftige Instrumentierung: `db_mv_refresh_duration_seconds` und\n`db_mv_refresh_total` als Histogram/Counter hinzufuegen.",
+        "content": "# Materialized View Refresh\n\nDie TI-Radar v2 Datenbank nutzt PostgreSQL Materialized Views für\nvorberechnete Aggregationen (Schema: `analytics_schema`).\n\n## Refresh-Mechanismus\n\n| View | Aktualisierung | Endpoint |\n|------|---------------|----------|\n| Landscape Summary | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n| Country Stats | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n| Actor Rankings | Nach Entity Resolution | `POST /api/v1/import/refresh-views` |\n| CPC Co-occurrence | Nach EPO-Import | `POST /api/v1/import/refresh-views` |\n| Temporal Trends | Nach Bulk-Import | `POST /api/v1/import/refresh-views` |\n\n## Monitoring\n\nDer Import-Service (`import-svc:8030`) stellt den Refresh-Endpoint bereit.\nEin manueller Refresh ist nach jedem Datenimport empfohlen.\n\n**Hinweis:** Derzeit keine Prometheus-Metriken für MV-Refresh verfügbar.\nFür zukünftige Instrumentierung: `db_mv_refresh_duration_seconds` und\n`db_mv_refresh_total` als Histogram/Counter hinzufügen.",
         "mode": "markdown"
       },
       "title": "Materialized View Refresh — Status & Anleitung",
