@@ -1,6 +1,6 @@
 # Testprotokoll — Agent 3 · Schemathesis (Property-Based API-Fuzzing)
 
-> **Adressat:** Claude-Code-Subagent, der diese Datei liest und eigenständig ausführt.
+> **Adressat:** Automatisierter Test-Agent, der diese Datei liest und eigenständig ausführt.
 > **Technologie:** [Schemathesis](https://schemathesis.readthedocs.io/) (+ Hypothesis) — Property-Based-API-Fuzzing direkt aus OpenAPI-Schema.
 > **Warum diese Technologie:** Weder `pytest` noch `pact-python` generieren automatisch tausende Edge-Case-Requests aus der API-Spezifikation. Schemathesis findet Klassen von Bugs, die manuelle Tests nie finden: Pydantic-Validation-Bypasses, 500er-Crashes bei unüblichen Typen, Schema-Drift zwischen Doku und Implementierung, Content-Type-Ignoranz etc.
 

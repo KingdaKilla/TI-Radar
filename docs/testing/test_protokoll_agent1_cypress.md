@@ -1,6 +1,6 @@
 # Testprotokoll — Agent 1 · Cypress (E2E Frontend)
 
-> **Adressat:** Claude-Code-Subagent, der diese Datei liest und eigenständig ausführt.
+> **Adressat:** Automatisierter Test-Agent, der diese Datei liest und eigenständig ausführt.
 > **Technologie:** [Cypress 13](https://docs.cypress.io/) — Browser-E2E-Testing in JavaScript/TypeScript.
 > **Warum diese Technologie:** Cypress ist **nicht** im Projekt-Stack (`pytest`, `pact`, `ruff`, `mypy`, `next lint`) und bietet als einziges Tool echte Browser-Interaktion mit zeitreisefähigem Network-Stubbing.
 

@@ -1,4 +1,4 @@
-# Ergebnis · Claude · Playwright MCP · Live-Test auf `app.drakain.de`
+# Ergebnis · Agent 4 · Playwright MCP · Live-Test auf `app.drakain.de`
 
 **Lauf:** 2026-04-14 20:10–20:42 (ca. 32 min) · **Browser:** Chromium (Playwright MCP) · **Viewport:** 1920×1080
 **Zielsystem:** `https://app.drakain.de` (Produktions-Deployment, Basic-Auth `bi`)

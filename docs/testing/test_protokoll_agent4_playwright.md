@@ -1,6 +1,6 @@
-# Testprotokoll — Claude (ich) · Playwright MCP (visuelle Plausibilität)
+# Testprotokoll — Agent 4 · Playwright MCP (visuelle Plausibilität)
 
-> **Adressat:** Ich selbst (Claude Code in dieser Sitzung), ausgeführt über das MCP-Plugin `plugin_playwright_playwright` (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`, `browser_evaluate`).
+> **Adressat:** Agent 4 (Playwright-Testagent in dieser Sitzung), ausgeführt über das MCP-Plugin `plugin_playwright_playwright` (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`, `browser_evaluate`).
 > **Warum diese Technologie:** Playwright MCP gibt mir eine **echte Browser-Sicht** ohne Test-Framework-Overhead. Ideal für inhaltliche Plausibilitätsprüfungen und visuelle Verifikation, die kein automatisierter Agent (Cypress/k6/Schemathesis) leisten kann.
 
 ---
@@ -143,7 +143,7 @@ Falls nicht: `cd deploy && make up && sleep 40`.
 
 ### Phase G · Bericht schreiben
 
-25. Konsolidiere alle Erkenntnisse in `docs/testing/ergebnisse/claude_playwright_bericht.md` (Template siehe § 8).
+25. Konsolidiere alle Erkenntnisse in `docs/testing/ergebnisse/agent4_playwright_bericht.md` (Template siehe § 8).
 26. Mindestens 13 Screenshots (1 je UC, bevorzugt von `quantum computing`-Lauf) ablegen unter `docs/testing/ergebnisse/screenshots/`.
 
 ---
@@ -161,10 +161,10 @@ Falls nicht: `cd deploy && make up && sleep 40`.
 
 ## 8. Ergebnis-Dokumentation (Template)
 
-Schreibe `docs/testing/ergebnisse/claude_playwright_bericht.md`:
+Schreibe `docs/testing/ergebnisse/agent4_playwright_bericht.md`:
 
 ```markdown
-# Ergebnis · Claude · Playwright MCP
+# Ergebnis · Agent 4 · Playwright MCP
 
 **Lauf:** <ISO-Datum> · **Browser:** Chromium (Playwright MCP default) · **Stack-Commit:** <SHA>
 

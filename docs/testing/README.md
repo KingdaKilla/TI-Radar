@@ -8,10 +8,10 @@
 
 | Rolle | Ausführung | Technologie | Warum diese Technologie |
 |---|---|---|---|
-| **Agent 1 / „Person A"** | Claude-Code-Subagent | **Cypress 13** (E2E, TypeScript) | Deckt Browser-basierte User-Journeys ab, die pytest nicht sieht |
-| **Agent 2 / „Person B"** | Claude-Code-Subagent | **k6** (Load, JavaScript) | Lasttests + Fan-Out-Chaos — kein Performance-Check bisher |
-| **Agent 3 / „Person C"** | Claude-Code-Subagent | **Schemathesis** (Property-Based API-Fuzzing, Python) | Automatisiert erschöpfendes API-Fuzzing aus OpenAPI — weder pact noch pytest machen das |
-| **Claude (ich)** | Direkte MCP-Sitzung | **Playwright MCP** (Browser-Automation) | End-User-Sicht: inhaltliche Plausibilität & visuelle Verifikation |
+| **Agent 1 / „Person A"** | Automatisierter Test-Agent | **Cypress 13** (E2E, TypeScript) | Deckt Browser-basierte User-Journeys ab, die pytest nicht sieht |
+| **Agent 2 / „Person B"** | Automatisierter Test-Agent | **k6** (Load, JavaScript) | Lasttests + Fan-Out-Chaos — kein Performance-Check bisher |
+| **Agent 3 / „Person C"** | Automatisierter Test-Agent | **Schemathesis** (Property-Based API-Fuzzing, Python) | Automatisiert erschöpfendes API-Fuzzing aus OpenAPI — weder pact noch pytest machen das |
+| **Agent 4** | Direkte MCP-Sitzung | **Playwright MCP** (Browser-Automation) | End-User-Sicht: inhaltliche Plausibilität & visuelle Verifikation |
 
 ---
 
@@ -20,9 +20,9 @@
 1. [`test_protokoll_agent1_cypress.md`](./test_protokoll_agent1_cypress.md) — Agent 1 · Cypress · Frontend-E2E
 2. [`test_protokoll_agent2_k6.md`](./test_protokoll_agent2_k6.md) — Agent 2 · k6 · Performance/Chaos
 3. [`test_protokoll_agent3_schemathesis.md`](./test_protokoll_agent3_schemathesis.md) — Agent 3 · Schemathesis · API-Fuzzing
-4. [`test_protokoll_claude_playwright.md`](./test_protokoll_claude_playwright.md) — Claude · Playwright MCP · visuelle Plausibilität
+4. [`test_protokoll_agent4_playwright.md`](./test_protokoll_agent4_playwright.md) — Agent 4 · Playwright MCP · visuelle Plausibilität
 
-Jedes Protokoll ist **self-contained** und so geschrieben, dass ein frisch gespawnter Claude-Code-Subagent ohne Rückfrage arbeiten kann.
+Jedes Protokoll ist **self-contained** und so geschrieben, dass ein frisch gespawnter automatisierter Test-Agent ohne Rückfrage arbeiten kann.
 
 ---
 
@@ -90,14 +90,14 @@ Legende: ✅ = primär getestet · ◻ = indirekt berührt · – = nicht im Sco
 │ 1. `make up` → Stack hochfahren (Dauer: ~1–2 min)           │
 │    docker compose ps → alle Container `Up (healthy)`         │
 ├─────────────────────────────────────────────────────────────┤
-│ 2. Parallel (in 3 separaten Claude-Code-Sessions):          │
+│ 2. Parallel (in 3 separaten Testagent-Sitzungen):            │
 │    - Subagent A liest test_protokoll_agent1_cypress.md      │
 │    - Subagent B liest test_protokoll_agent2_k6.md           │
 │    - Subagent C liest test_protokoll_agent3_schemathesis.md │
 │    Jeder Agent schreibt sein Ergebnis in ergebnisse/*.md    │
 ├─────────────────────────────────────────────────────────────┤
-│ 3. Claude (ich) führt eigenen Playwright-MCP-Lauf durch     │
-│    → ergebnisse/claude_playwright_bericht.md                │
+│ 3. Agent 4 führt eigenen Playwright-MCP-Lauf durch          │
+│    → ergebnisse/agent4_playwright_bericht.md                 │
 ├─────────────────────────────────────────────────────────────┤
 │ 4. Gesamt-Review: ergebnisse/ zusammenfassen, offene        │
 │    Bugs in GitHub-Issues überführen.                        │

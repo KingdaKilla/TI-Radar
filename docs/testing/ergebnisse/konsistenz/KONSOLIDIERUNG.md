@@ -2,7 +2,7 @@
 
 **Stand:** 2026-04-14 · **Zielsystem:** `https://app.drakain.de` · **Auftrag:** Prüfung, ob jeder UC hält, was er verspricht; Suche nach inkonsistenten Metriken, unvollständigen Jahren, Kreuz-UC-Widersprüchen.
 
-**Methodik:** Live-Durchlauf für 6 Technologien, Text-Dump aller 13 Tab-Panels, 3 Claude-Agenten pro Tech (Dokumentierer A, Analysierer B, Interpreter C) = 18 Agenten parallel → hier aggregiert.
+**Methodik:** Live-Durchlauf für 6 Technologien, Text-Dump aller 13 Tab-Panels, 3 Testagenten pro Tech (Dokumentierer A, Analysierer B, Interpreter C) = 18 Agenten parallel → hier aggregiert.
 
 ---
 

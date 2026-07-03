@@ -1,6 +1,6 @@
 # Testprotokoll — Agent 2 · k6 (Performance & Chaos)
 
-> **Adressat:** Claude-Code-Subagent, der diese Datei liest und eigenständig ausführt.
+> **Adressat:** Automatisierter Test-Agent, der diese Datei liest und eigenständig ausführt.
 > **Technologie:** [Grafana k6](https://k6.io/) — Performance-Testing mit JavaScript-DSL, Go-Runtime.
 > **Warum diese Technologie:** k6 ist **nicht** im Stack; bestehende Tests prüfen Korrektheit, nicht Latenz/Durchsatz/Robustheit. k6 füllt genau diese Lücke und kann zusätzlich Chaos-Szenarien (UC-Ausfall) messen.
 

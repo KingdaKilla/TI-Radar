@@ -1,7 +1,7 @@
 # Konsistenz-Bugfixes TI-Radar v3 — Abschlussbericht
 
 **Datum:** 2026-04-14 · **Basis-Audit:** `KONSOLIDIERUNG.md` (12 Bugs aus 6 Techs × 18 Agenten)
-**Plan:** `~/.claude/plans/iridescent-petting-rabin.md` · **Umsetzung:** 10 Arbeitspakete via 10 Claude-Subagenten
+**Plan:** interner Umsetzungsplan (`iridescent-petting-rabin.md`) · **Umsetzung:** 10 Arbeitspakete via 10 parallele Test-Subagenten
 
 ---
 
